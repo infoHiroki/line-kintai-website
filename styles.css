@@ -39,7 +39,7 @@ body {
 }
 
 section {
-    padding: 80px 0;
+    padding: 100px 0; /* セクション間の余白を増やす */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -279,21 +279,24 @@ img {
 /* 問題点セクション */
 .problems {
     background-color: var(--light-color);
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .problems-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    gap: 40px; /* カード間の余白を増やす */
 }
 
 .problem-card {
     background-color: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px 30px; /* 内部の余白を増やす */
     box-shadow: var(--box-shadow);
     transition: var(--transition);
     text-align: center;
+    position: relative;
+    margin-top: 40px; /* アイコンのためのスペースを確保 */
 }
 
 .problem-card:hover {
@@ -301,9 +304,17 @@ img {
 }
 
 .problem-icon {
-    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
     color: var(--danger-color);
-    margin-bottom: 20px;
+    margin: -80px auto 20px; /* 上部にアイコンを配置 */
+    box-shadow: var(--box-shadow);
 }
 
 .problem-card h3 {
@@ -418,6 +429,7 @@ img {
 /* 使い方セクション */
 .howto {
     background-color: var(--light-color);
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .howto-grid {
@@ -428,7 +440,7 @@ img {
 
 .howto-column h3 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px; /* 余白を増やす */
     font-size: 1.8rem;
     color: var(--primary-color);
 }
@@ -436,24 +448,25 @@ img {
 .step-cards {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 60px; /* カード間の余白を増やす */
 }
 
 .step-card {
     background-color: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px 30px 30px; /* 上部の余白を増やす */
     box-shadow: var(--box-shadow);
     position: relative;
+    margin-top: 30px; /* ステップ番号のためのスペースを確保 */
 }
 
 .step-number {
     position: absolute;
-    top: -20px;
+    top: -25px; /* 上に配置 */
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
+    width: 50px; /* サイズを大きくする */
+    height: 50px;
     background-color: var(--primary-color);
     color: white;
     border-radius: 50%;
@@ -461,7 +474,8 @@ img {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    box-shadow: 0 3px 10px rgba(0, 185, 0, 0.3); /* 影を追加 */
 }
 
 .step-card h4 {
@@ -472,7 +486,7 @@ img {
 
 .step-card p {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* 余白を増やす */
 }
 
 .step-image {
@@ -493,21 +507,24 @@ img {
 /* 機能セクション */
 .features {
     background-color: white;
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    gap: 40px; /* カード間の余白を増やす */
 }
 
 .feature-card {
     background-color: var(--light-color);
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px 30px; /* 内部の余白を増やす */
     box-shadow: var(--box-shadow);
     text-align: center;
     transition: var(--transition);
+    position: relative;
+    margin-top: 40px; /* アイコンのためのスペースを確保 */
 }
 
 .feature-card:hover {
@@ -515,33 +532,44 @@ img {
 }
 
 .feature-icon {
-    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
     color: var(--primary-color);
-    margin-bottom: 20px;
+    margin: -80px auto 20px; /* 上部にアイコンを配置 */
+    box-shadow: var(--box-shadow);
 }
 
 .feature-card h3 {
     font-size: 1.5rem;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 /* 役割別メリットセクション */
 .roles-benefits {
     background-color: var(--light-color);
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .roles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    gap: 40px; /* カード間の余白を増やす */
 }
 
 .role-card {
     background-color: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px 30px; /* 内部の余白を増やす */
     box-shadow: var(--box-shadow);
     transition: var(--transition);
+    position: relative;
+    margin-top: 40px; /* アイコンのためのスペースを確保 */
 }
 
 .role-card:hover {
@@ -549,10 +577,17 @@ img {
 }
 
 .role-icon {
-    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
     color: var(--primary-color);
-    margin-bottom: 20px;
-    text-align: center;
+    margin: -80px auto 20px; /* 上部にアイコンを配置 */
+    box-shadow: var(--box-shadow);
 }
 
 .role-card h3 {
@@ -562,15 +597,16 @@ img {
 }
 
 .role-benefits li {
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* 余白を増やす */
     display: flex;
     align-items: flex-start;
 }
 
 .role-benefits li i {
     color: var(--success-color);
-    margin-right: 10px;
+    margin-right: 15px; /* 余白を増やす */
     margin-top: 5px;
+    flex-shrink: 0; /* アイコンのサイズを固定 */
 }
 
 /* 導入事例セクション */
@@ -636,31 +672,33 @@ img {
 /* 導入の流れセクション */
 .implementation {
     background-color: var(--light-color);
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .implementation-steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+    gap: 50px; /* カード間の余白を増やす */
+    margin-bottom: 70px; /* 下部の余白を増やす */
 }
 
 .implementation-step {
     background-color: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px 30px 30px; /* 上部の余白を増やす */
     box-shadow: var(--box-shadow);
     text-align: center;
     position: relative;
+    margin-top: 30px; /* ステップ番号のためのスペースを確保 */
 }
 
 .implementation-step .step-number {
     position: absolute;
-    top: -20px;
+    top: -25px; /* 上に配置 */
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
+    width: 50px; /* サイズを大きくする */
+    height: 50px;
     background-color: var(--primary-color);
     color: white;
     border-radius: 50%;
@@ -668,7 +706,8 @@ img {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    box-shadow: 0 3px 10px rgba(0, 185, 0, 0.3); /* 影を追加 */
 }
 
 .implementation-step h3 {
@@ -678,14 +717,14 @@ img {
 
 .implementation-support {
     background-color: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 15px; /* 角丸を大きくする */
+    padding: 40px; /* 内部の余白を増やす */
     box-shadow: var(--box-shadow);
 }
 
 .implementation-support h3 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px; /* 余白を増やす */
     font-size: 1.5rem;
     color: var(--primary-color);
 }
@@ -693,7 +732,7 @@ img {
 .implementation-support ul {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    gap: 25px; /* 余白を増やす */
 }
 
 .implementation-support ul li {
@@ -703,24 +742,26 @@ img {
 
 .implementation-support ul li i {
     color: var(--primary-color);
-    margin-right: 10px;
-    font-size: 1.2rem;
+    margin-right: 15px; /* 余白を増やす */
+    font-size: 1.3rem;
+    flex-shrink: 0; /* アイコンのサイズを固定 */
 }
 
 /* 料金プランセクション */
 .pricing {
     background-color: white;
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .pricing-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    gap: 40px; /* カード間の余白を増やす */
 }
 
 .pricing-card {
     background-color: var(--light-color);
-    border-radius: 10px;
+    border-radius: 15px; /* 角丸を大きくする */
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: var(--transition);
@@ -780,14 +821,19 @@ img {
 }
 
 .pricing-features ul li {
-    margin-bottom: 15px;
+    margin-bottom: 15px; /* 余白を増やす */
     display: flex;
     align-items: center;
 }
 
 .pricing-features ul li i {
     color: var(--success-color);
-    margin-right: 10px;
+    margin-right: 15px; /* 余白を増やす */
+    flex-shrink: 0; /* アイコンのサイズを固定 */
+}
+
+.pricing-features ul li span {
+    flex: 1; /* テキストが折り返されるようにする */
 }
 
 .pricing-action {
@@ -798,6 +844,7 @@ img {
 /* よくある質問セクション */
 .faq {
     background-color: var(--light-color);
+    padding: 100px 0 120px; /* 下部の余白を増やす */
 }
 
 .faq-items {
@@ -807,14 +854,14 @@ img {
 
 .faq-item {
     background-color: white;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    border-radius: 15px; /* 角丸を大きくする */
+    margin-bottom: 25px; /* 余白を増やす */
     box-shadow: var(--box-shadow);
     overflow: hidden;
 }
 
 .faq-question {
-    padding: 20px;
+    padding: 25px 30px; /* 内部の余白を増やす */
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -824,12 +871,19 @@ img {
 .faq-question h3 {
     margin: 0;
     font-size: 1.2rem;
+    padding-right: 20px; /* アイコンとの間隔を確保 */
 }
 
 .faq-toggle {
     font-size: 1.2rem;
     color: var(--primary-color);
     transition: var(--transition);
+    flex-shrink: 0; /* アイコンのサイズを固定 */
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .faq-item.active .faq-toggle {
@@ -837,14 +891,14 @@ img {
 }
 
 .faq-answer {
-    padding: 0 20px;
+    padding: 0 30px; /* 左右の余白を増やす */
     max-height: 0;
     overflow: hidden;
     transition: var(--transition);
 }
 
 .faq-item.active .faq-answer {
-    padding: 0 20px 20px;
+    padding: 0 30px 25px; /* 余白を増やす */
     max-height: 1000px;
 }
 
@@ -1191,4 +1245,11 @@ img {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* リストアイテムの共通スタイル */
+.role-benefits li span,
+.implementation-support ul li span,
+.pricing-features ul li span {
+    flex: 1; /* テキストが折り返されるようにする */
 } 
