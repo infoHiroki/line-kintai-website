@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // ローディング完了後に初期表示要素のアニメーションを開始
                 triggerInitialAnimations();
+                
+                // テキストスプリットアニメーションを初期化
+                initSplitTextAnimations();
+                
+                // パララックス効果を初期化
+                initParallaxEffects();
+                
+                // 3Dカード効果を初期化
+                init3DCardEffects();
             }, 500);
         }, 500);
     });
@@ -36,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollDown.addEventListener('click', function() {
             const nextSection = document.querySelector('.problems');
             if (nextSection) {
-                nextSection.scrollIntoView({ behavior: 'smooth' });
+                smoothScrollTo(nextSection);
             }
         });
     }
@@ -99,21 +108,134 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // スムーズスクロール関数
+    function smoothScrollTo(element, duration = 1000) {
+        const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition - header.offsetHeight;
+        let startTime = null;
+        
+        function animation(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const ease = easeOutExpo(progress);
+            
+            window.scrollTo(0, startPosition + distance * ease);
+            
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            }
+        }
+        
+        function easeOutExpo(t) {
+            return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+        }
+        
+        requestAnimationFrame(animation);
+    }
+
     // 初期表示要素のアニメーションを発火
     function triggerInitialAnimations() {
         // ヒーローセクションの要素のみ初期表示時にアニメーション
         const initialElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image');
-        initialElements.forEach(function(element) {
+        
+        // 要素ごとに遅延を設定してアニメーション
+        initialElements.forEach(function(element, index) {
             if (!element.classList.contains('animated')) {
-                const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
-                const animationDelay = element.getAttribute('data-delay') || '';
-                
-                element.classList.add('animate__animated', animationClass);
-                if (animationDelay) {
-                    element.classList.add(animationDelay);
-                }
-                element.classList.add('animated');
+                setTimeout(() => {
+                    const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
+                    const animationDelay = element.getAttribute('data-delay') || '';
+                    
+                    element.classList.add('animate__animated', animationClass);
+                    if (animationDelay) {
+                        element.classList.add(animationDelay);
+                    }
+                    element.classList.add('animated');
+                }, index * 150); // 各要素に150msの遅延を追加
             }
+        });
+    }
+
+    // テキストスプリットアニメーションの初期化
+    function initSplitTextAnimations() {
+        // セクションタイトルをスプリットテキスト化
+        const sectionTitles = document.querySelectorAll('.section-title');
+        sectionTitles.forEach(function(title) {
+            // テキストを文字単位に分割
+            const text = title.textContent;
+            title.textContent = '';
+            title.classList.add('text-reveal');
+            
+            const textWrapper = document.createElement('span');
+            textWrapper.className = 'text-wrapper';
+            title.appendChild(textWrapper);
+            
+            // 各文字をspanで囲む
+            for (let i = 0; i < text.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.className = 'char';
+                charSpan.style.transitionDelay = `${i * 0.03}s`; // 文字ごとに遅延を設定
+                charSpan.textContent = text[i] === ' ' ? '\u00A0' : text[i]; // スペースを&nbsp;に置換
+                textWrapper.appendChild(charSpan);
+            }
+        });
+    }
+
+    // パララックス効果の初期化
+    function initParallaxEffects() {
+        // パララックス効果を適用する要素
+        const parallaxElements = document.querySelectorAll('.hero-image, .comparison-image, .demo-qr, .case-study-image');
+        parallaxElements.forEach(function(element) {
+            element.classList.add('parallax-element');
+            
+            // 親要素にパララックスコンテナクラスを追加
+            const parent = element.parentElement;
+            if (parent && !parent.classList.contains('parallax-container')) {
+                parent.classList.add('parallax-container');
+            }
+        });
+        
+        // マウス移動に応じたパララックス効果
+        document.addEventListener('mousemove', throttle(function(e) {
+            const mouseX = e.clientX / window.innerWidth - 0.5;
+            const mouseY = e.clientY / window.innerHeight - 0.5;
+            
+            parallaxElements.forEach(function(element) {
+                const speed = element.getAttribute('data-parallax-speed') || 20;
+                const x = mouseX * speed;
+                const y = mouseY * speed;
+                element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            });
+        }, 50));
+    }
+
+    // 3Dカード効果の初期化
+    function init3DCardEffects() {
+        // 3D効果を適用するカード要素
+        const cards = document.querySelectorAll('.problem-card, .feature-card, .role-card, .pricing-card');
+        cards.forEach(function(card) {
+            card.classList.add('card-3d');
+            
+            // マウスの動きに応じた3D効果
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // カード内のX座標
+                const y = e.clientY - rect.top; // カード内のY座標
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10; // Y軸の回転角度
+                const rotateY = (centerX - x) / 10; // X軸の回転角度
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+            
+            // マウスが離れたら元に戻す
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = '';
+            });
         });
     }
 
@@ -121,8 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const setupIntersectionObserver = function() {
         const options = {
             root: null, // ビューポートをルートとして使用
-            rootMargin: '0px 0px -150px 0px', // 要素が150px表示されたらコールバックを実行（画面下部から150px入ったところ）
-            threshold: 0.15 // 要素の15%が見えたらコールバックを実行（より確実に表示されてから）
+            rootMargin: '0px 0px -100px 0px', // 要素が100px表示されたらコールバックを実行
+            threshold: 0.1 // 要素の10%が見えたらコールバックを実行
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
@@ -149,7 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 element.classList.add(animationDelay);
                             }
                             element.classList.add('animated');
-                        }, 50);
+                            
+                            // テキストスプリットアニメーションの場合
+                            if (element.classList.contains('text-reveal')) {
+                                const chars = element.querySelectorAll('.char');
+                                chars.forEach(char => char.classList.add('animated'));
+                            }
+                        }, 100);
                     }
                     
                     // 一度アニメーションが実行されたら監視を解除
@@ -159,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, options);
 
         // animate-on-scroll クラスを持つ要素を監視（ヒーローセクション以外）
-        const elements = document.querySelectorAll('.animate-on-scroll:not(.hero-content *):not(.hero-image)');
+        const elements = document.querySelectorAll('.animate-on-scroll:not(.hero-content *):not(.hero-image), .text-reveal');
         elements.forEach(element => {
             observer.observe(element);
         });
@@ -184,7 +312,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         const percentage = timeProgress.getAttribute('data-percentage');
                         timeProgress.style.width = percentage + '%';
-                    }, 100);
+                        timeProgress.classList.add('animated');
+                    }, 300);
                     
                     // 一度アニメーションが実行されたら監視を解除
                     observer.unobserve(timeProgress);
@@ -209,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const elementPosition = element.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
             // 要素がより画面内に入ってからアニメーション発火
-            if (elementPosition < windowHeight - 150) {
+            if (elementPosition < windowHeight - 100) {
                 // アニメーションクラスを追加
                 if (!element.classList.contains('animated')) {
                     // データ属性からアニメーション名を取得
@@ -223,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             element.classList.add(animationDelay);
                         }
                         element.classList.add('animated');
-                    }, 50);
+                    }, 100);
                 }
             }
         });
@@ -233,13 +362,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (timeProgress && !timeProgress.style.width) {
             const timeProgressPosition = timeProgress.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
-            if (timeProgressPosition < windowHeight - 150) {
+            if (timeProgressPosition < windowHeight - 100) {
                 setTimeout(() => {
                     const percentage = timeProgress.getAttribute('data-percentage');
                     timeProgress.style.width = percentage + '%';
-                }, 100);
+                    timeProgress.classList.add('animated');
+                }, 300);
             }
         }
+        
+        // テキストスプリットアニメーション
+        const textReveals = document.querySelectorAll('.text-reveal:not(.animated)');
+        textReveals.forEach(function(element) {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            if (elementPosition < windowHeight - 100) {
+                element.classList.add('animated');
+                const chars = element.querySelectorAll('.char');
+                chars.forEach(char => char.classList.add('animated'));
+            }
+        });
     };
 
     // Intersection Observerをサポートしているブラウザでは、それを使用
@@ -292,6 +434,45 @@ document.addEventListener('DOMContentLoaded', function() {
         // animate-on-scrollクラスを追加
         element.classList.add('animate-on-scroll');
     });
+
+    // 新しいアニメーションタイプを適用
+    const applyModernAnimations = function() {
+        // 問題カードに回転アニメーションを適用
+        const problemCards = document.querySelectorAll('.problem-card');
+        problemCards.forEach((card, index) => {
+            card.setAttribute('data-animation', 'animate__fadeInRotate');
+            card.setAttribute('data-delay', `animate__delay-${index + 1}s`);
+        });
+        
+        // 機能カードにポップアニメーションを適用
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            card.setAttribute('data-animation', 'animate__fadeInPop');
+            card.setAttribute('data-delay', `animate__delay-${index + 1}s`);
+        });
+        
+        // 料金カードにスケールアニメーションを適用
+        const pricingCards = document.querySelectorAll('.pricing-card');
+        pricingCards.forEach((card, index) => {
+            card.setAttribute('data-animation', 'animate__fadeInScale');
+            card.setAttribute('data-delay', `animate__delay-${index + 1}s`);
+        });
+        
+        // 画像要素にズームエフェクトを適用
+        const imageContainers = document.querySelectorAll('.step-image, .comparison-image, .case-study-image');
+        imageContainers.forEach(container => {
+            container.classList.add('img-hover-zoom');
+        });
+        
+        // ボタン要素にホバーエフェクトを適用
+        const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
+        buttons.forEach(button => {
+            button.classList.add('hover-float');
+        });
+    };
+    
+    // モダンなアニメーションを適用
+    applyModernAnimations();
 
     // FAQのアコーディオン機能
     const faqItems = document.querySelectorAll('.faq-item');
@@ -391,19 +572,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 画像のホバーエフェクト
-    const images = document.querySelectorAll('.step-image img, .comparison-image img, .case-study-image img');
-    images.forEach(function(img) {
-        img.addEventListener('mouseenter', function() {
-            this.style.transform = 'scale(1.05)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-        
-        img.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(1)';
-        });
-    });
-
     // スムーズスクロール
     const smoothScrollLinks = document.querySelectorAll('a[href^="#"]');
     smoothScrollLinks.forEach(function(link) {
@@ -415,13 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
-                const headerHeight = document.querySelector('.header').offsetHeight;
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
+                smoothScrollTo(targetElement);
             }
         });
     });
@@ -438,17 +600,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const target = parseInt(element.getAttribute('data-target'));
                 const duration = 2000; // 2秒間
-                const step = target / (duration / 16); // 16msごとの増加量
+                const frameDuration = 1000 / 60; // 60fps
+                const totalFrames = Math.round(duration / frameDuration);
+                const easeOutQuad = t => t * (2 - t); // イージング関数
                 
-                let current = 0;
-                const timer = setInterval(function() {
-                    current += step;
-                    if (current >= target) {
-                        clearInterval(timer);
-                        current = target;
+                let frame = 0;
+                const countToTarget = () => {
+                    frame++;
+                    const progress = easeOutQuad(frame / totalFrames);
+                    const currentCount = Math.round(target * progress);
+                    
+                    if (currentCount === target) {
+                        cancelAnimationFrame(countToTarget);
+                    } else {
+                        element.textContent = currentCount;
+                        requestAnimationFrame(countToTarget);
                     }
-                    element.textContent = Math.floor(current);
-                }, 16);
+                };
+                
+                requestAnimationFrame(countToTarget);
             }
         });
     };
@@ -457,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function() {
     countUp();
     
     // スクロール時に実行
-    window.addEventListener('scroll', countUp);
+    window.addEventListener('scroll', throttle(countUp, 100));
 
     // 画像のLazyロード
     const lazyImages = document.querySelectorAll('img[data-src]');
@@ -466,6 +636,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (img.getBoundingClientRect().top < window.innerHeight + 300) {
                 img.src = img.getAttribute('data-src');
                 img.removeAttribute('data-src');
+                
+                // 画像読み込み完了時にフェードインアニメーション
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.5s ease';
+                img.onload = function() {
+                    img.style.opacity = '1';
+                };
             }
         });
     };
@@ -474,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
     lazyLoad();
     
     // スクロール時に実行
-    window.addEventListener('scroll', lazyLoad);
+    window.addEventListener('scroll', throttle(lazyLoad, 100));
 
     // パララックス効果
     const parallaxElements = document.querySelectorAll('.parallax');
@@ -487,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // スクロール時に実行
-    window.addEventListener('scroll', parallax);
+    window.addEventListener('scroll', throttle(parallax, 50));
 });
 
 // 画像プリロード関数

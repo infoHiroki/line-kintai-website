@@ -11,8 +11,25 @@
     --danger-color: #DC3545;
     --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
-    --animation-duration: 0.8s; /* アニメーション時間の統一 */
-    --animation-distance: 30px; /* アニメーション移動距離の統一 */
+    
+    /* アニメーション変数 - 拡張 */
+    --animation-duration: 0.8s;
+    --animation-distance: 30px;
+    --animation-scale: 0.95; /* スケールアニメーション用 */
+    --animation-rotate: 4deg; /* 回転アニメーション用 */
+    --animation-blur: 5px; /* ブラー効果用 */
+    
+    /* イージング関数 */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    
+    /* スタッガー遅延 */
+    --stagger-delay-1: 0.05s;
+    --stagger-delay-2: 0.1s;
+    --stagger-delay-3: 0.15s;
+    --stagger-delay-4: 0.2s;
 }
 
 * {
@@ -1207,46 +1224,88 @@ img {
 .animate-on-scroll {
     opacity: 0;
     transform: translateY(var(--animation-distance));
-    transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out;
-    will-change: opacity, transform;
-    backface-visibility: hidden; /* パフォーマンス向上 */
-    perspective: 1000px; /* パフォーマンス向上 */
+    transition: 
+        opacity var(--animation-duration) var(--ease-out-expo), 
+        transform var(--animation-duration) var(--ease-out-expo),
+        filter var(--animation-duration) var(--ease-out-expo);
+    will-change: opacity, transform, filter;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    filter: blur(0);
 }
 
 .animate-on-scroll.animated {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
 }
 
-/* アニメーションの種類に応じたスタイル */
+/* モダンなアニメーションバリエーション */
 .animate-on-scroll[data-animation="animate__fadeIn"] {
     transform: translateY(0);
     opacity: 0;
+    filter: blur(var(--animation-blur));
 }
 
 .animate-on-scroll[data-animation="animate__fadeInDown"] {
-    transform: translateY(calc(var(--animation-distance) * -1));
+    transform: translateY(calc(var(--animation-distance) * -1)) scale(var(--animation-scale));
+    filter: blur(var(--animation-blur));
+}
+
+.animate-on-scroll[data-animation="animate__fadeInUp"] {
+    transform: translateY(var(--animation-distance)) scale(var(--animation-scale));
+    filter: blur(var(--animation-blur));
 }
 
 .animate-on-scroll[data-animation="animate__fadeInLeft"] {
-    transform: translateX(var(--animation-distance));
+    transform: translateX(var(--animation-distance)) scale(var(--animation-scale));
+    filter: blur(var(--animation-blur));
 }
 
 .animate-on-scroll[data-animation="animate__fadeInRight"] {
-    transform: translateX(calc(var(--animation-distance) * -1));
+    transform: translateX(calc(var(--animation-distance) * -1)) scale(var(--animation-scale));
+    filter: blur(var(--animation-blur));
 }
 
-/* アニメーションの遅延クラス */
+/* 3D効果のあるアニメーション */
+.animate-on-scroll[data-animation="animate__fadeInRotate"] {
+    transform: translateY(var(--animation-distance)) rotate(var(--animation-rotate));
+    filter: blur(var(--animation-blur));
+}
+
+.animate-on-scroll[data-animation="animate__fadeInScale"] {
+    transform: scale(0.7);
+    filter: blur(var(--animation-blur));
+}
+
+.animate-on-scroll[data-animation="animate__fadeInPop"] {
+    transform: scale(0.5);
+    filter: blur(var(--animation-blur));
+    transition: 
+        opacity var(--animation-duration) var(--ease-out-back), 
+        transform var(--animation-duration) var(--ease-out-back),
+        filter var(--animation-duration) var(--ease-out-back);
+}
+
+.animate-on-scroll[data-animation="animate__fadeInPop"].animated {
+    transform: scale(1);
+}
+
+/* スタッガーアニメーション用の遅延クラス */
 .animate__delay-1s {
-    transition-delay: 0.2s !important;
+    transition-delay: var(--stagger-delay-1) !important;
 }
 
 .animate__delay-2s {
-    transition-delay: 0.4s !important;
+    transition-delay: var(--stagger-delay-2) !important;
 }
 
 .animate__delay-3s {
-    transition-delay: 0.6s !important;
+    transition-delay: var(--stagger-delay-3) !important;
+}
+
+.animate__delay-4s {
+    transition-delay: var(--stagger-delay-4) !important;
 }
 
 /* ヒーローセクションのアニメーション（初期表示用） */
@@ -1255,6 +1314,12 @@ img {
 .hero-content p,
 .hero-buttons {
     opacity: 0;
+    transform: translateY(20px);
+    filter: blur(var(--animation-blur));
+    transition: 
+        opacity 1s var(--ease-out-expo), 
+        transform 1s var(--ease-out-expo),
+        filter 1s var(--ease-out-expo);
 }
 
 .hero-content h1.animated,
@@ -1262,14 +1327,24 @@ img {
 .hero-content p.animated,
 .hero-buttons.animated {
     opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
 }
 
 .hero-image {
     opacity: 0;
+    transform: translateX(30px) scale(0.95);
+    filter: blur(var(--animation-blur));
+    transition: 
+        opacity 1.2s var(--ease-out-expo) 0.3s, 
+        transform 1.2s var(--ease-out-expo) 0.3s,
+        filter 1.2s var(--ease-out-expo) 0.3s;
 }
 
 .hero-image.animated {
     opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
 }
 
 /* 時間削減グラフのアニメーション */
@@ -1278,10 +1353,41 @@ img {
     background-color: var(--success-color);
     border-radius: 15px;
     width: 0;
-    transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* イージング関数の改善 */
+    transition: width 1.5s var(--ease-out-quart);
+    position: relative;
+    overflow: hidden;
 }
 
-/* スクロールダウンアニメーション */
+.time-saved-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0) 100%);
+    animation: progressShine 2s infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.time-saved-progress.animated::after {
+    opacity: 1;
+}
+
+@keyframes progressShine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* スクロールダウンアニメーション - モダン化 */
 .scroll-down {
     position: absolute;
     bottom: 30px;
@@ -1293,17 +1399,36 @@ img {
     color: var(--primary-color);
     font-size: 0.9rem;
     font-weight: 500;
-    cursor: pointer; /* クリック可能であることを示す */
-    transition: var(--transition);
-    z-index: 10; /* 他の要素より前面に */
+    cursor: pointer;
+    transition: all 0.5s var(--ease-out-expo);
+    z-index: 10;
 }
 
 .scroll-down:hover {
-    transform: translateX(-50%) translateY(-5px); /* ホバー時に少し上に移動 */
+    transform: translateX(-50%) translateY(-8px);
 }
 
 .scroll-down span {
     margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.scroll-down span::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-color);
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease-out-expo);
+}
+
+.scroll-down:hover span::after {
+    transform: translateX(0);
 }
 
 .scroll-down-arrow {
@@ -1312,6 +1437,12 @@ img {
     border: 2px solid var(--primary-color);
     border-radius: 15px;
     position: relative;
+    transition: all 0.3s var(--ease-out-expo);
+}
+
+.scroll-down:hover .scroll-down-arrow {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 15px rgba(0, 185, 0, 0.3);
 }
 
 .scroll-down-arrow::before {
@@ -1325,6 +1456,11 @@ img {
     border-radius: 50%;
     transform: translateX(-50%);
     animation: scrollDown 2s infinite;
+    transition: background-color 0.3s var(--ease-out-expo);
+}
+
+.scroll-down:hover .scroll-down-arrow::before {
+    background-color: var(--secondary-color);
 }
 
 @keyframes scrollDown {
@@ -1332,13 +1468,16 @@ img {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
     }
+    50% {
+        opacity: 0.5;
+    }
     100% {
         opacity: 0;
-        transform: translateX(-50%) translateY(20px);
+        transform: translateX(-50%) translateY(25px);
     }
 }
 
-/* ローディングアニメーション */
+/* ローディングアニメーション - モダン化 */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -1350,7 +1489,7 @@ img {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.8s var(--ease-out-expo), visibility 0.8s var(--ease-out-expo);
 }
 
 .loading-overlay.hidden {
@@ -1361,10 +1500,23 @@ img {
 .loading-spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid rgba(0, 185, 0, 0.2);
+    border: 5px solid rgba(0, 185, 0, 0.1);
     border-top: 5px solid var(--primary-color);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 1s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+    position: relative;
+}
+
+.loading-spinner::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 3px solid rgba(0, 185, 0, 0.05);
+    border-radius: 50%;
+    animation: pulse 2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
 }
 
 @keyframes spin {
@@ -1374,6 +1526,138 @@ img {
     100% {
         transform: rotate(360deg);
     }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.1;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0.3;
+    }
+}
+
+/* パララックス効果 */
+.parallax-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.parallax-element {
+    will-change: transform;
+    transition: transform 0.1s linear;
+}
+
+/* ホバーアニメーション */
+.hover-float {
+    transition: transform 0.3s var(--ease-out-back);
+}
+
+.hover-float:hover {
+    transform: translateY(-10px);
+}
+
+.hover-scale {
+    transition: transform 0.3s var(--ease-out-back);
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.hover-rotate {
+    transition: transform 0.3s var(--ease-out-back);
+}
+
+.hover-rotate:hover {
+    transform: rotate(3deg);
+}
+
+/* カード3D効果 */
+.card-3d {
+    transition: transform 0.3s var(--ease-out-expo);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.card-3d:hover {
+    transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* テキストアニメーション */
+.text-reveal {
+    position: relative;
+    overflow: hidden;
+}
+
+.text-reveal span {
+    display: inline-block;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.8s var(--ease-out-expo), opacity 0.8s var(--ease-out-expo);
+}
+
+.text-reveal.animated span {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* スプリットテキストアニメーション用 */
+.char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.3s var(--ease-out-expo), transform 0.3s var(--ease-out-expo);
+}
+
+.char.animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 画像ホバーエフェクト */
+.img-hover-zoom {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.img-hover-zoom img {
+    transition: transform 0.5s var(--ease-out-expo);
+}
+
+.img-hover-zoom:hover img {
+    transform: scale(1.1);
+}
+
+/* ボタンホバーエフェクト */
+.btn-primary, .btn-secondary {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-primary::after, .btn-secondary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease-out-expo);
+    z-index: -1;
+}
+
+.btn-primary:hover::after, .btn-secondary:hover::after {
+    transform: translateX(0);
 }
 
 /* リストアイテムの共通スタイル */
