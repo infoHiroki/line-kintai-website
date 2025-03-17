@@ -40,15 +40,15 @@ document.addEventListener('DOMContentLoaded', function() {
             slidesPerView: 1,
             speed: 800,
             mousewheel: {
-                sensitivity: 0.5, // 感度をさらに下げる（値を小さくすると感度が下がる）
+                sensitivity: 1, // 感度を調整
                 releaseOnEdges: false,
-                thresholdDelta: 80, // スクロール感度をさらに調整（値を大きくすると感度が下がる）
-                thresholdTime: 500, // スクロールの時間間隔をさらに調整（値を大きくすると連続スクロールが抑制される）
+                thresholdDelta: 50, // スクロール感度を調整
+                thresholdTime: 300, // スクロールの時間間隔を調整
                 forceToAxis: true, // 垂直方向のスクロールのみを検知
-                eventsTarget: '.swiper-container' // イベントのターゲットを明示的に指定
             },
             keyboard: {
                 enabled: true,
+                onlyInViewport: true,
             },
             pagination: {
                 el: '.swiper-pagination',
@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             // スナップ機能を強化
             touchReleaseOnEdges: false,
-            touchRatio: 0.8, // タッチ感度を少し下げる
-            threshold: 30, // しきい値を上げる
+            touchRatio: 1, // タッチ感度を最適化
+            threshold: 20, // しきい値を調整
             resistanceRatio: 0, // 端までスクロールした時の抵抗を無効化
             // スライド間の遷移を確実にする
-            followFinger: false, // 指の動きに追従せず、離した時点で次のスライドに移動
-            longSwipesRatio: 0.2, // 短いスワイプでも次のスライドに移動（値を小さくすると少しの操作で次に進む）
+            followFinger: true, // 指の動きに追従
+            longSwipesRatio: 0.1, // 短いスワイプでも次のスライドに移動
             // スライド間の遷移を確実にするための追加設定
             shortSwipes: true, // 短いスワイプを有効化
             longSwipes: true, // 長いスワイプを有効化
@@ -80,9 +80,20 @@ document.addEventListener('DOMContentLoaded', function() {
             allowSlideNext: true, // 次へのスライドを許可
             allowSlidePrev: true, // 前へのスライドを許可
             // スライドの速度
-            speed: 600, // スライド速度を少し遅くする
+            speed: 800, // スライド速度
             // スライドのイージング
             cssMode: false, // CSSモードを無効化
+            // 3D効果を有効化
+            watchSlidesProgress: true,
+            virtualTranslate: false,
+            // パララックス効果
+            parallax: true,
+            // タッチ操作の改善
+            touchStartPreventDefault: false,
+            simulateTouch: true,
+            touchStartForcePreventDefault: false,
+            touchMoveStopPropagation: true,
+            // イベントハンドラ
             on: {
                 slideChange: function() {
                     // スライド変更時にアニメーションをトリガー
@@ -93,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // ナビゲーションのアクティブ状態を更新
                     updateNavigation(this.activeIndex);
+                    
+                    // スワイプインジケーターの表示/非表示を切り替え
+                    updateSwipeIndicators(this.activeIndex, this.slides.length - 1);
                     
                     // スライド変更をコンソールに表示
                     console.log('Slide changed to index: ' + this.activeIndex);
@@ -107,6 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // ナビゲーションのアクティブ状態を更新
                     updateNavigation(this.activeIndex);
                     
+                    // スワイプインジケーターの表示/非表示を切り替え
+                    updateSwipeIndicators(this.activeIndex, this.slides.length - 1);
+                    
                     // 初期化完了をコンソールに表示
                     console.log('Swiper initialized with index: ' + this.activeIndex);
                 },
@@ -117,23 +134,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 現在のスライドに確実に合わせる
                     this.slideTo(this.activeIndex, 0, false);
+                    
+                    // スワイプ中のクラスを削除
+                    document.querySelector('.swiper-container').classList.remove('swiping');
                 },
                 // スライド遷移開始時
                 transitionStart: function() {
                     console.log('Slide transition started from index: ' + this.previousIndex + ' to ' + this.activeIndex);
+                    
+                    // スワイプ中のクラスを追加
+                    document.querySelector('.swiper-container').classList.add('swiping');
                 },
                 // タッチ開始時
                 touchStart: function() {
                     console.log('Touch started on index: ' + this.activeIndex);
+                    
+                    // スワイプ中のクラスを追加
+                    document.querySelector('.swiper-container').classList.add('swiping');
                 },
                 // タッチ終了時
                 touchEnd: function() {
                     console.log('Touch ended on index: ' + this.activeIndex);
                     
-                    // タッチ終了時に現在のスライドに確実に合わせる
+                    // スワイプ中のクラスを削除
                     setTimeout(() => {
-                        this.slideTo(this.activeIndex, 0, false);
-                    }, 100);
+                        document.querySelector('.swiper-container').classList.remove('swiping');
+                    }, 300);
+                },
+                // スワイプ方向の検出
+                touchMove: function(e) {
+                    // スワイプ方向に応じたアニメーション効果を追加できます
+                    const touchAngle = e.angle;
+                    
+                    // 上下方向のスワイプを検出
+                    if (touchAngle > 45 && touchAngle < 135) {
+                        console.log('Swiping down');
+                    } else if (touchAngle > 225 && touchAngle < 315) {
+                        console.log('Swiping up');
+                    }
                 }
             }
         });
@@ -172,12 +210,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        // スワイプインジケーターの表示/非表示を切り替える関数
+        function updateSwipeIndicators(activeIndex, lastIndex) {
+            const swipeIndicators = document.querySelectorAll('.swipe-indicator');
+            
+            swipeIndicators.forEach((indicator, index) => {
+                // 現在のスライドのインジケーターを非表示
+                if (index === activeIndex) {
+                    indicator.style.display = 'none';
+                } else {
+                    indicator.style.display = 'flex';
+                }
+                
+                // 最後のスライドの場合、最後のインジケーターに特別なクラスを追加
+                if (activeIndex === lastIndex) {
+                    if (indicator.classList.contains('last')) {
+                        indicator.style.display = 'flex';
+                    }
+                }
+            });
+        }
+
         // タッチデバイスでのスワイプ操作を改善
         document.addEventListener('touchmove', function(e) {
             // スワイプ中のスクロールを防止
-            if (e.target.closest('.swiper-container')) {
+            if (e.target.closest('.swiper-container') && !e.target.closest('.swiper-slide-content')) {
                 e.preventDefault();
-                console.log('Touch move prevented on swiper container');
             }
         }, { passive: false });
 
@@ -188,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 少し遅延を入れて確実にスナップさせる
             setTimeout(function() {
                 swiper.slideTo(currentIndex, 0, false);
-                console.log('Touch end forced snap to index: ' + currentIndex);
             }, 100);
         });
 
@@ -198,31 +255,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.addEventListener('wheel', function(e) {
             // スワイパーコンテナ内でのみ処理
-            if (e.target.closest('.swiper-container')) {
+            if (e.target.closest('.swiper-container') && !e.target.closest('.swiper-slide-content')) {
                 // ホイールロック中は何もしない
                 if (isWheelLocked) {
                     e.preventDefault();
-                    console.log('Wheel event blocked due to lock');
                     return;
                 }
                 
                 // ホイールをロック
                 isWheelLocked = true;
-                console.log('Wheel locked');
                 
                 // 連続したホイールイベントを制限
                 clearTimeout(wheelTimeout);
                 wheelTimeout = setTimeout(function() {
                     // 現在のスライドに確実に合わせる
                     swiper.slideTo(swiper.activeIndex, 0, false);
-                    console.log('Wheel timeout forced snap to index: ' + swiper.activeIndex);
                     
                     // ロックを解除
                     setTimeout(function() {
                         isWheelLocked = false;
-                        console.log('Wheel unlocked');
-                    }, 800); // スライド遷移が完了するまで待機
-                }, 300);
+                    }, 600);
+                }, 200);
             }
         }, { passive: false });
         
@@ -234,16 +287,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (e.key === 'ArrowUp') {
                     swiper.slidePrev();
-                    console.log('Arrow Up pressed, sliding to prev');
                 } else {
                     swiper.slideNext();
-                    console.log('Arrow Down pressed, sliding to next');
                 }
                 
                 // 少し遅延を入れて確実にスナップさせる
                 setTimeout(function() {
                     swiper.slideTo(swiper.activeIndex, 0, false);
-                    console.log('Keyboard forced snap to index: ' + swiper.activeIndex);
                 }, 100);
             }
         });
@@ -251,17 +301,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // ウィンドウのリサイズ時にSwiperを更新
         window.addEventListener('resize', function() {
             swiper.update();
-            console.log('Window resized, swiper updated');
         });
         
-        // スワイプ操作の状態をリセットする関数
-        function resetSwiperState() {
-            swiper.slideTo(swiper.activeIndex, 0, false);
-            console.log('Swiper state reset to index: ' + swiper.activeIndex);
-        }
-        
-        // 定期的にスワイプ状態をリセット（念のため）
-        setInterval(resetSwiperState, 5000);
+        // 初期表示時にスワイプインジケーターの表示/非表示を設定
+        updateSwipeIndicators(swiper.activeIndex, swiper.slides.length - 1);
         
         return swiper;
     }

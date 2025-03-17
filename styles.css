@@ -32,8 +32,8 @@
     --stagger-delay-4: 0.2s;
     
     /* スワイプ関連の変数 */
-    --swipe-transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    --swipe-indicator-size: 40px;
+    --swipe-transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    --swipe-indicator-size: 50px;
 }
 
 * {
@@ -1746,79 +1746,71 @@ img {
     flex: 1; /* テキストが折り返されるようにする */
 }
 
-/* スワイプコンテナ */
+/* スワイプコンテナのスタイル改善 */
 .swiper-container {
     width: 100%;
     height: 100vh;
-    overflow: hidden;
     position: relative;
-    touch-action: none; /* タッチ操作によるスクロールを無効化 */
-    overscroll-behavior: none; /* オーバースクロール効果を無効化 */
-    -webkit-overflow-scrolling: none; /* iOSの慣性スクロールを無効化 */
-    scroll-snap-type: y mandatory; /* 縦方向のスクロールスナップを強制 */
+    overflow: hidden;
+    touch-action: none;
+    z-index: 1;
+    transition: var(--swipe-transition);
+    background-color: #FFFFFF;
 }
 
 .swiper-wrapper {
-    height: 100%;
-    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1) !important; /* イージング関数を上書き */
-    transition-duration: 600ms !important; /* 遷移時間を上書き */
-}
-
-.swiper-slide {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    transition-property: transform;
+    transition-timing-function: var(--ease-out-expo);
+    box-sizing: content-box;
+}
+
+.swiper-slide {
+    width: 100%;
+    height: 100vh;
     position: relative;
-    overflow-y: auto; /* 各スライド内でのスクロールを許可 */
-    padding-top: 80px; /* ヘッダーの高さ分の余白 */
-    padding-bottom: 30px; /* 下部の余白 */
-    scroll-snap-align: start; /* スクロールスナップを追加 */
-    scroll-snap-stop: always; /* 必ず止まるように設定 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
     transition: var(--swipe-transition);
-    touch-action: pan-y; /* 縦方向のパン操作のみ許可 */
-    -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
-    overscroll-behavior: contain; /* オーバースクロール効果をスライド内に限定 */
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform, opacity;
 }
 
-/* スライド内のコンテンツがスクロール可能な場合のスタイル */
-.swiper-slide-content {
-    max-height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0 20px;
-}
-
-/* スワイプインジケーター */
+/* スワイプインジケーターの改善 */
 .swipe-indicator {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-color);
-    font-size: 0.9rem;
-    font-weight: 500;
-    animation: bounce 2s infinite;
-    z-index: 10;
-    cursor: pointer;
     width: var(--swipe-indicator-size);
     height: var(--swipe-indicator-size);
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: var(--transition);
-    -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    animation: bounce 2s infinite;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .swipe-indicator:hover,
-.swipe-indicator:active {
-    background-color: var(--primary-color);
-    color: white;
+.swipe-indicator:focus {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     transform: translateX(-50%) scale(1.1);
 }
 
@@ -1827,14 +1819,155 @@ img {
 }
 
 .swipe-indicator span {
-    margin-bottom: 5px;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 2px;
 }
 
 .swipe-indicator i {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    color: var(--primary-color);
 }
 
+/* ページネーションの改善 */
+.swiper-pagination {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+}
+
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid var(--primary-color);
+    opacity: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    margin: 0 !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-pagination-bullet::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: scale(1.2);
+}
+
+.swiper-pagination-bullet-active::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* アクティブスライドのスタイル */
+.swiper-slide-active {
+    z-index: 2;
+}
+
+.swiper-slide-prev, 
+.swiper-slide-next {
+    z-index: 1;
+}
+
+/* スクロールバーを非表示 */
+.swiper-slide::-webkit-scrollbar {
+    display: none;
+}
+
+.swiper-slide::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.swiper-slide::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* スワイプ中の視覚効果 */
+.swiper-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 185, 0, 0) 0%, rgba(0, 185, 0, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.swiper-container.swiping::after {
+    opacity: 1;
+}
+
+/* グラブカーソル */
+.swiper-container.grabbing {
+    cursor: grabbing;
+}
+
+/* モバイル対応の改善 */
+@media (max-width: 768px) {
+    .swiper-pagination {
+        right: 10px;
+        gap: 12px;
+    }
+    
+    .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .swipe-indicator {
+        bottom: 15px;
+        width: calc(var(--swipe-indicator-size) * 0.9);
+        height: calc(var(--swipe-indicator-size) * 0.9);
+    }
+    
+    .swipe-indicator i {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .swiper-pagination {
+        right: 5px;
+        gap: 10px;
+    }
+    
+    .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .swipe-indicator {
+        bottom: 10px;
+        width: calc(var(--swipe-indicator-size) * 0.8);
+        height: calc(var(--swipe-indicator-size) * 0.8);
+    }
+}
+
+/* スワイプアニメーション */
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
         transform: translateX(-50%) translateY(0);
@@ -1856,140 +1989,5 @@ img {
     }
     60% {
         transform: translateX(-50%) translateY(5px);
-    }
-}
-
-/* Swiperページネーション */
-.swiper-pagination {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    z-index: 100;
-}
-
-.swiper-pagination-bullet {
-    width: 12px;
-    height: 12px;
-    background-color: rgba(0, 185, 0, 0.3);
-    border-radius: 50%;
-    opacity: 1;
-    transition: var(--transition);
-    cursor: pointer;
-    position: relative;
-    -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-}
-
-.swiper-pagination-bullet::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    border: 1px solid transparent;
-    transition: var(--transition);
-}
-
-.swiper-pagination-bullet-active {
-    background-color: var(--primary-color);
-    transform: scale(1.3);
-}
-
-.swiper-pagination-bullet-active::after {
-    border-color: var(--primary-color);
-}
-
-/* スライド遷移アニメーション */
-.swiper-slide-active {
-    z-index: 2;
-}
-
-.swiper-slide-prev, 
-.swiper-slide-next {
-    z-index: 1;
-}
-
-/* スライド内のスクロールバーをカスタマイズ */
-.swiper-slide::-webkit-scrollbar {
-    width: 5px;
-}
-
-.swiper-slide::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-}
-
-.swiper-slide::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 10px;
-}
-
-/* スワイプ操作のフィードバック */
-.swiper-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-}
-
-.swiper-container.swiping::after {
-    opacity: 0.05;
-    background-color: var(--primary-color);
-}
-
-/* スワイプ中のカーソル変更 */
-.swiper-container.grabbing {
-    cursor: grabbing;
-}
-
-/* スマホ向けのページネーション調整 */
-@media (max-width: 768px) {
-    .swiper-pagination {
-        right: 10px;
-    }
-    
-    .swiper-pagination-bullet {
-        width: 10px;
-        height: 10px;
-    }
-    
-    .swipe-indicator {
-        bottom: 15px;
-        width: calc(var(--swipe-indicator-size) - 10px);
-        height: calc(var(--swipe-indicator-size) - 10px);
-    }
-    
-    .swipe-indicator i {
-        font-size: 1rem;
-    }
-}
-
-/* スマホ縦向き用の追加調整 */
-@media (max-width: 576px) {
-    .swiper-pagination {
-        right: 5px;
-        gap: 10px;
-    }
-    
-    .swiper-pagination-bullet {
-        width: 8px;
-        height: 8px;
-    }
-    
-    .swipe-indicator {
-        bottom: 10px;
-        width: calc(var(--swipe-indicator-size) - 15px);
-        height: calc(var(--swipe-indicator-size) - 15px);
     }
 } 
