@@ -1,612 +1,1155 @@
-// ページの読み込みが完了したら実行
-document.addEventListener('DOMContentLoaded', function() {
-    // ローディングアニメーション
-    const loadingOverlay = document.createElement('div');
-    loadingOverlay.className = 'loading-overlay';
-    const loadingSpinner = document.createElement('div');
-    loadingSpinner.className = 'loading-spinner';
-    loadingOverlay.appendChild(loadingSpinner);
-    document.body.appendChild(loadingOverlay);
+// DOM要素の取得を最適化
+const DOM = {
+    body: document.body,
+    swiperContainer: document.querySelector('.swiper-container'),
+    swiperWrapper: document.querySelector('.swiper-wrapper'),
+    swiperSlides: document.querySelectorAll('.swiper-slide'),
+    swipeIndicators: document.querySelectorAll('.swipe-indicator'),
+    header: document.querySelector('.header'),
+    menuToggle: document.querySelector('.menu-toggle'),
+    mainNav: document.querySelector('.main-nav'),
+    navLinks: document.querySelectorAll('.main-nav a'),
+    animateElements: document.querySelectorAll('.animate-on-scroll'),
+    scrollAnimateElements: document.querySelectorAll('.scroll-animate'),
+    progressBar: document.createElement('div')
+};
 
-    // ページが完全に読み込まれたらローディングアニメーションを非表示
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            loadingOverlay.classList.add('hidden');
-            setTimeout(function() {
-                loadingOverlay.remove();
-                
-                // ローディング完了後に初期表示要素のアニメーションを開始
-                triggerInitialAnimations();
-                
-                // Swiperの初期化
-                initSwiper();
-                
-                // テキストスプリットアニメーションを初期化
-                initSplitTextAnimations();
-                
-                // パララックス効果を初期化
-                initParallaxEffects();
-                
-                // 3Dカード効果を初期化
-                init3DCardEffects();
-            }, 500);
-        }, 500);
+// グローバル変数
+let swiper;
+let isScrolling = false;
+let lastScrollTime = 0;
+let touchStartY = 0;
+let deviceType = detectDeviceType();
+let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let scrollObserver;
+let lastScrollY = 0;
+let ticking = false;
+let scrollAnimations = [];
+
+// ページ読み込み時の初期化
+document.addEventListener('DOMContentLoaded', () => {
+    // パフォーマンス最適化のためにrequestAnimationFrameを使用
+    requestAnimationFrame(() => {
+        initApp();
     });
+});
+
+// アプリケーションの初期化
+function initApp() {
+    // スワイプ進行状況バーの追加
+    initProgressBar();
+                
+    // Swiperの初期化
+    initSwiper();
+                
+    // アニメーションの初期化
+    if (!isReducedMotion) {
+        triggerInitialAnimations();
+        initSplitTextAnimations();
+        initScrollAnimations(); // スクロールアニメーションの初期化を追加
+    }
+    
+    // イベントリスナーの設定
+    setupEventListeners();
+    
+    // 画像の遅延読み込み
+    lazyLoadImages();
+    
+    // アクセシビリティ対応
+    enhanceAccessibility();
+    
+    // スクロールプログレスバーの初期化
+    initScrollProgressBar();
+    
+    // ページの準備完了を示すクラスを追加
+    document.documentElement.classList.add('page-loaded');
+}
+
+// デバイスタイプの検出
+function detectDeviceType() {
+    const ua = navigator.userAgent;
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
+        return 'mobile';
+    }
+    return 'desktop';
+}
+
+// スワイプ進行状況バーの初期化
+function initProgressBar() {
+    DOM.progressBar.className = 'swipe-progress';
+    document.body.appendChild(DOM.progressBar);
+}
+
+// スワイプ進行状況の更新
+function updateProgressBar(progress) {
+    DOM.progressBar.style.width = `${progress * 100}%`;
+}
 
     // Swiperの初期化
     function initSwiper() {
-        const swiper = new Swiper('.swiper-container', {
+    // Swiperのオプション設定
+    const swiperOptions = {
             direction: 'vertical',
             slidesPerView: 1,
+        spaceBetween: 0,
             speed: 800,
+        threshold: 20,
+        resistanceRatio: 0,
+        followFinger: true,
+        touchRatio: 1,
+        touchAngle: 45,
+        simulateTouch: true,
+        shortSwipes: true,
+        longSwipes: true,
+        longSwipesRatio: 0.5,
+        longSwipesMs: 300,
+        
+        // マウスホイール設定
             mousewheel: {
-                sensitivity: 1, // 感度を調整
-                releaseOnEdges: false,
-                thresholdDelta: 50, // スクロール感度を調整
-                thresholdTime: 300, // スクロールの時間間隔を調整
-                forceToAxis: true, // 垂直方向のスクロールのみを検知
-            },
+            enabled: true,
+            sensitivity: deviceType === 'mobile' ? 0.8 : 1,
+            thresholdDelta: deviceType === 'mobile' ? 70 : 50,
+            thresholdTime: deviceType === 'mobile' ? 400 : 300,
+            releaseOnEdges: false
+        },
+        
+        // キーボードナビゲーション
             keyboard: {
                 enabled: true,
-                onlyInViewport: true,
+            onlyInViewport: true
             },
+        
+        // ページネーション
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
                 renderBullet: function (index, className) {
-                    return '<span class="' + className + '"></span>';
-                },
-            },
-            // スナップ機能を強化
-            touchReleaseOnEdges: false,
-            touchRatio: 1, // タッチ感度を最適化
-            threshold: 20, // しきい値を調整
-            resistanceRatio: 0, // 端までスクロールした時の抵抗を無効化
-            // スライド間の遷移を確実にする
-            followFinger: true, // 指の動きに追従
-            longSwipesRatio: 0.1, // 短いスワイプでも次のスライドに移動
-            // スライド間の遷移を確実にするための追加設定
-            shortSwipes: true, // 短いスワイプを有効化
-            longSwipes: true, // 長いスワイプを有効化
-            grabCursor: true, // グラブカーソルを表示
-            preventInteractionOnTransition: true, // 遷移中の操作を防止
-            // スライドの効果
-            effect: 'slide', // 標準的なスライド効果
-            // スライドの自動高さ
-            autoHeight: false, // 自動高さを無効化
-            // スライドのループ
-            loop: false, // ループを無効化
-            // スライドの方向
-            allowSlideNext: true, // 次へのスライドを許可
-            allowSlidePrev: true, // 前へのスライドを許可
-            // スライドの速度
-            speed: 800, // スライド速度
-            // スライドのイージング
-            cssMode: false, // CSSモードを無効化
-            // 3D効果を有効化
-            watchSlidesProgress: true,
-            virtualTranslate: false,
-            // パララックス効果
-            parallax: true,
-            // タッチ操作の改善
-            touchStartPreventDefault: false,
-            simulateTouch: true,
-            touchStartForcePreventDefault: false,
-            touchMoveStopPropagation: true,
-            // イベントハンドラ
-            on: {
-                slideChange: function() {
-                    // スライド変更時にアニメーションをトリガー
-                    const activeSlide = document.querySelector('.swiper-slide-active');
-                    if (activeSlide) {
-                        triggerAnimations(activeSlide);
-                    }
-                    
-                    // ナビゲーションのアクティブ状態を更新
-                    updateNavigation(this.activeIndex);
-                    
-                    // スワイプインジケーターの表示/非表示を切り替え
-                    updateSwipeIndicators(this.activeIndex, this.slides.length - 1);
-                    
-                    // スライド変更をコンソールに表示
-                    console.log('Slide changed to index: ' + this.activeIndex);
-                },
+                return `<span class="${className}" role="button" aria-label="ページ ${index + 1}へ移動" tabindex="0"></span>`;
+            }
+        },
+        
+        // アクセシビリティ
+        a11y: {
+            enabled: true,
+            notificationClass: 'swiper-notification',
+            prevSlideMessage: '前のスライドへ',
+            nextSlideMessage: '次のスライドへ',
+            firstSlideMessage: '最初のスライドです',
+            lastSlideMessage: '最後のスライドです',
+            paginationBulletMessage: '{{index}}番目のスライドへ移動'
+        },
+        
+        // パフォーマンス設定
+        observer: true,
+        observeParents: true,
+        watchSlidesProgress: true,
+        preventInteractionOnTransition: true,
+        autoHeight: false,
+        preloadImages: false,
+        lazy: {
+            loadPrevNext: true,
+            loadPrevNextAmount: 2,
+            loadOnTransitionStart: true
+        },
+        
+        // イベントハンドラ
+        on: {
                 init: function() {
-                    // 初期スライドのアニメーションをトリガー
-                    const activeSlide = document.querySelector('.swiper-slide-active');
-                    if (activeSlide) {
-                        triggerAnimations(activeSlide);
-                    }
-                    
-                    // ナビゲーションのアクティブ状態を更新
-                    updateNavigation(this.activeIndex);
-                    
-                    // スワイプインジケーターの表示/非表示を切り替え
-                    updateSwipeIndicators(this.activeIndex, this.slides.length - 1);
-                    
-                    // 初期化完了をコンソールに表示
-                    console.log('Swiper initialized with index: ' + this.activeIndex);
-                },
-                // スライド遷移後に確実に止まるようにする
-                transitionEnd: function() {
-                    // スライド遷移が完了したことをコンソールに表示
-                    console.log('Slide transition completed to index: ' + this.activeIndex);
-                    
-                    // 現在のスライドに確実に合わせる
-                    this.slideTo(this.activeIndex, 0, false);
-                    
-                    // スワイプ中のクラスを削除
-                    document.querySelector('.swiper-container').classList.remove('swiping');
-                },
-                // スライド遷移開始時
-                transitionStart: function() {
-                    console.log('Slide transition started from index: ' + this.previousIndex + ' to ' + this.activeIndex);
-                    
-                    // スワイプ中のクラスを追加
-                    document.querySelector('.swiper-container').classList.add('swiping');
-                },
-                // タッチ開始時
-                touchStart: function() {
-                    console.log('Touch started on index: ' + this.activeIndex);
-                    
-                    // スワイプ中のクラスを追加
-                    document.querySelector('.swiper-container').classList.add('swiping');
-                },
-                // タッチ終了時
-                touchEnd: function() {
-                    console.log('Touch ended on index: ' + this.activeIndex);
-                    
-                    // スワイプ中のクラスを削除
-                    setTimeout(() => {
-                        document.querySelector('.swiper-container').classList.remove('swiping');
-                    }, 300);
-                },
-                // スワイプ方向の検出
-                touchMove: function(e) {
-                    // スワイプ方向に応じたアニメーション効果を追加できます
-                    const touchAngle = e.angle;
-                    
-                    // 上下方向のスワイプを検出
-                    if (touchAngle > 45 && touchAngle < 135) {
-                        console.log('Swiping down');
-                    } else if (touchAngle > 225 && touchAngle < 315) {
-                        console.log('Swiping up');
-                    }
+                updateSwipeIndicators(this.activeIndex, this.slides.length);
+                updateProgressBar(0);
+                
+                // アクティブスライドにaria-current属性を追加
+                this.slides[this.activeIndex].setAttribute('aria-current', 'true');
+                
+                // 初期アニメーションのトリガー
+                if (!isReducedMotion) {
+                    triggerAnimations(this.slides[this.activeIndex]);
                 }
+                
+                // スワイプ可能な方向を示すARIA属性を設定
+                updateAriaAttributes(this.activeIndex, this.slides.length);
+            },
+            slideChange: function() {
+                updateSwipeIndicators(this.activeIndex, this.slides.length);
+                updateProgressBar(this.activeIndex / (this.slides.length - 1));
+                
+                // ARIA属性の更新
+                this.slides.forEach((slide, index) => {
+                    if (index === this.activeIndex) {
+                        slide.setAttribute('aria-current', 'true');
+                    } else {
+                        slide.removeAttribute('aria-current');
+                    }
+                });
+                
+                // スワイプ可能な方向を示すARIA属性を更新
+                updateAriaAttributes(this.activeIndex, this.slides.length);
+                
+                // アニメーションのトリガー
+                if (!isReducedMotion) {
+                    triggerAnimations(this.slides[this.activeIndex]);
+                }
+                
+                // アナリティクスイベントの送信（実装されている場合）
+                if (typeof trackPageView === 'function') {
+                    trackPageView(`Slide ${this.activeIndex + 1}`);
+                }
+            },
+            touchStart: function() {
+                DOM.swiperContainer.classList.add('grabbing');
+                DOM.swiperContainer.classList.add('swiping');
+            },
+            touchEnd: function() {
+                DOM.swiperContainer.classList.remove('grabbing');
+                setTimeout(() => {
+                    DOM.swiperContainer.classList.remove('swiping');
+                }, 300);
+            },
+            transitionStart: function() {
+                isScrolling = true;
+            },
+            transitionEnd: function() {
+                isScrolling = false;
+            },
+            progress: function(swiper, progress) {
+                updateProgressBar(progress);
             }
-        });
-        
-        // ナビゲーションリンクのクリックイベント
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const slideIndex = Array.from(document.querySelectorAll('.swiper-slide')).findIndex(slide => slide.id === targetId);
-                if (slideIndex !== -1) {
-                    swiper.slideTo(slideIndex);
-                    console.log('Navigation clicked to slide: ' + slideIndex);
-                }
-                
-                // モバイルメニューを閉じる
-                const mainNav = document.querySelector('.main-nav');
-                if (mainNav.classList.contains('active')) {
-                    mainNav.classList.remove('active');
-                }
-            });
-        });
-        
-        // スワイプインジケーターのクリックイベント
-        const swipeIndicators = document.querySelectorAll('.swipe-indicator');
-        swipeIndicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', function() {
-                if (indicator.classList.contains('last')) {
-                    swiper.slideTo(0); // 最後のインジケーターはトップに戻る
-                    console.log('Last indicator clicked, returning to top');
-                } else {
-                    swiper.slideTo(index + 1); // 次のスライドへ
-                    console.log('Indicator clicked to slide: ' + (index + 1));
-                }
-            });
-        });
-
-        // スワイプインジケーターの表示/非表示を切り替える関数
-        function updateSwipeIndicators(activeIndex, lastIndex) {
-            const swipeIndicators = document.querySelectorAll('.swipe-indicator');
-            
-            swipeIndicators.forEach((indicator, index) => {
-                // 現在のスライドのインジケーターを非表示
-                if (index === activeIndex) {
-                    indicator.style.display = 'none';
-                } else {
-                    indicator.style.display = 'flex';
-                }
-                
-                // 最後のスライドの場合、最後のインジケーターに特別なクラスを追加
-                if (activeIndex === lastIndex) {
-                    if (indicator.classList.contains('last')) {
-                        indicator.style.display = 'flex';
-                    }
-                }
-            });
         }
-
-        // タッチデバイスでのスワイプ操作を改善
-        document.addEventListener('touchmove', function(e) {
-            // スワイプ中のスクロールを防止
-            if (e.target.closest('.swiper-container') && !e.target.closest('.swiper-slide-content')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        // スワイプ操作の後に確実に止まるようにする
-        document.addEventListener('touchend', function() {
-            // 現在のスライドインデックスを取得
-            const currentIndex = swiper.activeIndex;
-            // 少し遅延を入れて確実にスナップさせる
-            setTimeout(function() {
-                swiper.slideTo(currentIndex, 0, false);
-            }, 100);
-        });
-
-        // マウスホイールイベントの制御
-        let wheelTimeout;
-        let isWheelLocked = false;
-        
-        document.addEventListener('wheel', function(e) {
-            // スワイパーコンテナ内でのみ処理
-            if (e.target.closest('.swiper-container') && !e.target.closest('.swiper-slide-content')) {
-                // ホイールロック中は何もしない
-                if (isWheelLocked) {
-                    e.preventDefault();
-                    return;
-                }
-                
-                // ホイールをロック
-                isWheelLocked = true;
-                
-                // 連続したホイールイベントを制限
-                clearTimeout(wheelTimeout);
-                wheelTimeout = setTimeout(function() {
-                    // 現在のスライドに確実に合わせる
-                    swiper.slideTo(swiper.activeIndex, 0, false);
-                    
-                    // ロックを解除
-                    setTimeout(function() {
-                        isWheelLocked = false;
-                    }, 600);
-                }, 200);
-            }
-        }, { passive: false });
-        
-        // キーボードイベントの制御
-        document.addEventListener('keydown', function(e) {
-            // 上下キーのみ処理
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                e.preventDefault();
-                
-                if (e.key === 'ArrowUp') {
-                    swiper.slidePrev();
-                } else {
-                    swiper.slideNext();
-                }
-                
-                // 少し遅延を入れて確実にスナップさせる
-                setTimeout(function() {
-                    swiper.slideTo(swiper.activeIndex, 0, false);
-                }, 100);
-            }
-        });
-        
-        // ウィンドウのリサイズ時にSwiperを更新
-        window.addEventListener('resize', function() {
-            swiper.update();
-        });
-        
-        // 初期表示時にスワイプインジケーターの表示/非表示を設定
-        updateSwipeIndicators(swiper.activeIndex, swiper.slides.length - 1);
-        
-        return swiper;
+    };
+    
+    // 動きの低減設定が有効な場合、アニメーション速度を調整
+    if (isReducedMotion) {
+        swiperOptions.speed = 400;
+        swiperOptions.effect = 'fade';
+        swiperOptions.fadeEffect = {
+            crossFade: true
+        };
     }
     
-    // ナビゲーションのアクティブ状態を更新
-    function updateNavigation(activeIndex) {
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-        });
-        
-        const slides = document.querySelectorAll('.swiper-slide');
-        if (slides[activeIndex]) {
-            const slideId = slides[activeIndex].id;
-            const activeLink = document.querySelector(`.nav-link[href="#${slideId}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-        }
-    }
+    // Swiperインスタンスの作成
+    swiper = new Swiper('.swiper-container', swiperOptions);
+}
 
-    // スクロールダウンアニメーション
-    const hero = document.querySelector('#hero');
-    if (hero) {
-        const scrollDown = document.querySelector('.swipe-indicator');
-        if (scrollDown) {
-            scrollDown.addEventListener('click', function() {
-                const nextSection = document.querySelector('#problems');
-                if (nextSection) {
-                    smoothScrollTo(nextSection);
-                }
-            });
-        }
-    }
-
-    // スムーズスクロール関数
-    function smoothScrollTo(element) {
-        const headerHeight = document.querySelector('.header').offsetHeight;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition - headerHeight;
-
-        window.scrollBy({
-            top: offsetPosition,
-            behavior: 'smooth'
-        });
-    }
-
-    // モバイルメニュートグル
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-    
-    if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', function() {
-            mainNav.classList.toggle('active');
-            this.querySelector('i').classList.toggle('fa-bars');
-            this.querySelector('i').classList.toggle('fa-times');
-        });
-    }
-
-    // スクロール時のヘッダー変更
-    window.addEventListener('scroll', function() {
-        const header = document.querySelector('.header');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+// スワイプインジケーターの更新
+function updateSwipeIndicators(activeIndex, totalSlides) {
+    DOM.swipeIndicators.forEach((indicator, index) => {
+        // 最後のスライドでは上向きインジケーターを表示
+        if (activeIndex === totalSlides - 1 && index === totalSlides - 1) {
+            indicator.style.display = 'flex';
+        } 
+        // 現在のスライドの下向きインジケーターを表示
+        else if (index === activeIndex) {
+            indicator.style.display = 'flex';
+        } 
+        // それ以外のインジケーターは非表示
+        else {
+            indicator.style.display = 'none';
         }
     });
+}
 
-    // 初期表示アニメーション
-    function triggerInitialAnimations() {
-        const heroElements = document.querySelectorAll('#hero .animate-on-scroll');
-        heroElements.forEach(function(element, index) {
-            setTimeout(function() {
-                element.classList.add('animated');
-            }, index * 200);
-        });
+// ARIA属性の更新
+function updateAriaAttributes(activeIndex, totalSlides) {
+    const container = DOM.swiperContainer;
+    
+    // スワイプ可能な方向を示す
+    if (activeIndex === 0) {
+        container.setAttribute('aria-description', '下にスワイプして次のコンテンツを表示できます');
+    } else if (activeIndex === totalSlides - 1) {
+        container.setAttribute('aria-description', '上にスワイプして前のコンテンツに戻れます');
+    } else {
+        container.setAttribute('aria-description', '上下にスワイプしてコンテンツを切り替えられます');
     }
+}
 
-    // スクロールアニメーション
-    function triggerAnimations(container) {
-        const animatedElements = container.querySelectorAll('.animate-on-scroll:not(.animated)');
-        animatedElements.forEach(function(element, index) {
-            const delay = element.dataset.delay ? parseFloat(element.dataset.delay) * 1000 : index * 200;
-            setTimeout(function() {
-                element.classList.add('animated');
-            }, delay);
+// イベントリスナーの設定
+function setupEventListeners() {
+    // ヘッダーのスクロール処理
+    window.addEventListener('scroll', throttle(handleScroll, 100));
+    
+    // メニュートグルの処理
+    if (DOM.menuToggle) {
+        DOM.menuToggle.addEventListener('click', toggleMenu);
+    }
+    
+    // ナビゲーションリンクのクリック処理
+    DOM.navLinks.forEach(link => {
+        link.addEventListener('click', handleNavLinkClick);
+    });
+    
+    // スワイプインジケーターのクリック処理
+    DOM.swipeIndicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            // 最後のスライドの場合は最初のスライドに戻る
+            if (index === DOM.swiperSlides.length - 1) {
+                swiper.slideTo(0);
+            } else {
+                // それ以外は次のスライドに進む
+                swiper.slideTo(index + 1);
+            }
         });
         
-        // 時間削減グラフのアニメーション
-        const progressBar = container.querySelector('.time-saved-progress');
-        if (progressBar && !progressBar.classList.contains('animated')) {
-            setTimeout(function() {
-                const percent = progressBar.dataset.percent || 80;
-                progressBar.style.width = percent + '%';
-                progressBar.classList.add('animated');
-            }, 500);
+        // キーボードアクセシビリティ
+        indicator.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (index === DOM.swiperSlides.length - 1) {
+                    swiper.slideTo(0);
+                } else {
+                    swiper.slideTo(index + 1);
+                }
+            }
+        });
+    });
+    
+    // タッチイベントの処理
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    
+    // ホイールイベントの処理
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // キーボードイベントの処理
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // ウィンドウのリサイズ処理
+    window.addEventListener('resize', debounce(handleResize, 200));
+    
+    // 動きの低減設定の変更を監視
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', handleReducedMotionChange);
+    
+    // ページの可視性変更時の処理
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // スクロールイベントリスナーの追加
+    window.addEventListener('scroll', throttle(handleScrollAnimation, 10));
+    
+    // リサイズイベントリスナーの追加
+    window.addEventListener('resize', debounce(() => {
+        // スクロールアニメーション要素の位置情報を更新
+        updateScrollAnimationRects();
+        
+        // その他のリサイズ処理
+        handleResize();
+    }, 200));
+}
+
+// スクロール処理
+function handleScroll() {
+    if (window.scrollY > 50) {
+        DOM.header.classList.add('scrolled');
+    } else {
+        DOM.header.classList.remove('scrolled');
+    }
+}
+
+// メニュートグル処理
+function toggleMenu() {
+    DOM.mainNav.classList.toggle('active');
+    const isExpanded = DOM.mainNav.classList.contains('active');
+    DOM.menuToggle.setAttribute('aria-expanded', isExpanded);
+    
+    // メニューが開いている場合はスワイプを無効化
+    if (isExpanded) {
+        swiper.allowTouchMove = false;
+    } else {
+        swiper.allowTouchMove = true;
+    }
+}
+
+// ナビゲーションリンクのクリック処理
+function handleNavLinkClick(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('href').substring(1);
+    const targetIndex = Array.from(DOM.swiperSlides).findIndex(slide => 
+        slide.id === targetId || slide.querySelector(`#${targetId}`)
+    );
+    
+    if (targetIndex !== -1) {
+        swiper.slideTo(targetIndex);
+    }
+    
+    // モバイルメニューが開いている場合は閉じる
+    if (DOM.mainNav.classList.contains('active')) {
+        toggleMenu();
+    }
+}
+
+// タッチスタート処理
+function handleTouchStart(e) {
+    // スワイパー内のタッチイベントのみを処理
+    if (!isElementInSwiper(e.target)) return;
+    
+    touchStartY = e.touches[0].clientY;
+}
+
+// タッチムーブ処理
+function handleTouchMove(e) {
+    // スワイパー内のタッチイベントのみを処理
+    if (!isElementInSwiper(e.target)) return;
+    
+    // スクロール中は追加のタッチイベントを防止
+    if (isScrolling) {
+        e.preventDefault();
+    }
+}
+
+// ホイール処理
+function handleWheel(e) {
+    // スワイパー内のホイールイベントのみを処理
+    if (!isElementInSwiper(e.target)) return;
+    
+    // スクロール中は追加のホイールイベントを防止
+    if (isScrolling) {
+        e.preventDefault();
+    }
+    
+    // スロットリングによるホイールイベントの制限
+    const now = Date.now();
+    if (now - lastScrollTime < 50) {
+        e.preventDefault();
+        return;
+    }
+    lastScrollTime = now;
+}
+
+// キーボード処理
+function handleKeyDown(e) {
+    // 矢印キーでのナビゲーション
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        if (isScrolling) {
+            e.preventDefault();
+            return;
+        }
+        
+        if (e.key === 'ArrowUp') {
+            swiper.slidePrev();
+        } else {
+            swiper.slideNext();
         }
     }
+}
 
-    // スクロールイベントリスナー
-    window.addEventListener('scroll', function() {
-        const scrollPosition = window.scrollY + window.innerHeight * 0.8;
+// リサイズ処理
+function handleResize() {
+    // デバイスタイプの再検出
+    deviceType = detectDeviceType();
+    
+    // Swiperの更新
+    swiper.update();
+    
+    // マウスホイール感度の調整
+    swiper.params.mousewheel.sensitivity = deviceType === 'mobile' ? 0.8 : 1;
+    swiper.params.mousewheel.thresholdDelta = deviceType === 'mobile' ? 70 : 50;
+}
+
+// 動きの低減設定変更処理
+function handleReducedMotionChange(e) {
+    isReducedMotion = e.matches;
+    
+    // Swiperの設定を更新
+    if (isReducedMotion) {
+        swiper.params.speed = 400;
+        swiper.params.effect = 'fade';
+    } else {
+        swiper.params.speed = 800;
+        swiper.params.effect = 'slide';
+    }
+    
+    swiper.update();
+}
+
+// ページの可視性変更処理
+function handleVisibilityChange() {
+    if (document.visibilityState === 'visible') {
+        // ページが再表示された時の処理
+        swiper.update();
+    }
+}
+
+// 要素がスワイパー内にあるかチェック
+function isElementInSwiper(element) {
+    let current = element;
+    while (current) {
+        if (current === DOM.swiperContainer) {
+            return true;
+        }
+        current = current.parentElement;
+    }
+    return false;
+}
+
+// アニメーションのトリガー
+function triggerAnimations(activeSlide) {
+    // アクティブスライド内のアニメーション要素を取得
+    const animateElements = activeSlide.querySelectorAll('.animate-on-scroll');
+    
+    // アニメーション要素にクラスを追加
+    animateElements.forEach((element, index) => {
+        // 動きの低減設定が有効な場合はアニメーションをスキップ
+        if (isReducedMotion) {
+            element.classList.add('animated');
+            return;
+        }
         
-        document.querySelectorAll('.animate-on-scroll:not(.animated)').forEach(function(element) {
-            if (element.getBoundingClientRect().top + window.scrollY < scrollPosition) {
-                const delay = element.dataset.delay ? element.dataset.delay : 0;
-                setTimeout(function() {
+        // 遅延を適用してアニメーションを順番に実行
+        const delay = index * 0.1;
+        setTimeout(() => {
                     element.classList.add('animated');
                 }, delay * 1000);
-            }
-        });
-        
-        // 時間削減グラフのアニメーション
-        document.querySelectorAll('.time-saved-progress:not(.animated)').forEach(function(progressBar) {
-            if (progressBar.getBoundingClientRect().top + window.scrollY < scrollPosition) {
-                const percent = progressBar.dataset.percent || 80;
-                progressBar.style.width = percent + '%';
-                progressBar.classList.add('animated');
-            }
-        });
     });
+}
 
-    // テキストスプリットアニメーション
+// 初期アニメーションのトリガー
+function triggerInitialAnimations() {
+    // 最初のスライドのアニメーション要素を取得
+    const firstSlideAnimateElements = DOM.swiperSlides[0].querySelectorAll('.animate-on-scroll');
+    
+    // アニメーション要素にクラスを追加
+    firstSlideAnimateElements.forEach((element, index) => {
+        // 動きの低減設定が有効な場合はアニメーションをスキップ
+        if (isReducedMotion) {
+            element.classList.add('animated');
+            return;
+        }
+        
+        // 遅延を適用してアニメーションを順番に実行
+        const delay = 0.5 + (index * 0.1);
+        setTimeout(() => {
+            element.classList.add('animated');
+        }, delay * 1000);
+    });
+}
+
+// テキスト分割アニメーションの初期化
     function initSplitTextAnimations() {
-        const textElements = document.querySelectorAll('.text-reveal');
-        textElements.forEach(function(element) {
+    // 動きの低減設定が有効な場合はスキップ
+    if (isReducedMotion) return;
+    
+    // 分割アニメーション対象の要素を取得
+    const splitTextElements = document.querySelectorAll('.split-text');
+    
+    splitTextElements.forEach(element => {
+        // テキストを取得
             const text = element.textContent;
+        // 要素を空にする
             element.textContent = '';
             
+        // 文字ごとにspanで囲む
             for (let i = 0; i < text.length; i++) {
                 const span = document.createElement('span');
                 span.textContent = text[i];
-                span.style.transitionDelay = (i * 0.03) + 's';
+            span.style.animationDelay = `${0.05 * i}s`;
                 element.appendChild(span);
             }
-            
-            // アニメーションをトリガー
-            setTimeout(function() {
-                element.classList.add('animated');
-            }, 100);
-        });
-    }
-
-    // パララックス効果
-    function initParallaxEffects() {
-        const parallaxElements = document.querySelectorAll('.parallax-element');
-        
-        window.addEventListener('mousemove', function(e) {
-            const mouseX = e.clientX / window.innerWidth;
-            const mouseY = e.clientY / window.innerHeight;
-            
-            parallaxElements.forEach(function(element) {
-                const speed = element.dataset.speed || 0.1;
-                const x = (0.5 - mouseX) * speed * 100;
-                const y = (0.5 - mouseY) * speed * 100;
-                
-                element.style.transform = `translate(${x}px, ${y}px)`;
-            });
-        });
-    }
-
-    // 3Dカード効果
-    function init3DCardEffects() {
-        const cards = document.querySelectorAll('.card-3d');
-        
-        cards.forEach(function(card) {
-            card.addEventListener('mousemove', function(e) {
-                const cardRect = card.getBoundingClientRect();
-                const cardCenterX = cardRect.left + cardRect.width / 2;
-                const cardCenterY = cardRect.top + cardRect.height / 2;
-                const mouseX = e.clientX - cardCenterX;
-                const mouseY = e.clientY - cardCenterY;
-                
-                const rotateY = (mouseX / cardRect.width) * 20;
-                const rotateX = -((mouseY / cardRect.height) * 20);
-                
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            });
         });
     }
 
     // 画像の遅延読み込み
+function lazyLoadImages() {
     const lazyImages = document.querySelectorAll('.lazy-image');
     
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(function(entry) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
                     img.src = img.dataset.src;
+                    img.addEventListener('load', () => {
                     img.classList.add('loaded');
-                    imageObserver.unobserve(img);
+                    });
+                    observer.unobserve(img);
                 }
             });
         });
         
-        lazyImages.forEach(function(img) {
+        lazyImages.forEach(img => {
             imageObserver.observe(img);
         });
     } else {
-        // Fallback for browsers without IntersectionObserver support
-        lazyImages.forEach(function(img) {
+        // IntersectionObserverがサポートされていない場合のフォールバック
+        lazyImages.forEach(img => {
             img.src = img.dataset.src;
-        });
-    }
-
-    // FAQアコーディオン
-    const faqItems = document.querySelectorAll('.faq-item');
-    
-    faqItems.forEach(function(item) {
-        const question = item.querySelector('.faq-question');
-        
-        question.addEventListener('click', function() {
-            const isActive = item.classList.contains('active');
-            
-            // 他のアイテムを閉じる
-            faqItems.forEach(function(otherItem) {
-                otherItem.classList.remove('active');
+            img.addEventListener('load', () => {
+                img.classList.add('loaded');
             });
-            
-            // クリックされたアイテムを開く（すでに開いていた場合は閉じる）
-            if (!isActive) {
-                item.classList.add('active');
-            }
         });
-    });
-
-    // お問い合わせフォーム送信
-    const contactForm = document.getElementById('contactForm');
-    
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // フォームデータの取得
-            const formData = new FormData(contactForm);
-            const formDataObj = {};
-            
-            formData.forEach(function(value, key) {
-                formDataObj[key] = value;
-            });
-            
-            // 送信ボタンを無効化
-            const submitButton = contactForm.querySelector('button[type="submit"]');
-            submitButton.disabled = true;
-            submitButton.textContent = '送信中...';
-            
-            // 実際のフォーム送信処理はここに実装
-            // 例: fetch APIを使用したPOSTリクエスト
-            
-            // 送信成功のシミュレーション
-            setTimeout(function() {
-                // 送信完了メッセージ
-                const successMessage = document.createElement('div');
-                successMessage.className = 'form-success';
-                successMessage.textContent = 'お問い合わせありがとうございます。担当者より折り返しご連絡いたします。';
-                
-                // フォームを非表示にして成功メッセージを表示
-                contactForm.style.display = 'none';
-                contactForm.parentNode.appendChild(successMessage);
-            }, 1500);
-        });
-    }
-});
-
-// 画像プリロード関数
-function preloadImages(sources, callback) {
-    let counter = 0;
-    
-    function onLoad() {
-        counter++;
-        if (counter >= sources.length && callback) {
-            callback();
-        }
-    }
-    
-    for (let i = 0; i < sources.length; i++) {
-        const img = new Image();
-        img.onload = onLoad;
-        img.onerror = onLoad;
-        img.src = sources[i];
     }
 }
 
-// 重要な画像をプリロード
-const imagesToPreload = [
-    'images/hero-image.png',
-    'images/before-image.png',
-    'images/after-image.png',
-    'images/line-checkin.png',
-    'images/line-checkout.png',
-    'images/line-record.png',
-    'images/manager-dashboard.png',
-    'images/spreadsheet.png',
-    'images/case-study.png',
-    'images/qr-code.png',
-    'images/pattern.png'
-];
+// アクセシビリティの強化
+function enhanceAccessibility() {
+    // スワイパーコンテナにARIA属性を追加
+    DOM.swiperContainer.setAttribute('role', 'region');
+    DOM.swiperContainer.setAttribute('aria-label', 'コンテンツスライダー');
+    
+    // スライドにARIA属性を追加
+    DOM.swiperSlides.forEach((slide, index) => {
+        slide.setAttribute('role', 'group');
+        slide.setAttribute('aria-label', `スライド ${index + 1}`);
+        slide.setAttribute('aria-roledescription', 'スライド');
+        
+        // 最初のスライドにaria-current属性を追加
+        if (index === 0) {
+            slide.setAttribute('aria-current', 'true');
+        }
+    });
+    
+    // スワイプインジケーターにARIA属性を追加
+    DOM.swipeIndicators.forEach((indicator, index) => {
+        indicator.setAttribute('role', 'button');
+        indicator.setAttribute('tabindex', '0');
+        
+        if (index === DOM.swiperSlides.length - 1) {
+            indicator.setAttribute('aria-label', 'トップに戻る');
+        } else {
+            indicator.setAttribute('aria-label', '次のスライドへ');
+        }
+    });
+}
 
-preloadImages(imagesToPreload); 
+// ユーティリティ関数: スロットリング
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function(...args) {
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            func.apply(this, args);
+        }
+    };
+}
+
+// ユーティリティ関数: デバウンス
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+// ユーティリティ関数: アナリティクスイベントの送信（実装例）
+function trackPageView(pageName) {
+    // アナリティクスが実装されている場合に使用
+    if (window.gtag) {
+        gtag('event', 'page_view', {
+            page_title: pageName,
+            page_location: window.location.href,
+            page_path: `/${pageName.toLowerCase().replace(/\s+/g, '-')}`
+        });
+    }
+}
+
+// ブラウザのサポート状況をチェック
+function checkBrowserSupport() {
+    const features = {
+        intersectionObserver: 'IntersectionObserver' in window,
+        passiveEvents: (function() {
+            let supportsPassive = false;
+            try {
+                window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+                    get: function() { supportsPassive = true; }
+                }));
+            } catch(e) {}
+            return supportsPassive;
+        })(),
+        touchEvents: 'ontouchstart' in window,
+        customProperties: CSS.supports('(--test: 0)'),
+        webp: (function() {
+            const elem = document.createElement('canvas');
+            if (elem.getContext && elem.getContext('2d')) {
+                return elem.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+            }
+            return false;
+        })()
+    };
+    
+    // サポート状況に基づいてクラスを追加
+    for (const feature in features) {
+        if (features[feature]) {
+            document.documentElement.classList.add(`has-${feature}`);
+        } else {
+            document.documentElement.classList.add(`no-${feature}`);
+        }
+    }
+    
+    return features;
+}
+
+// ブラウザのサポート状況をチェック
+const browserSupport = checkBrowserSupport();
+
+// スクロールプログレスバーの初期化
+function initScrollProgressBar() {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress';
+    document.body.appendChild(progressBar);
+}
+
+// スクロールプログレスバーの更新
+function updateScrollProgressBar() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = scrollTop / scrollHeight;
+    
+    const progressBar = document.querySelector('.scroll-progress');
+    if (progressBar) {
+        progressBar.style.width = `${progress * 100}%`;
+    }
+}
+
+// スクロールアニメーションの初期化
+function initScrollAnimations() {
+    // IntersectionObserverの設定
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: buildThresholdList()
+    };
+    
+    // スクロールアニメーション要素の取得
+    const scrollAnimateElements = document.querySelectorAll('.scroll-animate');
+    
+    // 各要素の情報を保存
+    scrollAnimations = Array.from(scrollAnimateElements).map(element => {
+        return {
+            element: element,
+            rect: element.getBoundingClientRect(),
+            triggered: false,
+            triggerPoint: parseFloat(getComputedStyle(element).getPropertyValue('--scroll-trigger-point') || 0.5)
+        };
+    });
+    
+    // IntersectionObserverの作成
+    scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const element = entry.target;
+            const animation = scrollAnimations.find(anim => anim.element === element);
+            
+            if (entry.isIntersecting) {
+                // 要素が画面内に入った時の処理
+                if (!animation.triggered) {
+                    // 要素の位置に基づいてアニメーションを適用
+                    updateElementAnimation(element, entry.intersectionRatio);
+                    
+                    // 完全に表示された場合はトリガーフラグを設定
+                    if (entry.intersectionRatio >= animation.triggerPoint) {
+                        animation.triggered = true;
+                        element.classList.add('active');
+                    }
+                }
+            } else {
+                // 要素が画面外に出た時の処理
+                // 上方向にスクロールして要素が画面外に出た場合
+                if (lastScrollY > window.scrollY && animation.triggered) {
+                    animation.triggered = false;
+                    element.classList.remove('active');
+                }
+            }
+        });
+    }, options);
+    
+    // 各要素をIntersectionObserverで監視
+    scrollAnimateElements.forEach(element => {
+        scrollObserver.observe(element);
+    });
+    
+    // スクロールイベントリスナーの追加
+    window.addEventListener('scroll', handleScrollAnimation);
+}
+
+// スクロールアニメーションの処理
+function handleScrollAnimation() {
+    lastScrollY = window.scrollY;
+    
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            // スクロールプログレスバーの更新
+            updateScrollProgressBar();
+            
+            // パララックス効果の更新
+            updateParallaxElements();
+            
+            // スティッキーセクションの更新
+            updateStickyElements();
+            
+            // スクロールシーケンスの更新
+            updateScrollSequence();
+            
+            // 3D回転効果の更新
+            updateRotateElements();
+            
+            // スケール効果の更新
+            updateScaleElements();
+            
+            // 不透明度効果の更新
+            updateFadeElements();
+            
+            // ぼかし効果の更新
+            updateBlurElements();
+            
+            // 位置変化効果の更新
+            updateMoveElements();
+            
+            // カウントアップアニメーションの更新
+            updateCountUpElements();
+            
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
+}
+
+// 閾値リストの作成（滑らかなアニメーションのため）
+function buildThresholdList() {
+    const thresholds = [];
+    const numSteps = 20;
+    
+    for (let i = 0; i <= numSteps; i++) {
+        thresholds.push(i / numSteps);
+    }
+    
+    return thresholds;
+}
+
+// 要素のアニメーションを更新
+function updateElementAnimation(element, ratio) {
+    // アニメーション効果の種類に基づいて処理
+    const effect = element.dataset.effect || 'fade-up';
+    const intensity = element.dataset.intensity || 'default';
+    
+    // 進行度に応じたスタイルの適用
+    switch (effect) {
+        case 'fade-up':
+            applyTransformStyle(element, `translate3d(0, ${calculateDistance(ratio, intensity)}px, 0)`);
+            break;
+        case 'fade-down':
+            applyTransformStyle(element, `translate3d(0, ${-calculateDistance(ratio, intensity)}px, 0)`);
+            break;
+        case 'fade-left':
+            applyTransformStyle(element, `translate3d(${calculateDistance(ratio, intensity)}px, 0, 0)`);
+            break;
+        case 'fade-right':
+            applyTransformStyle(element, `translate3d(${-calculateDistance(ratio, intensity)}px, 0, 0)`);
+            break;
+        case 'zoom-in':
+            const scaleIn = 0.9 + (ratio * 0.1);
+            applyTransformStyle(element, `scale3d(${scaleIn}, ${scaleIn}, ${scaleIn})`);
+            break;
+        case 'zoom-out':
+            const scaleOut = 1.1 - (ratio * 0.1);
+            applyTransformStyle(element, `scale3d(${scaleOut}, ${scaleOut}, ${scaleOut})`);
+            break;
+        case 'blur':
+            const blurValue = 10 - (ratio * 10);
+            element.style.filter = `blur(${blurValue}px)`;
+            break;
+        case 'rotate':
+            const rotateValue = 5 - (ratio * 5);
+            applyTransformStyle(element, `rotate3d(0, 0, 1, ${rotateValue}deg)`);
+            break;
+    }
+    
+    // 不透明度の適用
+    element.style.opacity = ratio;
+}
+
+// 距離の計算（強度に応じて）
+function calculateDistance(ratio, intensity) {
+    let baseDistance = 50;
+    
+    switch (intensity) {
+        case 'subtle':
+            baseDistance = 20;
+            break;
+        case 'strong':
+            baseDistance = 80;
+            break;
+    }
+    
+    return baseDistance - (ratio * baseDistance);
+}
+
+// 変形スタイルの適用
+function applyTransformStyle(element, transform) {
+    element.style.transform = transform;
+}
+
+// パララックス要素の更新
+function updateParallaxElements() {
+    const parallaxElements = document.querySelectorAll('.parallax-scroll');
+    
+    parallaxElements.forEach(element => {
+        const speed = parseFloat(element.dataset.speed || 0.3);
+        const direction = element.dataset.direction || 'up';
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenter = rect.top + (rect.height / 2);
+            const windowCenter = windowHeight / 2;
+            const distanceFromCenter = elementCenter - windowCenter;
+            
+            // パララックス効果の計算
+            const parallaxOffset = distanceFromCenter * speed;
+            
+            // 方向に応じた変形の適用
+            if (direction === 'up') {
+                element.style.transform = `translateY(${-parallaxOffset}px)`;
+            } else {
+                element.style.transform = `translateY(${parallaxOffset}px)`;
+            }
+        }
+    });
+}
+
+// スティッキー要素の更新
+function updateStickyElements() {
+    const stickySections = document.querySelectorAll('.sticky-section');
+    
+    stickySections.forEach(section => {
+        const container = section.querySelector('.sticky-container');
+        const content = section.querySelector('.sticky-content');
+        
+        if (container && content) {
+            const rect = section.getBoundingClientRect();
+            const progress = calculateStickyProgress(rect);
+            
+            // プログレスに応じたアニメーションの適用
+            if (progress >= 0 && progress <= 1) {
+                // コンテンツ内の要素にプログレスを適用
+                const animatedElements = content.querySelectorAll('[data-sticky-animate]');
+                
+                animatedElements.forEach(element => {
+                    const effect = element.dataset.stickyAnimate;
+                    
+                    switch (effect) {
+                        case 'fade':
+                            element.style.opacity = progress;
+                            break;
+                        case 'slide-up':
+                            const slideDistance = 100 - (progress * 100);
+                            element.style.transform = `translateY(${slideDistance}px)`;
+                            break;
+                        case 'scale':
+                            const scale = 0.8 + (progress * 0.2);
+                            element.style.transform = `scale(${scale})`;
+                            break;
+                    }
+                });
+            }
+        }
+    });
+}
+
+// スティッキーセクションのプログレス計算
+function calculateStickyProgress(rect) {
+    const windowHeight = window.innerHeight;
+    const sectionHeight = rect.height;
+    
+    // セクションの上端が画面上部に達した時のオフセット
+    const offsetTop = rect.top;
+    
+    // プログレスの計算（0〜1の範囲）
+    let progress = 1 - (offsetTop / (sectionHeight - windowHeight));
+    
+    // 範囲を0〜1に制限
+    return Math.max(0, Math.min(1, progress));
+}
+
+// スクロールシーケンスの更新
+function updateScrollSequence() {
+    const sequences = document.querySelectorAll('.scroll-sequence');
+    
+    sequences.forEach(sequence => {
+        const items = sequence.querySelectorAll('.scroll-sequence-item');
+        const rect = sequence.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // シーケンスが画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // プログレスの計算（0〜1の範囲）
+            const progress = 1 - (rect.top / (windowHeight - rect.height));
+            const clampedProgress = Math.max(0, Math.min(1, progress));
+            
+            // アイテム数に基づいてインデックスを計算
+            const itemCount = items.length;
+            const activeIndex = Math.floor(clampedProgress * itemCount);
+            
+            // 各アイテムのアクティブ状態を更新
+            items.forEach((item, index) => {
+                if (index === activeIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+    });
+}
+
+// 3D回転要素の更新
+function updateRotateElements() {
+    const rotateElements = document.querySelectorAll('.rotate-on-scroll-item');
+    
+    rotateElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenterX = rect.left + (rect.width / 2);
+            const elementCenterY = rect.top + (rect.height / 2);
+            
+            // 画面中心からの距離を計算
+            const distanceX = (elementCenterX - (windowWidth / 2)) / (windowWidth / 2);
+            const distanceY = (elementCenterY - (windowHeight / 2)) / (windowHeight / 2);
+            
+            // 回転角度の計算
+            const rotateX = -distanceY * 10; // Y軸の距離に基づいてX軸回転
+            const rotateY = distanceX * 10; // X軸の距離に基づいてY軸回転
+            
+            // CSSカスタムプロパティの設定
+            element.style.setProperty('--rotate-x', `${rotateX}deg`);
+            element.style.setProperty('--rotate-y', `${rotateY}deg`);
+        }
+    });
+}
+
+// スケール要素の更新
+function updateScaleElements() {
+    const scaleElements = document.querySelectorAll('.scale-on-scroll');
+    
+    scaleElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenter = rect.top + (rect.height / 2);
+            const windowCenter = windowHeight / 2;
+            
+            // 画面中心からの距離を計算（-1〜1の範囲）
+            const distanceFromCenter = (elementCenter - windowCenter) / (windowHeight / 2);
+            
+            // スケール係数の計算（0.8〜1.2の範囲）
+            const scaleFactor = 1 - (Math.abs(distanceFromCenter) * 0.2);
+            
+            // CSSカスタムプロパティの設定
+            element.style.setProperty('--scale-factor', scaleFactor);
+        }
+    });
+}
+
+// 不透明度要素の更新
+function updateFadeElements() {
+    const fadeElements = document.querySelectorAll('.fade-on-scroll');
+    
+    fadeElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenter = rect.top + (rect.height / 2);
+            const windowCenter = windowHeight / 2;
+            
+            // 画面中心からの距離を計算（0〜1の範囲）
+            const distanceFromCenter = Math.abs((elementCenter - windowCenter) / (windowHeight / 2));
+            
+            // 不透明度の計算（0.3〜1の範囲）
+            const opacityFactor = 1 - (distanceFromCenter * 0.7);
+            
+            // CSSカスタムプロパティの設定
+            element.style.setProperty('--opacity-factor', opacityFactor);
+        }
+    });
+}
+
+// ぼかし要素の更新
+function updateBlurElements() {
+    const blurElements = document.querySelectorAll('.blur-on-scroll');
+    
+    blurElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenter = rect.top + (rect.height / 2);
+            const windowCenter = windowHeight / 2;
+            
+            // 画面中心からの距離を計算（0〜1の範囲）
+            const distanceFromCenter = Math.abs((elementCenter - windowCenter) / (windowHeight / 2));
+            
+            // ぼかし値の計算（0〜5pxの範囲）
+            const blurFactor = distanceFromCenter * 5;
+            
+            // CSSカスタムプロパティの設定
+            element.style.setProperty('--blur-factor', `${blurFactor}px`);
+        }
+    });
+}
+
+// 位置変化要素の更新
+function updateMoveElements() {
+    const moveElements = document.querySelectorAll('.move-on-scroll');
+    
+    moveElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内にある場合のみ処理
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // 要素の中心位置を計算
+            const elementCenter = rect.top + (rect.height / 2);
+            const windowCenter = windowHeight / 2;
+            
+            // 画面中心からの距離を計算（-1〜1の範囲）
+            const distanceFromCenter = (elementCenter - windowCenter) / (windowHeight / 2);
+            
+            // 移動距離の計算
+            const moveX = element.dataset.moveX ? distanceFromCenter * parseFloat(element.dataset.moveX) : 0;
+            const moveY = element.dataset.moveY ? distanceFromCenter * parseFloat(element.dataset.moveY) : 0;
+            const moveZ = element.dataset.moveZ ? distanceFromCenter * parseFloat(element.dataset.moveZ) : 0;
+            
+            // CSSカスタムプロパティの設定
+            element.style.setProperty('--translate-x', `${moveX}px`);
+            element.style.setProperty('--translate-y', `${moveY}px`);
+            element.style.setProperty('--translate-z', `${moveZ}px`);
+        }
+    });
+}
+
+// カウントアップ要素の更新
+function updateCountUpElements() {
+    const countUpElements = document.querySelectorAll('.count-up');
+    
+    countUpElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // 要素が画面内に入った場合のみ処理
+        if (rect.top < windowHeight * 0.8 && !element.classList.contains('active')) {
+            element.classList.add('active');
+        }
+    });
+}
+
+// スクロールアニメーション要素の位置情報を更新
+function updateScrollAnimationRects() {
+    scrollAnimations.forEach(animation => {
+        animation.rect = animation.element.getBoundingClientRect();
+    });
+} 

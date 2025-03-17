@@ -34,6 +34,42 @@
     /* スワイプ関連の変数 */
     --swipe-transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
     --swipe-indicator-size: 50px;
+    
+    /* フォントサイズ変数 */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 2.5rem;
+    
+    /* スペーシング変数 */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* ブレイクポイント */
+    --breakpoint-xs: 576px;
+    --breakpoint-sm: 768px;
+    --breakpoint-md: 992px;
+    --breakpoint-lg: 1200px;
+    
+    /* Apple風スクロールアニメーション用変数 */
+    --scroll-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --scroll-animation-duration: 1s;
+    --scroll-animation-distance-short: 50px;
+    --scroll-animation-distance-medium: 100px;
+    --scroll-animation-distance-long: 150px;
+    --scroll-animation-scale-start: 0.9;
+    --scroll-animation-scale-end: 1;
+    --scroll-animation-opacity-start: 0;
+    --scroll-animation-opacity-end: 1;
+    --scroll-animation-blur-start: 10px;
+    --scroll-animation-blur-end: 0px;
 }
 
 * {
@@ -48,10 +84,11 @@ html {
     overflow: hidden; /* スワイプ型LPのためにスクロールを無効化 */
     overscroll-behavior: none; /* オーバースクロール効果を無効化 */
     touch-action: none; /* タッチ操作によるスクロールを無効化 */
+    font-size: 16px; /* ベースフォントサイズを明示的に設定 */
 }
 
 body {
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
     color: var(--dark-color);
     background-color: #FFFFFF;
@@ -61,37 +98,81 @@ body {
     touch-action: none; /* タッチ操作によるスクロールを無効化 */
     overscroll-behavior: none; /* オーバースクロール効果を無効化 */
     -webkit-overflow-scrolling: none; /* iOSの慣性スクロールを無効化 */
+    text-rendering: optimizeSpeed; /* テキストレンダリングを最適化 */
+    -webkit-font-smoothing: antialiased; /* フォントのアンチエイリアス */
+    -moz-osx-font-smoothing: grayscale; /* Firefoxでのフォントレンダリング */
+}
+
+/* アクセシビリティ向上のためのフォーカス表示 */
+:focus {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* キーボードユーザー向けのフォーカス表示 */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* スクリーンリーダー向けのテキスト */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 
 .container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 var(--spacing-md);
 }
 
 section {
-    padding: 100px 0; /* セクション間の余白を増やす */
+    padding: var(--spacing-2xl) 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     line-height: 1.2;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
 }
 
 p {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
 }
 
 a {
     color: var(--primary-color);
     text-decoration: none;
     transition: var(--transition);
+    position: relative;
 }
 
 a:hover {
     color: var(--secondary-color);
+}
+
+/* アクセシビリティ向上のためのリンク下線 */
+a:not(.btn-primary):not(.btn-secondary):not(.nav-link):not(.logo a) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+a:not(.btn-primary):not(.btn-secondary):not(.nav-link):not(.logo a):hover {
+    text-decoration-thickness: 2px;
 }
 
 ul {
@@ -101,14 +182,25 @@ ul {
 img {
     max-width: 100%;
     height: auto;
+    display: block; /* 画像下の余白を防止 */
+}
+
+/* 画像の遅延読み込み用スタイル */
+.lazy-image {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lazy-image.loaded {
+    opacity: 1;
 }
 
 .section-title {
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 50px;
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-xl);
     position: relative;
-    padding-bottom: 20px;
+    padding-bottom: var(--spacing-md);
 }
 
 .section-title::after {
@@ -132,7 +224,11 @@ img {
     cursor: pointer;
     transition: var(--transition);
     border: none;
-    font-size: 1rem;
+    font-size: var(--font-size-md);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    text-decoration: none !important;
 }
 
 .btn-primary {
@@ -160,13 +256,38 @@ img {
     box-shadow: var(--box-shadow);
 }
 
+/* ボタンのリップルエフェクト */
+.btn-primary::after, .btn-secondary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    z-index: -1;
+    transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+}
+
+.btn-primary:active::after, .btn-secondary:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+    transition: width 0s, height 0s, opacity 0.3s ease;
+}
+
 /* ヘッダー */
 .header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     padding: 15px 0;
@@ -175,6 +296,7 @@ img {
 
 .header.scrolled {
     padding: 10px 0;
+    background-color: rgba(255, 255, 255, 0.98);
 }
 
 .header .container {
@@ -184,7 +306,7 @@ img {
 }
 
 .logo h1 {
-    font-size: 1.8rem;
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--primary-color);
     margin: 0;
@@ -202,6 +324,7 @@ img {
     color: var(--dark-color);
     font-weight: 500;
     position: relative;
+    text-decoration: none;
 }
 
 .main-nav ul li a::after {
@@ -215,7 +338,8 @@ img {
     transition: var(--transition);
 }
 
-.main-nav ul li a:hover::after {
+.main-nav ul li a:hover::after,
+.main-nav ul li a.active::after {
     width: 100%;
 }
 
@@ -223,6 +347,16 @@ img {
     display: none;
     font-size: 1.5rem;
     cursor: pointer;
+    color: var(--primary-color);
+    background: none;
+    border: none;
+    padding: 5px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.menu-toggle:hover {
+    background-color: rgba(0, 185, 0, 0.1);
 }
 
 /* ヒーローセクション */
@@ -1756,6 +1890,7 @@ img {
     z-index: 1;
     transition: var(--swipe-transition);
     background-color: #FFFFFF;
+    will-change: transform;
 }
 
 .swiper-wrapper {
@@ -1766,6 +1901,7 @@ img {
     transition-property: transform;
     transition-timing-function: var(--ease-out-expo);
     box-sizing: content-box;
+    will-change: transform;
 }
 
 .swiper-slide {
@@ -1782,6 +1918,7 @@ img {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     will-change: transform, opacity;
+    padding-top: 80px; /* ヘッダーの高さ分の余白 */
 }
 
 /* スワイプインジケーターの改善 */
@@ -1793,7 +1930,7 @@ img {
     width: var(--swipe-indicator-size);
     height: var(--swipe-indicator-size);
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
@@ -1805,6 +1942,7 @@ img {
     animation: bounce 2s infinite;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    border: 2px solid rgba(0, 185, 0, 0.2);
 }
 
 .swipe-indicator:hover,
@@ -1812,6 +1950,7 @@ img {
     background-color: rgba(255, 255, 255, 0.95);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     transform: translateX(-50%) scale(1.1);
+    border-color: var(--primary-color);
 }
 
 .swipe-indicator.last {
@@ -1819,13 +1958,14 @@ img {
 }
 
 .swipe-indicator span {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     margin-bottom: 2px;
+    color: var(--dark-color);
 }
 
 .swipe-indicator i {
-    font-size: 1rem;
+    font-size: var(--font-size-md);
     color: var(--primary-color);
 }
 
@@ -1846,7 +1986,7 @@ img {
 .swiper-pagination-bullet {
     width: 12px;
     height: 12px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.7);
     border: 2px solid var(--primary-color);
     opacity: 1;
     border-radius: 50%;
@@ -1871,7 +2011,7 @@ img {
 }
 
 .swiper-pagination-bullet-active {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.95);
     transform: scale(1.2);
 }
 
@@ -1947,6 +2087,26 @@ img {
     .swipe-indicator i {
         font-size: 0.9rem;
     }
+    
+    /* モバイルでのスワイプ感度を調整 */
+    .swiper-container {
+        touch-action: pan-y;
+    }
+    
+    /* モバイルでのフォントサイズ調整 */
+    html {
+        font-size: 14px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    /* モバイルでのボタンサイズ調整 */
+    .btn-primary, .btn-secondary {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1964,6 +2124,20 @@ img {
         bottom: 10px;
         width: calc(var(--swipe-indicator-size) * 0.8);
         height: calc(var(--swipe-indicator-size) * 0.8);
+    }
+    
+    /* 小さい画面でのコンテンツ調整 */
+    .container {
+        padding: 0 15px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    /* 小さい画面でのスペーシング調整 */
+    section {
+        padding: 40px 0;
     }
 }
 
@@ -1989,5 +2163,692 @@ img {
     }
     60% {
         transform: translateX(-50%) translateY(5px);
+    }
+}
+
+/* 読み込み中のスケルトンローディング */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 印刷用スタイル */
+@media print {
+    html, body {
+        overflow: visible !important;
+        height: auto !important;
+    }
+    
+    .swiper-container, .swiper-wrapper, .swiper-slide {
+        height: auto !important;
+        overflow: visible !important;
+        transform: none !important;
+    }
+    
+    .swiper-pagination, .swipe-indicator {
+        display: none !important;
+    }
+    
+    .header {
+        position: static !important;
+        box-shadow: none !important;
+    }
+    
+    .swiper-slide {
+        page-break-after: always;
+        padding-top: 0 !important;
+    }
+}
+
+/* ダークモードサポート */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dark-color: #f8f9fa;
+        --light-color: #333333;
+    }
+    
+    body {
+        background-color: #121212;
+        color: var(--dark-color);
+    }
+    
+    .header, .swiper-container {
+        background-color: rgba(18, 18, 18, 0.95);
+    }
+    
+    .swiper-pagination-bullet {
+        background-color: rgba(18, 18, 18, 0.7);
+    }
+    
+    .swipe-indicator {
+        background-color: rgba(18, 18, 18, 0.9);
+    }
+    
+    .swipe-indicator span {
+        color: var(--dark-color);
+    }
+    
+    .btn-secondary {
+        background-color: #121212;
+    }
+}
+
+/* 高コントラストモードサポート */
+@media (forced-colors: active) {
+    .swiper-pagination-bullet {
+        border: 2px solid CanvasText;
+        background-color: Canvas;
+    }
+    
+    .swiper-pagination-bullet-active {
+        background-color: CanvasText;
+    }
+    
+    .swipe-indicator {
+        border: 2px solid CanvasText;
+    }
+    
+    .btn-primary, .btn-secondary {
+        border: 2px solid CanvasText;
+    }
+}
+
+/* Apple風スクロールアニメーション */
+.scroll-animate {
+    opacity: 0;
+    will-change: transform, opacity, filter;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* スクロールアニメーションの種類 */
+.scroll-animate[data-effect="fade-up"] {
+    transform: translate3d(0, var(--scroll-animation-distance-short), 0);
+}
+
+.scroll-animate[data-effect="fade-down"] {
+    transform: translate3d(0, calc(var(--scroll-animation-distance-short) * -1), 0);
+}
+
+.scroll-animate[data-effect="fade-left"] {
+    transform: translate3d(var(--scroll-animation-distance-medium), 0, 0);
+}
+
+.scroll-animate[data-effect="fade-right"] {
+    transform: translate3d(calc(var(--scroll-animation-distance-medium) * -1), 0, 0);
+}
+
+.scroll-animate[data-effect="zoom-in"] {
+    transform: scale3d(var(--scroll-animation-scale-start), var(--scroll-animation-scale-start), var(--scroll-animation-scale-start));
+}
+
+.scroll-animate[data-effect="zoom-out"] {
+    transform: scale3d(1.1, 1.1, 1.1);
+}
+
+.scroll-animate[data-effect="blur"] {
+    filter: blur(var(--scroll-animation-blur-start));
+    transform: scale3d(var(--scroll-animation-scale-start), var(--scroll-animation-scale-start), var(--scroll-animation-scale-start));
+}
+
+.scroll-animate[data-effect="rotate"] {
+    transform: rotate3d(0, 0, 1, 5deg);
+}
+
+/* スクロールアニメーションの強度 */
+.scroll-animate[data-intensity="subtle"] {
+    --scroll-animation-distance-short: 20px;
+    --scroll-animation-distance-medium: 40px;
+    --scroll-animation-scale-start: 0.95;
+    --scroll-animation-blur-start: 5px;
+}
+
+.scroll-animate[data-intensity="strong"] {
+    --scroll-animation-distance-short: 80px;
+    --scroll-animation-distance-medium: 120px;
+    --scroll-animation-scale-start: 0.85;
+    --scroll-animation-blur-start: 15px;
+}
+
+/* スクロールアニメーションの速度 */
+.scroll-animate[data-speed="slow"] {
+    --scroll-animation-duration: 1.5s;
+}
+
+.scroll-animate[data-speed="fast"] {
+    --scroll-animation-duration: 0.6s;
+}
+
+/* スクロールアニメーションのタイミング関数 */
+.scroll-animate[data-easing="ease-out-expo"] {
+    --scroll-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-animate[data-easing="ease-out-back"] {
+    --scroll-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scroll-animate[data-easing="ease-in-out"] {
+    --scroll-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* スクロールアニメーションの遅延 */
+.scroll-animate[data-delay="100"] {
+    transition-delay: 0.1s;
+}
+
+.scroll-animate[data-delay="200"] {
+    transition-delay: 0.2s;
+}
+
+.scroll-animate[data-delay="300"] {
+    transition-delay: 0.3s;
+}
+
+.scroll-animate[data-delay="400"] {
+    transition-delay: 0.4s;
+}
+
+.scroll-animate[data-delay="500"] {
+    transition-delay: 0.5s;
+}
+
+/* スクロールアニメーションのアクティブ状態 */
+.scroll-animate.active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotate3d(0, 0, 1, 0);
+    filter: blur(0);
+    transition: 
+        transform var(--scroll-animation-duration) var(--scroll-timing-function),
+        opacity var(--scroll-animation-duration) var(--scroll-timing-function),
+        filter var(--scroll-animation-duration) var(--scroll-timing-function);
+}
+
+/* スクロールトリガーポイント */
+.scroll-animate[data-trigger="top"] {
+    --scroll-trigger-point: 0.1;
+}
+
+.scroll-animate[data-trigger="middle"] {
+    --scroll-trigger-point: 0.5;
+}
+
+.scroll-animate[data-trigger="bottom"] {
+    --scroll-trigger-point: 0.9;
+}
+
+/* シーケンシャルアニメーション（Apple風の連続アニメーション） */
+.scroll-sequence {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.scroll-sequence-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.scroll-sequence-item.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+/* パララックススクロール効果 */
+.parallax-scroll {
+    will-change: transform;
+    transform: translateY(0);
+    transition: transform 0.1s linear;
+}
+
+.parallax-scroll[data-direction="up"] {
+    transform: translateY(calc(var(--parallax-speed, 0.3) * var(--scroll-position) * -1px));
+}
+
+.parallax-scroll[data-direction="down"] {
+    transform: translateY(calc(var(--parallax-speed, 0.3) * var(--scroll-position) * 1px));
+}
+
+/* スティッキーセクション（Apple風の固定セクション） */
+.sticky-section {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sticky-container {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sticky-content {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 var(--spacing-md);
+    z-index: 1;
+}
+
+/* スクロールスナップ（Apple風のスナップスクロール） */
+.scroll-snap-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+.scroll-snap-section {
+    scroll-snap-align: start;
+    height: 100vh;
+    position: relative;
+}
+
+/* スクロールプログレス（スクロールに応じた進行状況） */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 4px;
+    background-color: var(--primary-color);
+    z-index: 1000;
+    transition: width 0.1s linear;
+}
+
+/* スクロールに応じたテキストの分割アニメーション */
+.split-text-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 
+        opacity var(--scroll-animation-duration) var(--scroll-timing-function),
+        transform var(--scroll-animation-duration) var(--scroll-timing-function);
+}
+
+.split-text-char.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* スクロールに応じた画像のマスクアニメーション */
+.mask-reveal {
+    position: relative;
+    overflow: hidden;
+}
+
+.mask-reveal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--light-color);
+    transform: translateX(0);
+    transition: transform var(--scroll-animation-duration) var(--scroll-timing-function);
+}
+
+.mask-reveal.active::after {
+    transform: translateX(100%);
+}
+
+/* スクロールに応じた3D回転効果 */
+.rotate-on-scroll {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.rotate-on-scroll-item {
+    transform: rotateY(var(--rotate-y, 0deg)) rotateX(var(--rotate-x, 0deg));
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+/* スクロールに応じた色の変化 */
+.color-change-on-scroll {
+    transition: 
+        color 0.5s var(--scroll-timing-function),
+        background-color 0.5s var(--scroll-timing-function);
+    will-change: color, background-color;
+}
+
+/* スクロールに応じたスケール変化 */
+.scale-on-scroll {
+    transform: scale(var(--scale-factor, 1));
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+/* スクロールに応じた不透明度変化 */
+.fade-on-scroll {
+    opacity: var(--opacity-factor, 1);
+    transition: opacity 0.1s linear;
+    will-change: opacity;
+}
+
+/* スクロールに応じたぼかし効果 */
+.blur-on-scroll {
+    filter: blur(var(--blur-factor, 0px));
+    transition: filter 0.1s linear;
+    will-change: filter;
+}
+
+/* スクロールに応じた位置変化 */
+.move-on-scroll {
+    transform: translate3d(
+        var(--translate-x, 0px),
+        var(--translate-y, 0px),
+        var(--translate-z, 0px)
+    );
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+/* スクロールに応じた要素の出現タイミング制御 */
+.scroll-timing-container > * {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.scroll-timing-container > *.active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: 
+        opacity var(--scroll-animation-duration) var(--scroll-timing-function),
+        transform var(--scroll-animation-duration) var(--scroll-timing-function);
+}
+
+/* スクロールに応じたカウントアップアニメーション */
+.count-up {
+    counter-reset: count var(--count-start, 0);
+    transition: counter-reset 2s linear;
+    will-change: counter-reset;
+}
+
+.count-up::after {
+    content: counter(count);
+}
+
+.count-up.active {
+    counter-reset: count var(--count-end, 100);
+}
+
+/* スクロールアニメーションデモセクションのスタイル */
+#scroll-demo .container,
+#sticky-demo .container {
+    max-width: 1000px;
+}
+
+.demo-section {
+    margin-bottom: 80px;
+    padding: 30px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+}
+
+.demo-section h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.demo-item {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--light-color);
+    border-radius: 10px;
+    transition: var(--transition);
+}
+
+.demo-item:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--box-shadow);
+}
+
+.demo-icon {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 15px;
+}
+
+.demo-item h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+/* パララックスデモのスタイル */
+.parallax-demo {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.parallax-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.parallax-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.parallax-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.parallax-content h4 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+/* スクロールシーケンスのスタイル */
+.scroll-sequence {
+    height: 300px;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.scroll-sequence-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.scroll-sequence-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 3D回転効果のスタイル */
+.rotate-on-scroll {
+    perspective: 1000px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.rotate-on-scroll-item {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.rotate-on-scroll-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 色の変化デモのスタイル */
+.color-change-on-scroll {
+    transition: background-color 0.5s var(--scroll-timing-function);
+}
+
+.color-demo {
+    padding: 50px;
+    text-align: center;
+    border-radius: 10px;
+    background-color: var(--light-color);
+    transition: background-color 0.5s var(--scroll-timing-function);
+}
+
+.color-demo h4 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    transition: color 0.5s var(--scroll-timing-function);
+}
+
+.color-demo p {
+    transition: color 0.5s var(--scroll-timing-function);
+}
+
+/* カウントアップデモのスタイル */
+.count-demo {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.count-item {
+    text-align: center;
+}
+
+.count-up {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: inline-block;
+}
+
+.count-item span {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.count-item p {
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+/* スティッキーセクションのスタイル */
+.sticky-demo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+}
+
+.sticky-item {
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+
+.sticky-item h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.sticky-image {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.sticky-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .demo-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sticky-demo {
+        grid-template-columns: 1fr;
+    }
+    
+    .count-demo {
+        flex-direction: column;
+    }
+    
+    .parallax-demo,
+    .scroll-sequence,
+    .rotate-on-scroll,
+    .rotate-on-scroll-item {
+        height: 200px;
     }
 } 
