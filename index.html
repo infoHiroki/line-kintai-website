@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINEでカンタン勤怠 - 誰でも使える簡単勤怠管理</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>LINEでカンタン勤怠</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#features">機能紹介</a></li>
+                    <li><a href="#benefits">導入効果</a></li>
+                    <li><a href="#howto">使い方</a></li>
+                    <li><a href="#case-studies">導入事例</a></li>
+                    <li><a href="#pricing">料金プラン</a></li>
+                    <li><a href="#faq">よくある質問</a></li>
+                    <li><a href="#contact" class="btn-primary">お問い合わせ</a></li>
+                </ul>
+            </nav>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="animate__animated animate__fadeInDown">LINEでカンタン勤怠管理</h1>
+                <h2 class="animate__animated animate__fadeInUp">誰でも使える簡単勤怠管理システム</h2>
+                <p class="animate__animated animate__fadeInUp animate__delay-1s">警備業界に特化した、LINEで完結する勤怠管理システム</p>
+                <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="#demo" class="btn-primary">無料デモを試す</a>
+                    <a href="#contact" class="btn-secondary">資料請求</a>
+                </div>
+            </div>
+            <div class="hero-image animate__animated animate__fadeIn animate__delay-1s">
+                <img src="images/hero-image.png" alt="LINEでカンタン勤怠管理の画面イメージ">
+            </div>
+        </div>
+    </section>
+
+    <section id="problems" class="problems">
+        <div class="container">
+            <h2 class="section-title">警備現場の3つの悩みを解決します</h2>
+            <div class="problems-grid">
+                <div class="problem-card animate__animated animate__fadeInUp">
+                    <div class="problem-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>複数現場の勤怠管理が煩雑</h3>
+                    <p>複数の現場で働く警備員の勤怠を一元管理できず、管理者の負担が大きい</p>
+                </div>
+                <div class="problem-card animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="problem-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>紙の勤務表の集計・確認に時間がかかる</h3>
+                    <p>紙ベースの勤務表を回収し、手作業で集計するため時間と労力がかかる</p>
+                </div>
+                <div class="problem-card animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="problem-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>急な人員変更に対応できない</h3>
+                    <p>リアルタイムで勤務状況を把握できず、急な欠員や変更に対応が遅れる</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="benefits" class="benefits">
+        <div class="container">
+            <h2 class="section-title">導入効果：現場管理者の負担を大幅削減</h2>
+            <div class="comparison-wrapper">
+                <div class="comparison-before">
+                    <h3>導入前</h3>
+                    <div class="comparison-image">
+                        <img src="images/before-image.png" alt="導入前の勤怠管理">
+                    </div>
+                    <ul class="comparison-list">
+                        <li><i class="fas fa-times"></i> 紙の勤務表を回収・確認・集計 → <strong>月40時間</strong></li>
+                        <li><i class="fas fa-times"></i> 勤務状況の把握に時間がかかる</li>
+                        <li><i class="fas fa-times"></i> 給与計算のためのデータ入力が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="comparison-after">
+                    <h3>導入後</h3>
+                    <div class="comparison-image">
+                        <img src="images/after-image.png" alt="導入後の勤怠管理">
+                    </div>
+                    <ul class="comparison-list">
+                        <li><i class="fas fa-check"></i> 自動集計でデータ確認のみ → <strong>月5時間</strong></li>
+                        <li><i class="fas fa-check"></i> リアルタイムで勤務状況を把握</li>
+                        <li><i class="fas fa-check"></i> 給与計算システムへ自動連携</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="time-saved">
+                <div class="time-saved-graphic">
+                    <div class="time-saved-bar">
+                        <div class="time-saved-progress" data-percentage="87"></div>
+                    </div>
+                </div>
+                <p class="time-saved-text">勤怠管理時間 <strong>87%削減</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="howto" class="howto">
+        <div class="container">
+            <h2 class="section-title">使い方はカンタン3ステップ</h2>
+            <div class="howto-grid">
+                <div class="howto-column">
+                    <h3>警備員</h3>
+                    <div class="step-cards">
+                        <div class="step-card animate__animated animate__fadeInLeft">
+                            <div class="step-number">1</div>
+                            <h4>出勤時</h4>
+                            <p>LINEで「出勤」ボタンをタップ</p>
+                            <div class="step-image">
+                                <img src="images/line-checkin.png" alt="LINEで出勤">
+                            </div>
+                        </div>
+                        <div class="step-card animate__animated animate__fadeInLeft animate__delay-1s">
+                            <div class="step-number">2</div>
+                            <h4>退勤時</h4>
+                            <p>LINEで「退勤」ボタンをタップ</p>
+                            <div class="step-image">
+                                <img src="images/line-checkout.png" alt="LINEで退勤">
+                            </div>
+                        </div>
+                        <div class="step-card animate__animated animate__fadeInLeft animate__delay-2s">
+                            <div class="step-number">3</div>
+                            <h4>勤務記録確認</h4>
+                            <p>LINEで「勤務記録確認」ボタンをタップ</p>
+                            <div class="step-image">
+                                <img src="images/line-record.png" alt="勤務記録確認">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="howto-column">
+                    <h3>管理者</h3>
+                    <div class="step-cards">
+                        <div class="step-card animate__animated animate__fadeInRight">
+                            <div class="step-number">1</div>
+                            <h4>現場管理者</h4>
+                            <p>PCやスマホで勤怠状況を確認</p>
+                            <div class="step-image">
+                                <img src="images/manager-dashboard.png" alt="管理者ダッシュボード">
+                            </div>
+                        </div>
+                        <div class="step-card animate__animated animate__fadeInRight animate__delay-1s">
+                            <div class="step-number">2</div>
+                            <h4>事務・経理担当者</h4>
+                            <p>PCで、経理ソフトへ入力をしやすい形(スプレッドシート)で勤怠状況を確認</p>
+                            <div class="step-image">
+                                <img src="images/spreadsheet.png" alt="スプレッドシート連携">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">警備業界に特化した機能</h2>
+            <div class="features-grid">
+                <div class="feature-card animate__animated animate__fadeInUp">
+                    <div class="feature-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>複数現場の一元管理</h3>
+                    <p>現場ごとの勤怠状況をまとめて確認</p>
+                    <p>地図上で警備員の配置状況を把握(開発中)</p>
+                </div>
+                <div class="feature-card animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <h3>急な人員配置変更に対応</h3>
+                    <p>欠員発生時に即座に把握</p>
+                    <p>代替要員への連絡をLINEから直接送信</p>
+                </div>
+                <div class="feature-card animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>警備報告書との連携</h3>
+                    <p>警備日報・月報の自動作成(開発中)</p>
+                    <p>写真や特記事項も簡単に記録</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roles-benefits" class="roles-benefits">
+        <div class="container">
+            <h2 class="section-title">経営者様・管理者様・経理担当者様それぞれのメリット</h2>
+            <div class="roles-grid">
+                <div class="role-card animate__animated animate__fadeInUp">
+                    <div class="role-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3>経営者様のメリット</h3>
+                    <ul class="role-benefits">
+                        <li><i class="fas fa-check-circle"></i> 人件費の適正化（残業時間の可視化）</li>
+                        <li><i class="fas fa-check-circle"></i> 請求漏れ防止による売上向上</li>
+                        <li><i class="fas fa-check-circle"></i> 管理コストの削減</li>
+                    </ul>
+                </div>
+                <div class="role-card animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="role-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>現場管理者様のメリット</h3>
+                    <ul class="role-benefits">
+                        <li><i class="fas fa-check-circle"></i> 勤怠管理業務の時間削減</li>
+                        <li><i class="fas fa-check-circle"></i> リアルタイムでの現場状況把握</li>
+                        <li><i class="fas fa-check-circle"></i> 急なシフト変更にも素早く対応(開発中)</li>
+                    </ul>
+                </div>
+                <div class="role-card animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="role-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>経理担当者様のメリット</h3>
+                    <ul class="role-benefits">
+                        <li><i class="fas fa-check-circle"></i> 紙の書類の回収や現物確認が不要</li>
+                        <li><i class="fas fa-check-circle"></i> 手作業での入力やチェックが減少</li>
+                        <li><i class="fas fa-check-circle"></i> スプレッドシートなどのデジタルデータを会計ソフトに直接インポート可能</li>
+                        <li><i class="fas fa-check-circle"></i> 手作業減少によるヒューマンエラーの削減</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="case-studies" class="case-studies">
+        <div class="container">
+            <h2 class="section-title">導入事例：A警備保障株式会社様</h2>
+            <div class="case-study-content">
+                <div class="case-study-image">
+                    <img src="images/case-study.png" alt="導入事例">
+                </div>
+                <div class="case-study-details">
+                    <div class="case-challenge">
+                        <h3>課題</h3>
+                        <p>30名の警備員を3名の管理者で管理。紙の勤務表管理に月50時間以上を費やしていた。</p>
+                    </div>
+                    <div class="case-result">
+                        <h3>導入後</h3>
+                        <p>勤怠管理時間が<strong>85%削減</strong>。給与計算ミスもゼロに。</p>
+                    </div>
+                    <div class="case-testimonial">
+                        <blockquote>
+                            「ITに詳しくない60代の警備員も簡単に使えています。LINEなら普段から使っているので抵抗なく導入できました」
+                            <cite>（現場責任者・58歳）</cite>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="implementation" class="implementation">
+        <div class="container">
+            <h2 class="section-title">導入の流れ</h2>
+            <div class="implementation-steps">
+                <div class="implementation-step animate__animated animate__fadeInUp">
+                    <div class="step-number">1</div>
+                    <h3>お申し込み</h3>
+                    <p>最短即日利用開始</p>
+                </div>
+                <div class="implementation-step animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="step-number">2</div>
+                    <h3>LINE連携</h3>
+                    <p>QRコードを読み取るだけ</p>
+                </div>
+                <div class="implementation-step animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="step-number">3</div>
+                    <h3>社員登録</h3>
+                    <p>CSVでまとめてインポート可能</p>
+                </div>
+                <div class="implementation-step animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="step-number">4</div>
+                    <h3>運用開始</h3>
+                    <p>初期設定サポート付き</p>
+                </div>
+            </div>
+            <div class="implementation-support">
+                <h3>導入サポート</h3>
+                <ul>
+                    <li><i class="fas fa-headset"></i> 操作説明会の実施（オンライン/訪問）</li>
+                    <li><i class="fas fa-book"></i> マニュアル・動画の提供</li>
+                    <li><i class="fas fa-phone-alt"></i> 電話サポート（平日9:00-18:00）</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">料金プラン</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card animate__animated animate__fadeInUp">
+                    <div class="pricing-header">
+                        <h3>ライト</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">19,800</span>
+                            <span class="price-period">円/月</span>
+                        </div>
+                        <p class="pricing-initial">初期費用 0円</p>
+                    </div>
+                    <div class="pricing-features">
+                        <p class="pricing-capacity">対応人数：〜30名</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> 給与計算ソフト連携機能</li>
+                            <li><i class="fas fa-check"></i> 24時間サポート対応</li>
+                            <li><i class="fas fa-check"></i> データ保存期間7年間</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-action">
+                        <a href="#contact" class="btn-primary">お問い合わせ</a>
+                    </div>
+                </div>
+                <div class="pricing-card featured animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="pricing-header">
+                        <h3>スタンダード</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">29,800</span>
+                            <span class="price-period">円/月</span>
+                        </div>
+                        <p class="pricing-initial">初期費用 0円</p>
+                    </div>
+                    <div class="pricing-features">
+                        <p class="pricing-capacity">対応人数：〜100名</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> 給与計算ソフト連携機能</li>
+                            <li><i class="fas fa-check"></i> 24時間サポート対応</li>
+                            <li><i class="fas fa-check"></i> データ保存期間7年間</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-action">
+                        <a href="#contact" class="btn-primary">お問い合わせ</a>
+                    </div>
+                </div>
+                <div class="pricing-card animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="pricing-header">
+                        <h3>プレミアム</h3>
+                        <div class="pricing-price">
+                            <span class="price-amount">49,800</span>
+                            <span class="price-period">円/月</span>
+                        </div>
+                        <p class="pricing-initial">初期費用 0円</p>
+                    </div>
+                    <div class="pricing-features">
+                        <p class="pricing-capacity">対応人数：無制限</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> 給与計算ソフト連携機能</li>
+                            <li><i class="fas fa-check"></i> 24時間サポート対応</li>
+                            <li><i class="fas fa-check"></i> データ保存期間7年間</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-action">
+                        <a href="#contact" class="btn-primary">お問い合わせ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">よくあるご質問</h2>
+            <div class="faq-items">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>ITに詳しくないスタッフでも使えますか？</h3>
+                        <div class="faq-toggle"><i class="fas fa-plus"></i></div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>LINEが使える方なら簡単に操作できます。60代以上の方も多数ご利用中です。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>複数の現場を管理できますか？</h3>
+                        <div class="faq-toggle"><i class="fas fa-plus"></i></div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>現場ごとに管理画面を分けられるので、複数現場の一元管理が可能です。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>既存の給与システムと連携できますか？</h3>
+                        <div class="faq-toggle"><i class="fas fa-plus"></i></div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>CSV出力機能で主要な給与システムと連携可能です。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">お問い合わせ・デモ申込み</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>無料デモ体験実施中</h3>
+                    <p>スマホでQRコードを読み取り、実際の操作感をお試しください</p>
+                    <div class="contact-qr">
+                        <img src="images/qr-code.png" alt="デモQRコード">
+                    </div>
+                    <div class="contact-details">
+                        <h3>お問い合わせ先</h3>
+                        <p><i class="fas fa-phone"></i> TEL: 03-XXXX-XXXX</p>
+                        <p><i class="fas fa-envelope"></i> Email: info@keibi-line.co.jp</p>
+                        <p><i class="fas fa-user"></i> 担当: 警備太郎</p>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>お問い合わせフォーム</h3>
+                    <form id="inquiry-form">
+                        <div class="form-group">
+                            <label for="company">会社名</label>
+                            <input type="text" id="company" name="company" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">お名前</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">メールアドレス</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">電話番号</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">お問い合わせ内容</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary">送信する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>LINEでカンタン勤怠</h2>
+                    <p>警備業界に特化した勤怠管理システム</p>
+                </div>
+                <div class="footer-links">
+                    <h3>サイトマップ</h3>
+                    <ul>
+                        <li><a href="#features">機能紹介</a></li>
+                        <li><a href="#benefits">導入効果</a></li>
+                        <li><a href="#howto">使い方</a></li>
+                        <li><a href="#case-studies">導入事例</a></li>
+                        <li><a href="#pricing">料金プラン</a></li>
+                        <li><a href="#faq">よくある質問</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>お問い合わせ</h3>
+                    <p><i class="fas fa-phone"></i> 03-XXXX-XXXX</p>
+                    <p><i class="fas fa-envelope"></i> info@keibi-line.co.jp</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 LINEでカンタン勤怠 All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
