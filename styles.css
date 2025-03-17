@@ -30,6 +30,10 @@
     --stagger-delay-2: 0.1s;
     --stagger-delay-3: 0.15s;
     --stagger-delay-4: 0.2s;
+    
+    /* スワイプ関連の変数 */
+    --swipe-transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    --swipe-indicator-size: 40px;
 }
 
 * {
@@ -52,6 +56,7 @@ body {
     overflow: hidden; /* スワイプ型LPのためにスクロールを無効化 */
     height: 100%;
     position: relative;
+    touch-action: none; /* タッチ操作によるスクロールを無効化 */
 }
 
 .container {
@@ -1742,6 +1747,8 @@ img {
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    position: relative;
+    touch-action: none; /* タッチ操作によるスクロールを無効化 */
 }
 
 .swiper-slide {
@@ -1754,6 +1761,9 @@ img {
     overflow-y: auto; /* 各スライド内でのスクロールを許可 */
     padding-top: 80px; /* ヘッダーの高さ分の余白 */
     padding-bottom: 30px; /* 下部の余白 */
+    scroll-snap-align: start; /* スクロールスナップを追加 */
+    scroll-snap-stop: always; /* 必ず止まるように設定 */
+    transition: var(--swipe-transition);
 }
 
 /* スワイプインジケーター */
@@ -1770,6 +1780,19 @@ img {
     font-weight: 500;
     animation: bounce 2s infinite;
     z-index: 10;
+    cursor: pointer;
+    width: var(--swipe-indicator-size);
+    height: var(--swipe-indicator-size);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+}
+
+.swipe-indicator:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateX(-50%) scale(1.1);
 }
 
 .swipe-indicator.last {
@@ -1778,6 +1801,7 @@ img {
 
 .swipe-indicator span {
     margin-bottom: 5px;
+    font-size: 0.8rem;
 }
 
 .swipe-indicator i {
@@ -1786,25 +1810,25 @@ img {
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
     }
     40% {
-        transform: translateY(-10px);
+        transform: translateX(-50%) translateY(-10px);
     }
     60% {
-        transform: translateY(-5px);
+        transform: translateX(-50%) translateY(-5px);
     }
 }
 
 @keyframes bounceDown {
     0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
     }
     40% {
-        transform: translateY(10px);
+        transform: translateX(-50%) translateY(10px);
     }
     60% {
-        transform: translateY(5px);
+        transform: translateX(-50%) translateY(5px);
     }
 }
 
@@ -1816,7 +1840,7 @@ img {
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     z-index: 100;
 }
 
@@ -1828,11 +1852,53 @@ img {
     opacity: 1;
     transition: var(--transition);
     cursor: pointer;
+    position: relative;
+}
+
+.swiper-pagination-bullet::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: var(--transition);
 }
 
 .swiper-pagination-bullet-active {
     background-color: var(--primary-color);
     transform: scale(1.3);
+}
+
+.swiper-pagination-bullet-active::after {
+    border-color: var(--primary-color);
+}
+
+/* スライド遷移アニメーション */
+.swiper-slide-active {
+    z-index: 2;
+}
+
+.swiper-slide-prev, 
+.swiper-slide-next {
+    z-index: 1;
+}
+
+/* スライド内のスクロールバーをカスタマイズ */
+.swiper-slide::-webkit-scrollbar {
+    width: 5px;
+}
+
+.swiper-slide::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.swiper-slide::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
 }
 
 /* スマホ向けのページネーション調整 */
@@ -1842,7 +1908,36 @@ img {
     }
     
     .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .swipe-indicator {
+        bottom: 15px;
+        width: calc(var(--swipe-indicator-size) - 10px);
+        height: calc(var(--swipe-indicator-size) - 10px);
+    }
+    
+    .swipe-indicator i {
+        font-size: 1rem;
+    }
+}
+
+/* スマホ縦向き用の追加調整 */
+@media (max-width: 576px) {
+    .swiper-pagination {
+        right: 5px;
+        gap: 10px;
+    }
+    
+    .swiper-pagination-bullet {
         width: 8px;
         height: 8px;
+    }
+    
+    .swipe-indicator {
+        bottom: 10px;
+        width: calc(var(--swipe-indicator-size) - 15px);
+        height: calc(var(--swipe-indicator-size) - 15px);
     }
 } 
