@@ -81,12 +81,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // スクロールアニメーション
     const animateOnScroll = function() {
+        // animate-on-scroll クラスを持つ要素のアニメーション
         const elements = document.querySelectorAll('.animate-on-scroll');
         elements.forEach(function(element) {
             const elementPosition = element.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
             if (elementPosition < windowHeight - 100) {
-                element.classList.add('animated');
+                // アニメーションクラスを追加
+                if (!element.classList.contains('animated')) {
+                    // データ属性からアニメーション名を取得
+                    const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
+                    const animationDelay = element.getAttribute('data-delay') || '';
+                    
+                    element.classList.add('animate__animated', animationClass);
+                    if (animationDelay) {
+                        element.classList.add(animationDelay);
+                    }
+                    element.classList.add('animated');
+                }
             }
         });
 
@@ -94,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const timeProgress = document.querySelector('.time-saved-progress');
         if (timeProgress) {
             const timeProgressPosition = timeProgress.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
             if (timeProgressPosition < windowHeight - 100) {
                 const percentage = timeProgress.getAttribute('data-percentage');
                 timeProgress.style.width = percentage + '%';
@@ -107,9 +120,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // スクロール時に実行
     window.addEventListener('scroll', animateOnScroll);
 
-    // Animate.cssを使用した要素に対して、スクロール時にアニメーションを適用
-    const animateElements = document.querySelectorAll('.problem-card, .feature-card, .role-card, .implementation-step, .pricing-card');
+    // Animate.cssを使用する要素に対して、animate-on-scrollクラスを追加
+    const animateElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image, .problem-card, .feature-card, .role-card, .implementation-step, .pricing-card, .step-card, .comparison-before, .comparison-after');
     animateElements.forEach(function(element) {
+        // 既存のアニメーションクラスを保存
+        const classes = Array.from(element.classList);
+        let animationClass = '';
+        let animationDelay = '';
+        
+        // アニメーションクラスとディレイクラスを検出
+        classes.forEach(function(className) {
+            if (className.startsWith('animate__') && className !== 'animate__animated') {
+                if (className.includes('delay')) {
+                    animationDelay = className;
+                } else {
+                    animationClass = className;
+                }
+            }
+        });
+        
+        // アニメーションクラスを削除
+        if (element.classList.contains('animate__animated')) {
+            element.classList.remove('animate__animated');
+        }
+        
+        if (animationClass) {
+            element.classList.remove(animationClass);
+            element.setAttribute('data-animation', animationClass);
+        }
+        
+        if (animationDelay) {
+            element.classList.remove(animationDelay);
+            element.setAttribute('data-delay', animationDelay);
+        }
+        
+        // animate-on-scrollクラスを追加
         element.classList.add('animate-on-scroll');
     });
 
