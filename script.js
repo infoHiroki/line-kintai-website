@@ -134,37 +134,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const inquiryForm = document.getElementById('inquiry-form');
     if (inquiryForm) {
         inquiryForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // フォームデータの取得
-            const formData = new FormData(inquiryForm);
-            const formDataObj = {};
-            formData.forEach(function(value, key) {
-                formDataObj[key] = value;
-            });
-            
-            // 送信中の表示
+            // フォームがFormspreeに送信されるため、ここでは特別な処理は不要
+            // ただし、送信中の表示などのUX向上のための処理を追加
             const submitButton = inquiryForm.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
             submitButton.textContent = '送信中...';
             submitButton.disabled = true;
             
-            // 実際のAPIエンドポイントに送信する場合はここでfetchなどを使用
-            // ここではデモとして成功したことにする
-            setTimeout(function() {
-                // 送信完了の表示
+            // 送信完了後の処理はFormspreeのリダイレクト設定で行うか、
+            // または以下のようにカスタム処理を追加することも可能
+            // この例ではコメントアウトしています
+            /*
+            e.preventDefault();
+            
+            // FormDataオブジェクトの作成
+            const formData = new FormData(inquiryForm);
+            
+            // Fetch APIを使用してFormspreeにデータを送信
+            fetch(inquiryForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                // 送信成功時の処理
                 submitButton.textContent = '送信完了!';
                 submitButton.style.backgroundColor = 'var(--success-color)';
-                
-                // フォームをリセット
                 inquiryForm.reset();
-                
-                // 元に戻す
-                setTimeout(function() {
-                    submitButton.textContent = originalText;
-                    submitButton.disabled = false;
-                    submitButton.style.backgroundColor = '';
-                }, 3000);
                 
                 // 成功メッセージの表示
                 const successMessage = document.createElement('div');
@@ -182,7 +186,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 inquiryForm.appendChild(successMessage);
-            }, 2000);
+                
+                // 元に戻す
+                setTimeout(function() {
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                    submitButton.style.backgroundColor = '';
+                }, 3000);
+            })
+            .catch(error => {
+                // エラー時の処理
+                console.error('Error:', error);
+                submitButton.textContent = 'エラーが発生しました';
+                submitButton.style.backgroundColor = 'var(--error-color)';
+                
+                // 元に戻す
+                setTimeout(function() {
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                    submitButton.style.backgroundColor = '';
+                }, 3000);
+            });
+            */
         });
     }
 
