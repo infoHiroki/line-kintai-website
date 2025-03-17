@@ -79,10 +79,98 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // スクロールアニメーション
+    // スロットリング関数 - スクロールイベントの頻度を制限
+    function throttle(callback, delay) {
+        let isThrottled = false;
+        return function() {
+            if (isThrottled) return;
+            
+            isThrottled = true;
+            const context = this;
+            const args = arguments;
+            
+            setTimeout(function() {
+                callback.apply(context, args);
+                isThrottled = false;
+            }, delay);
+        };
+    }
+
+    // Intersection Observerを使用したスクロールアニメーション
+    const setupIntersectionObserver = function() {
+        const options = {
+            root: null, // ビューポートをルートとして使用
+            rootMargin: '0px 0px -100px 0px', // 要素が100px表示されたらコールバックを実行
+            threshold: 0.1 // 要素の10%が見えたらコールバックを実行
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    
+                    // アニメーションクラスを追加
+                    if (!element.classList.contains('animated')) {
+                        // データ属性からアニメーション名を取得
+                        const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
+                        const animationDelay = element.getAttribute('data-delay') || '';
+                        
+                        element.classList.add('animate__animated', animationClass);
+                        if (animationDelay) {
+                            element.classList.add(animationDelay);
+                        }
+                        element.classList.add('animated');
+                    }
+                    
+                    // 一度アニメーションが実行されたら監視を解除
+                    observer.unobserve(element);
+                }
+            });
+        }, options);
+
+        // animate-on-scroll クラスを持つ要素を監視
+        const elements = document.querySelectorAll('.animate-on-scroll');
+        elements.forEach(element => {
+            observer.observe(element);
+        });
+
+        return observer;
+    };
+
+    // 時間削減グラフのアニメーション用Intersection Observer
+    const setupProgressObserver = function() {
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3 // 要素の30%が見えたらコールバックを実行
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const timeProgress = entry.target;
+                    const percentage = timeProgress.getAttribute('data-percentage');
+                    timeProgress.style.width = percentage + '%';
+                    
+                    // 一度アニメーションが実行されたら監視を解除
+                    observer.unobserve(timeProgress);
+                }
+            });
+        }, options);
+
+        // 時間削減グラフを監視
+        const timeProgress = document.querySelector('.time-saved-progress');
+        if (timeProgress) {
+            observer.observe(timeProgress);
+        }
+
+        return observer;
+    };
+
+    // 従来のスクロールアニメーション（フォールバック）
     const animateOnScroll = function() {
         // animate-on-scroll クラスを持つ要素のアニメーション
-        const elements = document.querySelectorAll('.animate-on-scroll');
+        const elements = document.querySelectorAll('.animate-on-scroll:not(.animated)');
         elements.forEach(function(element) {
             const elementPosition = element.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
@@ -104,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 時間削減グラフのアニメーション
         const timeProgress = document.querySelector('.time-saved-progress');
-        if (timeProgress) {
+        if (timeProgress && !timeProgress.style.width) {
             const timeProgressPosition = timeProgress.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
             if (timeProgressPosition < windowHeight - 100) {
@@ -114,14 +202,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 初期実行
-    animateOnScroll();
-
-    // スクロール時に実行
-    window.addEventListener('scroll', animateOnScroll);
+    // Intersection Observerをサポートしているブラウザでは、それを使用
+    if ('IntersectionObserver' in window) {
+        const animationObserver = setupIntersectionObserver();
+        const progressObserver = setupProgressObserver();
+    } else {
+        // フォールバック: 従来のスクロールイベントベースのアニメーション
+        // 初期実行
+        animateOnScroll();
+        
+        // スクロール時に実行（スロットリング適用）
+        window.addEventListener('scroll', throttle(animateOnScroll, 100));
+    }
 
     // Animate.cssを使用する要素に対して、animate-on-scrollクラスを追加
-    const animateElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image, .problem-card, .feature-card, .role-card, .implementation-step, .pricing-card, .step-card, .comparison-before, .comparison-after');
+    const animateElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image, .problem-card, .feature-card, .role-card, .implementation-step, .pricing-card, .step-card, .comparison-before, .comparison-after, .demo-content, .demo-cta, .case-study-content, .contact-content');
     animateElements.forEach(function(element) {
         // 既存のアニメーションクラスを保存
         const classes = Array.from(element.classList);

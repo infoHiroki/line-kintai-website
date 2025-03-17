@@ -11,6 +11,8 @@
     --danger-color: #DC3545;
     --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+    --animation-duration: 0.8s; /* アニメーション時間の統一 */
+    --animation-distance: 30px; /* アニメーション移動距離の統一 */
 }
 
 * {
@@ -414,7 +416,7 @@ img {
     background-color: var(--success-color);
     border-radius: 15px;
     width: 0;
-    transition: width 2s ease;
+    transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* イージング関数の改善 */
 }
 
 .time-saved-text {
@@ -1204,9 +1206,11 @@ img {
 /* アニメーション */
 .animate-on-scroll {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(var(--animation-distance));
+    transition: opacity var(--animation-duration) ease, transform var(--animation-duration) ease;
     will-change: opacity, transform;
+    backface-visibility: hidden; /* パフォーマンス向上 */
+    perspective: 1000px; /* パフォーマンス向上 */
 }
 
 .animate-on-scroll.animated {
@@ -1220,15 +1224,28 @@ img {
 }
 
 .animate-on-scroll[data-animation="animate__fadeInDown"] {
-    transform: translateY(-30px);
+    transform: translateY(calc(var(--animation-distance) * -1));
 }
 
 .animate-on-scroll[data-animation="animate__fadeInLeft"] {
-    transform: translateX(30px);
+    transform: translateX(var(--animation-distance));
 }
 
 .animate-on-scroll[data-animation="animate__fadeInRight"] {
-    transform: translateX(-30px);
+    transform: translateX(calc(var(--animation-distance) * -1));
+}
+
+/* アニメーションの遅延クラス */
+.animate__delay-1s {
+    transition-delay: 0.2s !important;
+}
+
+.animate__delay-2s {
+    transition-delay: 0.4s !important;
+}
+
+.animate__delay-3s {
+    transition-delay: 0.6s !important;
 }
 
 /* スクロールダウンアニメーション */
@@ -1243,6 +1260,13 @@ img {
     color: var(--primary-color);
     font-size: 0.9rem;
     font-weight: 500;
+    cursor: pointer; /* クリック可能であることを示す */
+    transition: var(--transition);
+    z-index: 10; /* 他の要素より前面に */
+}
+
+.scroll-down:hover {
+    transform: translateX(-50%) translateY(-5px); /* ホバー時に少し上に移動 */
 }
 
 .scroll-down span {
