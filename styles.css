@@ -1080,11 +1080,29 @@ img {
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
 }
 
 .animate-on-scroll.animated {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* アニメーションの種類に応じたスタイル */
+.animate-on-scroll[data-animation="animate__fadeIn"] {
+    transform: translateY(0);
+}
+
+.animate-on-scroll[data-animation="animate__fadeInDown"] {
+    transform: translateY(-30px);
+}
+
+.animate-on-scroll[data-animation="animate__fadeInLeft"] {
+    transform: translateX(30px);
+}
+
+.animate-on-scroll[data-animation="animate__fadeInRight"] {
+    transform: translateX(-30px);
 }
 
 /* スクロールダウンアニメーション */
