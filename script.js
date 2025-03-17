@@ -40,11 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
             slidesPerView: 1,
             speed: 800,
             mousewheel: {
-                sensitivity: 1,
+                sensitivity: 0.5, // 感度をさらに下げる（値を小さくすると感度が下がる）
                 releaseOnEdges: false,
-                thresholdDelta: 50, // スクロール感度を調整（値を大きくすると感度が下がる）
-                thresholdTime: 300, // スクロールの時間間隔を調整（値を大きくすると連続スクロールが抑制される）
-                forceToAxis: true // 垂直方向のスクロールのみを検知
+                thresholdDelta: 80, // スクロール感度をさらに調整（値を大きくすると感度が下がる）
+                thresholdTime: 500, // スクロールの時間間隔をさらに調整（値を大きくすると連続スクロールが抑制される）
+                forceToAxis: true, // 垂直方向のスクロールのみを検知
+                eventsTarget: '.swiper-container' // イベントのターゲットを明示的に指定
             },
             keyboard: {
                 enabled: true,
@@ -58,12 +59,30 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             // スナップ機能を強化
             touchReleaseOnEdges: false,
-            touchRatio: 1,
-            threshold: 20,
+            touchRatio: 0.8, // タッチ感度を少し下げる
+            threshold: 30, // しきい値を上げる
             resistanceRatio: 0, // 端までスクロールした時の抵抗を無効化
             // スライド間の遷移を確実にする
             followFinger: false, // 指の動きに追従せず、離した時点で次のスライドに移動
-            longSwipesRatio: 0.1, // 短いスワイプでも次のスライドに移動（値を小さくすると少しの操作で次に進む）
+            longSwipesRatio: 0.2, // 短いスワイプでも次のスライドに移動（値を小さくすると少しの操作で次に進む）
+            // スライド間の遷移を確実にするための追加設定
+            shortSwipes: true, // 短いスワイプを有効化
+            longSwipes: true, // 長いスワイプを有効化
+            grabCursor: true, // グラブカーソルを表示
+            preventInteractionOnTransition: true, // 遷移中の操作を防止
+            // スライドの効果
+            effect: 'slide', // 標準的なスライド効果
+            // スライドの自動高さ
+            autoHeight: false, // 自動高さを無効化
+            // スライドのループ
+            loop: false, // ループを無効化
+            // スライドの方向
+            allowSlideNext: true, // 次へのスライドを許可
+            allowSlidePrev: true, // 前へのスライドを許可
+            // スライドの速度
+            speed: 600, // スライド速度を少し遅くする
+            // スライドのイージング
+            cssMode: false, // CSSモードを無効化
             on: {
                 slideChange: function() {
                     // スライド変更時にアニメーションをトリガー
@@ -74,6 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // ナビゲーションのアクティブ状態を更新
                     updateNavigation(this.activeIndex);
+                    
+                    // スライド変更をコンソールに表示
+                    console.log('Slide changed to index: ' + this.activeIndex);
                 },
                 init: function() {
                     // 初期スライドのアニメーションをトリガー
@@ -84,11 +106,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // ナビゲーションのアクティブ状態を更新
                     updateNavigation(this.activeIndex);
+                    
+                    // 初期化完了をコンソールに表示
+                    console.log('Swiper initialized with index: ' + this.activeIndex);
                 },
                 // スライド遷移後に確実に止まるようにする
                 transitionEnd: function() {
                     // スライド遷移が完了したことをコンソールに表示
                     console.log('Slide transition completed to index: ' + this.activeIndex);
+                    
+                    // 現在のスライドに確実に合わせる
+                    this.slideTo(this.activeIndex, 0, false);
+                },
+                // スライド遷移開始時
+                transitionStart: function() {
+                    console.log('Slide transition started from index: ' + this.previousIndex + ' to ' + this.activeIndex);
+                },
+                // タッチ開始時
+                touchStart: function() {
+                    console.log('Touch started on index: ' + this.activeIndex);
+                },
+                // タッチ終了時
+                touchEnd: function() {
+                    console.log('Touch ended on index: ' + this.activeIndex);
+                    
+                    // タッチ終了時に現在のスライドに確実に合わせる
+                    setTimeout(() => {
+                        this.slideTo(this.activeIndex, 0, false);
+                    }, 100);
                 }
             }
         });
@@ -102,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const slideIndex = Array.from(document.querySelectorAll('.swiper-slide')).findIndex(slide => slide.id === targetId);
                 if (slideIndex !== -1) {
                     swiper.slideTo(slideIndex);
+                    console.log('Navigation clicked to slide: ' + slideIndex);
                 }
                 
                 // モバイルメニューを閉じる
@@ -118,8 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
             indicator.addEventListener('click', function() {
                 if (indicator.classList.contains('last')) {
                     swiper.slideTo(0); // 最後のインジケーターはトップに戻る
+                    console.log('Last indicator clicked, returning to top');
                 } else {
                     swiper.slideTo(index + 1); // 次のスライドへ
+                    console.log('Indicator clicked to slide: ' + (index + 1));
                 }
             });
         });
@@ -129,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // スワイプ中のスクロールを防止
             if (e.target.closest('.swiper-container')) {
                 e.preventDefault();
+                console.log('Touch move prevented on swiper container');
             }
         }, { passive: false });
 
@@ -138,23 +187,83 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentIndex = swiper.activeIndex;
             // 少し遅延を入れて確実にスナップさせる
             setTimeout(function() {
-                swiper.slideTo(currentIndex);
-            }, 50);
+                swiper.slideTo(currentIndex, 0, false);
+                console.log('Touch end forced snap to index: ' + currentIndex);
+            }, 100);
         });
 
         // マウスホイールイベントの制御
         let wheelTimeout;
+        let isWheelLocked = false;
+        
         document.addEventListener('wheel', function(e) {
             // スワイパーコンテナ内でのみ処理
             if (e.target.closest('.swiper-container')) {
+                // ホイールロック中は何もしない
+                if (isWheelLocked) {
+                    e.preventDefault();
+                    console.log('Wheel event blocked due to lock');
+                    return;
+                }
+                
+                // ホイールをロック
+                isWheelLocked = true;
+                console.log('Wheel locked');
+                
                 // 連続したホイールイベントを制限
                 clearTimeout(wheelTimeout);
                 wheelTimeout = setTimeout(function() {
                     // 現在のスライドに確実に合わせる
-                    swiper.slideTo(swiper.activeIndex);
-                }, 200);
+                    swiper.slideTo(swiper.activeIndex, 0, false);
+                    console.log('Wheel timeout forced snap to index: ' + swiper.activeIndex);
+                    
+                    // ロックを解除
+                    setTimeout(function() {
+                        isWheelLocked = false;
+                        console.log('Wheel unlocked');
+                    }, 800); // スライド遷移が完了するまで待機
+                }, 300);
             }
-        }, { passive: true });
+        }, { passive: false });
+        
+        // キーボードイベントの制御
+        document.addEventListener('keydown', function(e) {
+            // 上下キーのみ処理
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                
+                if (e.key === 'ArrowUp') {
+                    swiper.slidePrev();
+                    console.log('Arrow Up pressed, sliding to prev');
+                } else {
+                    swiper.slideNext();
+                    console.log('Arrow Down pressed, sliding to next');
+                }
+                
+                // 少し遅延を入れて確実にスナップさせる
+                setTimeout(function() {
+                    swiper.slideTo(swiper.activeIndex, 0, false);
+                    console.log('Keyboard forced snap to index: ' + swiper.activeIndex);
+                }, 100);
+            }
+        });
+        
+        // ウィンドウのリサイズ時にSwiperを更新
+        window.addEventListener('resize', function() {
+            swiper.update();
+            console.log('Window resized, swiper updated');
+        });
+        
+        // スワイプ操作の状態をリセットする関数
+        function resetSwiperState() {
+            swiper.slideTo(swiper.activeIndex, 0, false);
+            console.log('Swiper state reset to index: ' + swiper.activeIndex);
+        }
+        
+        // 定期的にスワイプ状態をリセット（念のため）
+        setInterval(resetSwiperState, 5000);
+        
+        return swiper;
     }
     
     // ナビゲーションのアクティブ状態を更新

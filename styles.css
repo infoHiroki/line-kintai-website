@@ -46,6 +46,8 @@ html {
     scroll-behavior: smooth;
     height: 100%;
     overflow: hidden; /* スワイプ型LPのためにスクロールを無効化 */
+    overscroll-behavior: none; /* オーバースクロール効果を無効化 */
+    touch-action: none; /* タッチ操作によるスクロールを無効化 */
 }
 
 body {
@@ -57,6 +59,8 @@ body {
     height: 100%;
     position: relative;
     touch-action: none; /* タッチ操作によるスクロールを無効化 */
+    overscroll-behavior: none; /* オーバースクロール効果を無効化 */
+    -webkit-overflow-scrolling: none; /* iOSの慣性スクロールを無効化 */
 }
 
 .container {
@@ -1749,6 +1753,15 @@ img {
     overflow: hidden;
     position: relative;
     touch-action: none; /* タッチ操作によるスクロールを無効化 */
+    overscroll-behavior: none; /* オーバースクロール効果を無効化 */
+    -webkit-overflow-scrolling: none; /* iOSの慣性スクロールを無効化 */
+    scroll-snap-type: y mandatory; /* 縦方向のスクロールスナップを強制 */
+}
+
+.swiper-wrapper {
+    height: 100%;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1) !important; /* イージング関数を上書き */
+    transition-duration: 600ms !important; /* 遷移時間を上書き */
 }
 
 .swiper-slide {
@@ -1764,6 +1777,17 @@ img {
     scroll-snap-align: start; /* スクロールスナップを追加 */
     scroll-snap-stop: always; /* 必ず止まるように設定 */
     transition: var(--swipe-transition);
+    touch-action: pan-y; /* 縦方向のパン操作のみ許可 */
+    -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
+    overscroll-behavior: contain; /* オーバースクロール効果をスライド内に限定 */
+}
+
+/* スライド内のコンテンツがスクロール可能な場合のスタイル */
+.swiper-slide-content {
+    max-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 20px;
 }
 
 /* スワイプインジケーター */
@@ -1775,6 +1799,7 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     color: var(--primary-color);
     font-size: 0.9rem;
     font-weight: 500;
@@ -1787,9 +1812,11 @@ img {
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: var(--transition);
+    -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
 }
 
-.swipe-indicator:hover {
+.swipe-indicator:hover,
+.swipe-indicator:active {
     background-color: var(--primary-color);
     color: white;
     transform: translateX(-50%) scale(1.1);
@@ -1853,6 +1880,7 @@ img {
     transition: var(--transition);
     cursor: pointer;
     position: relative;
+    -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
 }
 
 .swiper-pagination-bullet::after {
@@ -1899,6 +1927,30 @@ img {
 .swiper-slide::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 10px;
+}
+
+/* スワイプ操作のフィードバック */
+.swiper-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.swiper-container.swiping::after {
+    opacity: 0.05;
+    background-color: var(--primary-color);
+}
+
+/* スワイプ中のカーソル変更 */
+.swiper-container.grabbing {
+    cursor: grabbing;
 }
 
 /* スマホ向けのページネーション調整 */
