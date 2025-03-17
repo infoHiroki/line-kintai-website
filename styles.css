@@ -426,6 +426,78 @@ img {
     color: var(--success-color);
 }
 
+/* デモセクション */
+.demo {
+    background-color: var(--light-color);
+    padding: 100px 0 120px;
+}
+
+.demo-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 50px;
+    margin-bottom: 40px;
+    background-color: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: var(--box-shadow);
+}
+
+.demo-description h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.demo-description p {
+    margin-bottom: 20px;
+}
+
+.demo-features {
+    margin-bottom: 30px;
+}
+
+.demo-features li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.demo-features li i {
+    color: var(--success-color);
+    margin-right: 15px;
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.demo-features li span {
+    flex: 1;
+}
+
+.demo-qr {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.demo-qr img {
+    max-width: 200px;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+}
+
+.demo-qr p {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.demo-cta {
+    text-align: center;
+}
+
 /* 使い方セクション */
 .howto {
     background-color: var(--light-color);

@@ -84,16 +84,16 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="animate__animated animate__fadeInDown">LINEでカンタン勤怠管理</h1>
-                <h2 class="animate__animated animate__fadeInUp">誰でも使える簡単勤怠管理システム</h2>
-                <p class="animate__animated animate__fadeInUp animate__delay-1s">警備業界に特化した、LINEで完結する勤怠管理システム</p>
-                <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-2s">
+                <h1 class="animate-on-scroll" data-animation="animate__fadeInDown">LINEでカンタン勤怠管理</h1>
+                <h2 class="animate-on-scroll" data-animation="animate__fadeInUp">誰でも使える簡単勤怠管理システム</h2>
+                <p class="animate-on-scroll" data-animation="animate__fadeInUp" data-delay="animate__delay-1s">警備業界に特化した、LINEで完結する勤怠管理システム</p>
+                <div class="hero-buttons animate-on-scroll" data-animation="animate__fadeInUp" data-delay="animate__delay-2s">
                     <a href="#demo" class="btn-primary">無料デモを試す</a>
                     <a href="#contact" class="btn-secondary">資料請求</a>
                 </div>
             </div>
-            <div class="hero-image animate__animated animate__fadeIn animate__delay-1s">
-                <img src="images/free/hero-image.jpg" alt="LINEでカンタン勤怠管理の画面イメージ">
+            <div class="hero-image animate-on-scroll" data-animation="animate__fadeIn" data-delay="animate__delay-1s">
+                <img src="images/hero-image.png" alt="LINEでカンタン勤怠管理の画面イメージ">
             </div>
         </div>
     </section>
@@ -134,7 +134,7 @@
                 <div class="comparison-before">
                     <h3>導入前</h3>
                     <div class="comparison-image">
-                        <img data-src="images/free/before-image.jpg" alt="導入前の勤怠管理" class="lazy-image">
+                        <img data-src="images/before-image.png" alt="導入前の勤怠管理" class="lazy-image">
                     </div>
                     <ul class="comparison-list">
                         <li><i class="fas fa-times"></i> 紙の勤務表を回収・確認・集計 → <strong>月40時間</strong></li>
@@ -148,7 +148,7 @@
                 <div class="comparison-after">
                     <h3>導入後</h3>
                     <div class="comparison-image">
-                        <img data-src="images/free/after-image.jpg" alt="導入後の勤怠管理" class="lazy-image">
+                        <img data-src="images/after-image.png" alt="導入後の勤怠管理" class="lazy-image">
                     </div>
                     <ul class="comparison-list">
                         <li><i class="fas fa-check"></i> 自動集計でデータ確認のみ → <strong>月5時間</strong></li>
@@ -168,6 +168,32 @@
         </div>
     </section>
 
+    <section id="demo" class="demo">
+        <div class="container">
+            <h2 class="section-title">無料デモを体験する</h2>
+            <div class="demo-content animate-on-scroll" data-animation="animate__fadeInUp">
+                <div class="demo-description">
+                    <h3>実際の操作感をお試しください</h3>
+                    <p>LINEでカンタン勤怠管理の機能を実際に体験できます。スマホでQRコードを読み取るだけで、すぐに試すことができます。</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check-circle"></i> <span>出勤・退勤打刻機能</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>勤務記録の確認</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>管理画面の操作</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>レポート機能</span></li>
+                    </ul>
+                    <p>デモ環境は14日間ご利用いただけます。実際の現場で試してみたい場合は、お気軽にご相談ください。</p>
+                </div>
+                <div class="demo-qr">
+                    <img data-src="images/demo-qr.png" alt="デモQRコード" class="lazy-image">
+                    <p>QRコードを読み取ってデモを開始</p>
+                </div>
+            </div>
+            <div class="demo-cta animate-on-scroll" data-animation="animate__fadeInUp" data-delay="animate__delay-1s">
+                <a href="#contact" class="btn-primary">資料請求・お問い合わせ</a>
+            </div>
+        </div>
+    </section>
+
     <section id="howto" class="howto">
         <div class="container">
             <h2 class="section-title">使い方はカンタン3ステップ</h2>
@@ -180,7 +206,7 @@
                             <h4>出勤時</h4>
                             <p>LINEで「出勤」ボタンをタップ</p>
                             <div class="step-image">
-                                <img data-src="images/free/line-checkin.jpg" alt="LINEで出勤" class="lazy-image">
+                                <img data-src="images/line-checkin.png" alt="LINEで出勤" class="lazy-image">
                             </div>
                         </div>
                         <div class="step-card animate-on-scroll" data-animation="animate__fadeInLeft" data-delay="animate__delay-1s">
@@ -188,7 +214,7 @@
                             <h4>退勤時</h4>
                             <p>LINEで「退勤」ボタンをタップ</p>
                             <div class="step-image">
-                                <img data-src="images/free/line-checkout.jpg" alt="LINEで退勤" class="lazy-image">
+                                <img data-src="images/line-checkout.png" alt="LINEで退勤" class="lazy-image">
                             </div>
                         </div>
                         <div class="step-card animate-on-scroll" data-animation="animate__fadeInLeft" data-delay="animate__delay-2s">
@@ -196,7 +222,7 @@
                             <h4>勤務記録確認</h4>
                             <p>LINEで「勤務記録確認」ボタンをタップ</p>
                             <div class="step-image">
-                                <img data-src="images/free/line-record.jpg" alt="勤務記録確認" class="lazy-image">
+                                <img data-src="images/line-record.png" alt="勤務記録確認" class="lazy-image">
                             </div>
                         </div>
                     </div>
@@ -209,7 +235,7 @@
                             <h4>現場管理者</h4>
                             <p>PCやスマホで勤怠状況を確認</p>
                             <div class="step-image">
-                                <img data-src="images/free/manager-dashboard.jpg" alt="管理者ダッシュボード" class="lazy-image">
+                                <img data-src="images/manager-dashboard.png" alt="管理者ダッシュボード" class="lazy-image">
                             </div>
                         </div>
                         <div class="step-card animate-on-scroll" data-animation="animate__fadeInRight" data-delay="animate__delay-1s">
@@ -217,7 +243,7 @@
                             <h4>事務・経理担当者</h4>
                             <p>PCで、経理ソフトへ入力をしやすい形(スプレッドシート)で勤怠状況を確認</p>
                             <div class="step-image">
-                                <img data-src="images/free/spreadsheet.jpg" alt="スプレッドシート連携" class="lazy-image">
+                                <img data-src="images/spreadsheet.png" alt="スプレッドシート連携" class="lazy-image">
                             </div>
                         </div>
                     </div>
@@ -305,7 +331,7 @@
             <h2 class="section-title">導入事例：A警備保障株式会社様</h2>
             <div class="case-study-content">
                 <div class="case-study-image">
-                    <img data-src="images/free/case-study.jpg" alt="導入事例" class="lazy-image">
+                    <img data-src="images/case-study.png" alt="導入事例" class="lazy-image">
                 </div>
                 <div class="case-study-details">
                     <div class="case-challenge">
@@ -477,7 +503,7 @@
                     <h3>無料デモ体験実施中</h3>
                     <p>スマホでQRコードを読み取り、実際の操作感をお試しください</p>
                     <div class="contact-qr">
-                        <img data-src="images/free/qr-code.jpg" alt="デモQRコード" class="lazy-image">
+                        <img data-src="images/qr-code.png" alt="デモQRコード" class="lazy-image">
                     </div>
                     <div class="contact-details">
                         <h3>お問い合わせ先</h3>
