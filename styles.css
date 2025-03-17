@@ -1207,7 +1207,7 @@ img {
 .animate-on-scroll {
     opacity: 0;
     transform: translateY(var(--animation-distance));
-    transition: opacity var(--animation-duration) ease, transform var(--animation-duration) ease;
+    transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out;
     will-change: opacity, transform;
     backface-visibility: hidden; /* パフォーマンス向上 */
     perspective: 1000px; /* パフォーマンス向上 */
@@ -1221,6 +1221,7 @@ img {
 /* アニメーションの種類に応じたスタイル */
 .animate-on-scroll[data-animation="animate__fadeIn"] {
     transform: translateY(0);
+    opacity: 0;
 }
 
 .animate-on-scroll[data-animation="animate__fadeInDown"] {
@@ -1246,6 +1247,38 @@ img {
 
 .animate__delay-3s {
     transition-delay: 0.6s !important;
+}
+
+/* ヒーローセクションのアニメーション（初期表示用） */
+.hero-content h1,
+.hero-content h2,
+.hero-content p,
+.hero-buttons {
+    opacity: 0;
+}
+
+.hero-content h1.animated,
+.hero-content h2.animated,
+.hero-content p.animated,
+.hero-buttons.animated {
+    opacity: 1;
+}
+
+.hero-image {
+    opacity: 0;
+}
+
+.hero-image.animated {
+    opacity: 1;
+}
+
+/* 時間削減グラフのアニメーション */
+.time-saved-progress {
+    height: 100%;
+    background-color: var(--success-color);
+    border-radius: 15px;
+    width: 0;
+    transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* イージング関数の改善 */
 }
 
 /* スクロールダウンアニメーション */

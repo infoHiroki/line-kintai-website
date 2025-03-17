@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingOverlay.classList.add('hidden');
             setTimeout(function() {
                 loadingOverlay.remove();
+                
+                // ローディング完了後に初期表示要素のアニメーションを開始
+                triggerInitialAnimations();
             }, 500);
         }, 500);
     });
@@ -96,12 +99,30 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // 初期表示要素のアニメーションを発火
+    function triggerInitialAnimations() {
+        // ヒーローセクションの要素のみ初期表示時にアニメーション
+        const initialElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image');
+        initialElements.forEach(function(element) {
+            if (!element.classList.contains('animated')) {
+                const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
+                const animationDelay = element.getAttribute('data-delay') || '';
+                
+                element.classList.add('animate__animated', animationClass);
+                if (animationDelay) {
+                    element.classList.add(animationDelay);
+                }
+                element.classList.add('animated');
+            }
+        });
+    }
+
     // Intersection Observerを使用したスクロールアニメーション
     const setupIntersectionObserver = function() {
         const options = {
             root: null, // ビューポートをルートとして使用
-            rootMargin: '0px 0px -100px 0px', // 要素が100px表示されたらコールバックを実行
-            threshold: 0.1 // 要素の10%が見えたらコールバックを実行
+            rootMargin: '0px 0px -150px 0px', // 要素が150px表示されたらコールバックを実行（画面下部から150px入ったところ）
+            threshold: 0.15 // 要素の15%が見えたらコールバックを実行（より確実に表示されてから）
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
@@ -109,17 +130,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (entry.isIntersecting) {
                     const element = entry.target;
                     
+                    // ヒーローセクション内の要素は初期表示で処理するため、ここではスキップ
+                    if (element.closest('.hero')) {
+                        observer.unobserve(element);
+                        return;
+                    }
+                    
                     // アニメーションクラスを追加
                     if (!element.classList.contains('animated')) {
                         // データ属性からアニメーション名を取得
                         const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
                         const animationDelay = element.getAttribute('data-delay') || '';
                         
-                        element.classList.add('animate__animated', animationClass);
-                        if (animationDelay) {
-                            element.classList.add(animationDelay);
-                        }
-                        element.classList.add('animated');
+                        // アニメーション適用前に少し遅延を入れる（スクロール後に発火するように）
+                        setTimeout(() => {
+                            element.classList.add('animate__animated', animationClass);
+                            if (animationDelay) {
+                                element.classList.add(animationDelay);
+                            }
+                            element.classList.add('animated');
+                        }, 50);
                     }
                     
                     // 一度アニメーションが実行されたら監視を解除
@@ -128,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }, options);
 
-        // animate-on-scroll クラスを持つ要素を監視
-        const elements = document.querySelectorAll('.animate-on-scroll');
+        // animate-on-scroll クラスを持つ要素を監視（ヒーローセクション以外）
+        const elements = document.querySelectorAll('.animate-on-scroll:not(.hero-content *):not(.hero-image)');
         elements.forEach(element => {
             observer.observe(element);
         });
@@ -141,16 +171,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const setupProgressObserver = function() {
         const options = {
             root: null,
-            rootMargin: '0px',
-            threshold: 0.3 // 要素の30%が見えたらコールバックを実行
+            rootMargin: '0px 0px -100px 0px', // 画面下部から100px入ったところ
+            threshold: 0.4 // 要素の40%が見えたらコールバックを実行
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const timeProgress = entry.target;
-                    const percentage = timeProgress.getAttribute('data-percentage');
-                    timeProgress.style.width = percentage + '%';
+                    
+                    // アニメーション適用前に少し遅延を入れる
+                    setTimeout(() => {
+                        const percentage = timeProgress.getAttribute('data-percentage');
+                        timeProgress.style.width = percentage + '%';
+                    }, 100);
                     
                     // 一度アニメーションが実行されたら監視を解除
                     observer.unobserve(timeProgress);
@@ -169,23 +203,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 従来のスクロールアニメーション（フォールバック）
     const animateOnScroll = function() {
-        // animate-on-scroll クラスを持つ要素のアニメーション
-        const elements = document.querySelectorAll('.animate-on-scroll:not(.animated)');
+        // animate-on-scroll クラスを持つ要素のアニメーション（ヒーローセクション以外）
+        const elements = document.querySelectorAll('.animate-on-scroll:not(.hero-content *):not(.hero-image):not(.animated)');
         elements.forEach(function(element) {
             const elementPosition = element.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
-            if (elementPosition < windowHeight - 100) {
+            // 要素がより画面内に入ってからアニメーション発火
+            if (elementPosition < windowHeight - 150) {
                 // アニメーションクラスを追加
                 if (!element.classList.contains('animated')) {
                     // データ属性からアニメーション名を取得
                     const animationClass = element.getAttribute('data-animation') || 'animate__fadeInUp';
                     const animationDelay = element.getAttribute('data-delay') || '';
                     
-                    element.classList.add('animate__animated', animationClass);
-                    if (animationDelay) {
-                        element.classList.add(animationDelay);
-                    }
-                    element.classList.add('animated');
+                    // アニメーション適用前に少し遅延を入れる
+                    setTimeout(() => {
+                        element.classList.add('animate__animated', animationClass);
+                        if (animationDelay) {
+                            element.classList.add(animationDelay);
+                        }
+                        element.classList.add('animated');
+                    }, 50);
                 }
             }
         });
@@ -195,9 +233,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (timeProgress && !timeProgress.style.width) {
             const timeProgressPosition = timeProgress.getBoundingClientRect().top;
             const windowHeight = window.innerHeight;
-            if (timeProgressPosition < windowHeight - 100) {
-                const percentage = timeProgress.getAttribute('data-percentage');
-                timeProgress.style.width = percentage + '%';
+            if (timeProgressPosition < windowHeight - 150) {
+                setTimeout(() => {
+                    const percentage = timeProgress.getAttribute('data-percentage');
+                    timeProgress.style.width = percentage + '%';
+                }, 100);
             }
         }
     };
@@ -216,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Animate.cssを使用する要素に対して、animate-on-scrollクラスを追加
-    const animateElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image, .problem-card, .feature-card, .role-card, .implementation-step, .pricing-card, .step-card, .comparison-before, .comparison-after, .demo-content, .demo-cta, .case-study-content, .contact-content');
+    const animateElements = document.querySelectorAll('.hero-content h1, .hero-content h2, .hero-content p, .hero-buttons, .hero-image, .problem-card, .feature-card, .role-card, .implementation-step, .pricing-card, .step-card, .comparison-before, .comparison-after, .demo-content, .demo-cta, .case-study-content, .contact-content, .faq-item');
     animateElements.forEach(function(element) {
         // 既存のアニメーションクラスを保存
         const classes = Array.from(element.classList);
