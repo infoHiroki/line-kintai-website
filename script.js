@@ -11,7 +11,10 @@ const DOM = {
     navLinks: document.querySelectorAll('.main-nav a'),
     animateElements: document.querySelectorAll('.animate-on-scroll'),
     scrollAnimateElements: document.querySelectorAll('.scroll-animate'),
-    progressBar: document.createElement('div')
+    progressBar: document.createElement('div'),
+    // GSAP用の要素を追加
+    lineMessagingSection: document.querySelector('.line-messaging-section'),
+    comparisonSection: document.querySelector('.comparison-section')
 };
 
 // グローバル変数
@@ -46,23 +49,32 @@ function initApp() {
     if (!isReducedMotion) {
         triggerInitialAnimations();
         initSplitTextAnimations();
-        initScrollAnimations(); // スクロールアニメーションの初期化を追加
+        initScrollAnimations(); // スクロールアニメーションの初期化
+        initGSAPAnimations(); // GSAP アニメーションの初期化を追加
     }
-    
+                
     // イベントリスナーの設定
     setupEventListeners();
-    
+                
+    // アクセシビリティの向上
+    enhanceAccessibility();
+                
+    // ブラウザサポートのチェック
+    checkBrowserSupport();
+                
+    // スクロール進行状況バーの初期化
+    initScrollProgressBar();
+                
     // 画像の遅延読み込み
     lazyLoadImages();
+                
+    // パフォーマンス追跡の初期化
+    if (window.performance && window.performance.mark) {
+        window.performance.mark('app-initialized');
+    }
     
-    // アクセシビリティ対応
-    enhanceAccessibility();
-    
-    // スクロールプログレスバーの初期化
-    initScrollProgressBar();
-    
-    // ページの準備完了を示すクラスを追加
-    document.documentElement.classList.add('page-loaded');
+    // 初期ページビューの追跡
+    trackPageView('home');
 }
 
 // デバイスタイプの検出
@@ -1152,4 +1164,135 @@ function updateScrollAnimationRects() {
     scrollAnimations.forEach(animation => {
         animation.rect = animation.element.getBoundingClientRect();
     });
+}
+
+// GSAP アニメーションの初期化
+function initGSAPAnimations() {
+    // GSAP と ScrollTrigger を登録
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // 仕様書に記載された LINEメッセージフロー表示のアニメーション
+    if (DOM.lineMessagingSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.line-messaging-section',
+                start: 'top center',
+                end: 'bottom center',
+                scrub: true, // スクロールに完全同期
+                markers: false, // 開発時のみ true に設定
+                pin: true, // セクションを画面に固定
+                anticipatePin: 1, // ピン留めをスムーズに
+                onEnter: () => console.log('LINE メッセージフローアニメーション開始'),
+                onLeave: () => console.log('LINE メッセージフローアニメーション終了')
+            }
+        })
+        .from('.line-message-1', { opacity: 0, y: 50, duration: 0.5 })
+        .from('.line-message-2', { opacity: 0, y: 50, duration: 0.5 })
+        .from('.line-message-3', { opacity: 0, y: 50, duration: 0.5 })
+        .to('.spreadsheet-icon', { scale: 1.2, duration: 0.3 })
+        .from('.data-flow-arrow', { drawSVG: 0, duration: 1 })
+        .from('.spreadsheet-data', { opacity: 0, y: 20, stagger: 0.2, duration: 0.8 });
+    }
+    
+    // Before/After比較アニメーション
+    if (DOM.comparisonSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.comparison-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+                onEnter: () => console.log('比較アニメーション開始'),
+                onLeave: () => console.log('比較アニメーション終了')
+            }
+        })
+        .from('.before-image', { x: -100, opacity: 0.5, duration: 1 })
+        .from('.after-image', { x: 100, opacity: 0, duration: 1 }, "-=0.8")
+        .from('.comparison-arrow', { opacity: 0, scale: 0.5, duration: 0.5 }, "-=0.5")
+        .from('.improvement-stats', { opacity: 0, y: 30, stagger: 0.2, duration: 0.8 });
+    }
+    
+    // 特徴セクションのパララックス効果
+    gsap.utils.toArray('.features-grid .feature-card').forEach((card, i) => {
+        const direction = i % 2 === 0 ? -30 : 30;
+        
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top bottom-=100',
+                end: 'bottom top+=100',
+                scrub: 1
+            },
+            y: direction,
+            opacity: 0.5,
+            duration: 1.5
+        });
+    });
+    
+    // ヒーローセクションのパララックス効果
+    gsap.timeline({
+        scrollTrigger: {
+            trigger: '.hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true
+        }
+    })
+    .to('.hero-image', { y: 100, duration: 1 })
+    .to('.hero-content', { y: 50, opacity: 0.8, duration: 1 }, 0);
+    
+    // ユーザー別メリットセクションのスティッキー表示
+    if (document.querySelector('.roles-benefits')) {
+        const rolesSection = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.roles-benefits',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: true,
+                pin: '.roles-heading', // 見出しを固定
+                pinSpacing: true
+            }
+        });
+        
+        gsap.utils.toArray('.role-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top bottom-=100',
+                    end: 'center center',
+                    scrub: 1
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.2
+            });
+        });
+    }
+    
+    // 導入手順のステップバイステップアニメーション
+    gsap.utils.toArray('.implementation-step').forEach((step, i) => {
+        gsap.from(step, {
+            scrollTrigger: {
+                trigger: step,
+                start: 'top bottom-=50',
+                end: 'center center+=100',
+                scrub: 0.5
+            },
+            x: i % 2 === 0 ? -50 : 50,
+            opacity: 0,
+            duration: 1
+        });
+    });
+    
+    // スクロールダウン矢印のアニメーション
+    if (document.querySelector('.scroll-down')) {
+        gsap.to('.scroll-down-arrow', {
+            y: 10,
+            repeat: -1,
+            yoyo: true,
+            duration: 0.8,
+            ease: 'power1.inOut'
+        });
+    }
 } 

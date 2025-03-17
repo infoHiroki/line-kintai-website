@@ -147,7 +147,7 @@
             <section class="swiper-slide" id="benefits">
                 <div class="container">
                     <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">導入後のメリット</h2>
-                    <div class="comparison-wrapper">
+                    <div class="comparison-wrapper comparison-section">
                         <div class="comparison-before animate-on-scroll" data-animation="animate__fadeInLeft">
                             <h3>導入前</h3>
                             <div class="comparison-image">
@@ -184,6 +184,95 @@
                             </div>
                             <div class="time-saved-text">
                                 <p>月間作業時間: <strong>40時間 → 8時間</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swipe-indicator">
+                    <span>下にスワイプ</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </section>
+
+            <!-- セクション3.5: LINEメッセージフロー -->
+            <section class="swiper-slide line-messaging-section" id="line-flow">
+                <div class="container">
+                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">LINEからスプレッドシートまで、シームレスなデータフロー</h2>
+                    <div class="line-flow-container">
+                        <div class="line-messages">
+                            <div class="line-message line-message-1">
+                                <div class="line-message-header">
+                                    <img src="images/line-checkin.png" alt="LINE出勤報告" class="line-icon">
+                                    <span class="line-username">鈴木太郎</span>
+                                    <span class="line-timestamp">08:00</span>
+                                </div>
+                                <div class="line-message-body">
+                                    <p>出勤しました。渋谷駅前現場です。</p>
+                                </div>
+                            </div>
+                            <div class="line-message line-message-2">
+                                <div class="line-message-header">
+                                    <img src="images/line-record.png" alt="LINE記録" class="line-icon">
+                                    <span class="line-username">LINEでカンタン勤怠</span>
+                                    <span class="line-timestamp">08:01</span>
+                                </div>
+                                <div class="line-message-body">
+                                    <p>【出勤記録】<br>日時: 2023/07/15 08:00<br>現場: 渋谷駅前<br>記録完了しました✓</p>
+                                </div>
+                            </div>
+                            <div class="line-message line-message-3">
+                                <div class="line-message-header">
+                                    <img src="images/line-checkout.png" alt="LINE退勤報告" class="line-icon">
+                                    <span class="line-username">鈴木太郎</span>
+                                    <span class="line-timestamp">17:00</span>
+                                </div>
+                                <div class="line-message-body">
+                                    <p>退勤します。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-flow">
+                            <svg class="data-flow-arrow" viewBox="0 0 100 50">
+                                <path d="M10,25 C30,5 70,45 90,25 L95,30 L90,25 L95,20" fill="none" stroke="#00B900" stroke-width="2" />
+                            </svg>
+                            <div class="spreadsheet-icon">
+                                <img src="images/spreadsheet.png" alt="スプレッドシート" class="spreadsheet-img">
+                            </div>
+                        </div>
+                        <div class="spreadsheet-preview">
+                            <div class="spreadsheet-header">
+                                <div class="spreadsheet-cell">日付</div>
+                                <div class="spreadsheet-cell">名前</div>
+                                <div class="spreadsheet-cell">現場</div>
+                                <div class="spreadsheet-cell">出勤時間</div>
+                                <div class="spreadsheet-cell">退勤時間</div>
+                                <div class="spreadsheet-cell">勤務時間</div>
+                            </div>
+                            <div class="spreadsheet-data">
+                                <div class="spreadsheet-row">
+                                    <div class="spreadsheet-cell">2023/07/15</div>
+                                    <div class="spreadsheet-cell">鈴木太郎</div>
+                                    <div class="spreadsheet-cell">渋谷駅前</div>
+                                    <div class="spreadsheet-cell">08:00</div>
+                                    <div class="spreadsheet-cell">17:00</div>
+                                    <div class="spreadsheet-cell">9.0</div>
+                                </div>
+                                <div class="spreadsheet-row">
+                                    <div class="spreadsheet-cell">2023/07/15</div>
+                                    <div class="spreadsheet-cell">佐藤次郎</div>
+                                    <div class="spreadsheet-cell">新宿西口</div>
+                                    <div class="spreadsheet-cell">07:30</div>
+                                    <div class="spreadsheet-cell">16:30</div>
+                                    <div class="spreadsheet-cell">9.0</div>
+                                </div>
+                                <div class="spreadsheet-row">
+                                    <div class="spreadsheet-cell">2023/07/15</div>
+                                    <div class="spreadsheet-cell">田中花子</div>
+                                    <div class="spreadsheet-cell">池袋東口</div>
+                                    <div class="spreadsheet-cell">09:00</div>
+                                    <div class="spreadsheet-cell">18:00</div>
+                                    <div class="spreadsheet-cell">9.0</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -627,6 +716,9 @@
 
     <!-- スクリプト -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/DrawSVGPlugin.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 
