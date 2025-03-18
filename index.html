@@ -193,10 +193,10 @@
         </section>
 
         <!-- セクション2: 課題 -->
-        <section id="section2" class="fullscreen-section relative flex flex-col justify-center min-h-screen w-full bg-light overflow-hidden">
-            <div class="section-container max-w-7xl w-full mx-auto px-6 md:px-8 py-12 relative z-10">
+        <section id="section2" class="relative py-16 px-4 bg-light overflow-hidden">
+            <div class="section-container max-w-7xl w-full mx-auto px-6 md:px-8 py-8 relative z-10">
                 <h2 class="section-title fade-in text-3xl md:text-4xl font-bold mb-12 text-center relative after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2 after:w-[60px] after:h-[3px] after:bg-primary">警備業界の勤怠管理の課題</h2>
-                <div class="problems-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+                <div class="problems-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
                     <div class="bg-white rounded-lg p-6 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg fade-in delay-1">
                         <div class="text-primary-600 text-3xl mb-3">
                             <i class="fas fa-file-alt"></i>
@@ -234,9 +234,9 @@
         </section>
 
         <!-- セクション3: 解決策 (Before/After) -->
-        <section id="section3" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-blue-50 to-white">
+        <section id="section3" class="py-16 px-4 bg-gradient-to-b from-blue-50 to-white">
             <div class="w-full max-w-6xl mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 text-primary-800 fade-in">導入後のメリット</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 text-primary-800 fade-in">導入後のメリット</h2>
                 <div class="grid md:grid-cols-3 gap-8 items-center">
                     <div class="bg-white rounded-xl p-6 shadow-lg fade-in-left">
                         <h3 class="text-2xl font-bold mb-4 text-center text-red-600">導入前</h3>
@@ -284,10 +284,10 @@
         </section>
 
         <!-- セクション4: 機能紹介（LINEメッセージフロー） -->
-        <section id="section4" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
+        <section id="section4" class="py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
             <div class="w-full max-w-6xl mx-auto">
                 <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 text-primary-800 fade-in">主な機能</h2>
-                <div class="flex flex-col md:flex-row items-center justify-between mb-16 fade-in delay-1">
+                <div class="flex flex-col md:flex-row items-center justify-between mb-10 fade-in delay-1">
                     <!-- LINEメッセージ -->
                     <div class="w-full md:w-1/3 mb-8 md:mb-0 max-w-xs mx-auto">
                         <!-- ユーザーメッセージ -->
@@ -319,8 +319,8 @@
                     </div>
                     
                     <!-- 矢印 -->
-                    <div class="my-6 md:my-0 fade-in delay-2">
-                        <svg class="w-24 h-12 md:rotate-0 rotate-90" viewBox="0 0 100 50">
+                    <div class="my-4 md:my-0 fade-in delay-2">
+                        <svg class="w-16 h-8 md:rotate-0 rotate-90" viewBox="0 0 100 50">
                             <path d="M10,25 C30,5 70,45 90,25 L95,30 L90,25 L95,20" fill="none" stroke="#00B900" stroke-width="2" />
                         </svg>
                     </div>
@@ -343,75 +343,44 @@
                         </div>
                     </div>
                 </div>
-                <div class="features-grid fade-in delay-4">
-                    <div class="feature-item">
-                        <div class="feature-icon">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8 fade-in delay-4">
+                    <div class="bg-white rounded-lg p-5 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                        <div class="text-primary-600 text-3xl mb-3">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <h3>LINEで簡単打刻</h3>
-                        <p>出勤・退勤をLINEで簡単に報告。位置情報付きで不正打刻も防止。</p>
+                        <h3 class="text-lg font-bold mb-2">LINEで簡単打刻</h3>
+                        <p class="text-gray-600 text-sm">出勤・退勤をLINEで簡単に報告。位置情報付きで不正打刻も防止。</p>
                     </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
+                    <div class="bg-white rounded-lg p-5 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                        <div class="text-primary-600 text-3xl mb-3">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <h3>シフト管理</h3>
-                        <p>複数現場のシフトを一元管理。LINEで簡単に確認・変更。</p>
+                        <h3 class="text-lg font-bold mb-2">シフト管理</h3>
+                        <p class="text-gray-600 text-sm">複数現場のシフトを一元管理。LINEで簡単に確認・変更。</p>
                     </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
+                    <div class="bg-white rounded-lg p-5 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                        <div class="text-primary-600 text-3xl mb-3">
                             <i class="fas fa-chart-bar"></i>
                         </div>
-                        <h3>勤怠データ分析</h3>
-                        <p>勤怠データを自動集計し、現場ごと・個人ごとの分析が可能。</p>
+                        <h3 class="text-lg font-bold mb-2">勤怠データ分析</h3>
+                        <p class="text-gray-600 text-sm">勤怠データを自動集計し、現場ごと・個人ごとの分析が可能。</p>
                     </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
+                    <div class="bg-white rounded-lg p-5 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                        <div class="text-primary-600 text-3xl mb-3">
                             <i class="fas fa-file-export"></i>
                         </div>
-                        <h3>給与計算連携</h3>
-                        <p>給与計算ソフトと連携し、データをCSVで出力可能。</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12 fade-in delay-4">
-                    <div class="bg-white rounded-lg p-6 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                        <div class="text-primary-600 text-4xl mb-4">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">LINEで簡単打刻</h3>
-                        <p class="text-gray-600">出勤・退勤をLINEで簡単に報告。位置情報付きで不正打刻も防止。</p>
-                    </div>
-                    <div class="bg-white rounded-lg p-6 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                        <div class="text-primary-600 text-4xl mb-4">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">シフト管理</h3>
-                        <p class="text-gray-600">複数現場のシフトを一元管理。LINEで簡単に確認・変更。</p>
-                    </div>
-                    <div class="bg-white rounded-lg p-6 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                        <div class="text-primary-600 text-4xl mb-4">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">勤怠データ分析</h3>
-                        <p class="text-gray-600">勤怠データを自動集計し、現場ごと・個人ごとの分析が可能。</p>
-                    </div>
-                    <div class="bg-white rounded-lg p-6 shadow-md text-center transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                        <div class="text-primary-600 text-4xl mb-4">
-                            <i class="fas fa-file-export"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">給与計算連携</h3>
-                        <p class="text-gray-600">給与計算ソフトと連携し、データをCSVで出力可能。</p>
+                        <h3 class="text-lg font-bold mb-2">給与計算連携</h3>
+                        <p class="text-gray-600 text-sm">給与計算ソフトと連携し、データをCSVで出力可能。</p>
                     </div>
                 </div>
             </div>
-            <div class="scroll-indicator absolute bottom-8 left-0 right-0 flex flex-col items-center text-gray-600 animate-bounce cursor-pointer hover:text-primary transition-colors duration-300">
-                <span class="mb-2 cursor-pointer">下にスクロール</span>
-                <i class="fas fa-chevron-down cursor-pointer"></i>
+            <div class="mt-8 text-center">
+                <a href="#section5" class="inline-block py-2 px-6 bg-primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all">料金プランを見る</a>
             </div>
         </section>
 
         <!-- セクション5: 料金 -->
-        <section id="section5" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+        <section id="section5" class="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
             <div class="w-full max-w-6xl mx-auto">
                 <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-primary-800 fade-in">料金プラン</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -504,20 +473,20 @@
         </section>
 
         <!-- セクション6: お問い合わせ -->
-        <section id="section6" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
+        <section id="section6" class="py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
             <div class="w-full max-w-6xl mx-auto">
-                <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-primary-800 fade-in">お問い合わせ</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 text-primary-800 fade-in">お問い合わせ</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <!-- お問い合わせ情報 -->
-                    <div class="bg-white rounded-xl shadow-lg p-8 fade-in-left">
-                        <h3 class="text-2xl font-bold mb-8 text-center text-gray-800">お気軽にお問い合わせください</h3>
-                        <div class="flex flex-col items-center mb-10">
-                            <div class="bg-white p-3 border-2 border-primary rounded-xl shadow-md mb-4 w-48 h-48 flex items-center justify-center">
+                    <div class="bg-white rounded-xl shadow-lg p-6 fade-in-left">
+                        <h3 class="text-xl font-bold mb-6 text-center text-gray-800">お気軽にお問い合わせください</h3>
+                        <div class="flex flex-col items-center mb-6">
+                            <div class="bg-white p-3 border-2 border-primary rounded-xl shadow-md mb-4 w-40 h-40 flex items-center justify-center">
                                 <img src="images/qr-code.png" alt="お問い合わせ用QRコード" class="w-full h-auto">
                             </div>
                             <p class="text-center font-medium text-primary">LINEで簡単にお問い合わせ</p>
                         </div>
-                        <div class="space-y-4 mt-8">
+                        <div class="space-y-3 mt-6">
                             <p class="flex items-center text-gray-700"><i class="fas fa-phone text-primary w-8"></i> 03-1234-5678</p>
                             <p class="flex items-center text-gray-700"><i class="fas fa-envelope text-primary w-8"></i> info@keibi-line.co.jp</p>
                             <p class="flex items-center text-gray-700"><i class="fas fa-map-marker-alt text-primary w-8"></i> 東京都渋谷区〇〇町1-2-3</p>
@@ -525,39 +494,35 @@
                     </div>
                     
                     <!-- お問い合わせフォーム -->
-                    <div class="bg-white rounded-xl shadow-lg p-8 fade-in-right">
-                        <h3 class="text-2xl font-bold mb-8 text-center text-gray-800">お問い合わせフォーム</h3>
+                    <div class="bg-white rounded-xl shadow-lg p-6 fade-in-right">
+                        <h3 class="text-xl font-bold mb-6 text-center text-gray-800">お問い合わせフォーム</h3>
                         <form id="contactForm">
-                            <div class="mb-5">
-                                <label for="name" class="block text-gray-700 font-medium mb-2">お名前</label>
-                                <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
+                            <div class="mb-4">
+                                <label for="name" class="block text-gray-700 font-medium mb-1">お名前</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="company" class="block text-gray-700 font-medium mb-1">会社名</label>
+                                <input type="text" id="company" name="company" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 font-medium mb-1">メールアドレス</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="phone" class="block text-gray-700 font-medium mb-1">電話番号</label>
+                                <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                             </div>
                             <div class="mb-5">
-                                <label for="company" class="block text-gray-700 font-medium mb-2">会社名</label>
-                                <input type="text" id="company" name="company" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
-                            </div>
-                            <div class="mb-5">
-                                <label for="email" class="block text-gray-700 font-medium mb-2">メールアドレス</label>
-                                <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
-                            </div>
-                            <div class="mb-5">
-                                <label for="phone" class="block text-gray-700 font-medium mb-2">電話番号</label>
-                                <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
-                            </div>
-                            <div class="mb-6">
-                                <label for="message" class="block text-gray-700 font-medium mb-2">お問い合わせ内容</label>
-                                <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" required></textarea>
+                                <label for="message" class="block text-gray-700 font-medium mb-1">お問い合わせ内容</label>
+                                <textarea id="message" name="message" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" required></textarea>
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="inline-block py-3 px-8 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300">送信する</button>
+                                <button type="submit" class="inline-block py-2 px-6 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300">送信する</button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
-            <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center text-gray-600 animate-bounce cursor-pointer hover:text-primary transition-colors duration-300">
-                <span class="mb-2 cursor-pointer">トップに戻る</span>
-                <i class="fas fa-chevron-up cursor-pointer"></i>
             </div>
         </section>
     </main>
@@ -602,3 +567,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
