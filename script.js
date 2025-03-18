@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // section要素のうち、id属性が'section1'から始まるものすべてを取得
     sections: document.querySelectorAll('section[id^="section"]'),
     navDots: document.querySelectorAll('.section-navigation li'),
-    navLinks: document.querySelectorAll('.nav-link'),
+    navLinks: document.querySelectorAll('.nav-link, .footer-nav-link'),
     menuToggle: document.querySelector('.menu-toggle'),
     mainNav: document.querySelector('.main-nav'),
     mobileMenu: document.querySelector('.mobile-menu'),
@@ -159,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const targetId = link.getAttribute('href').substring(1);
         const targetIndex = Array.from(elements.sections).findIndex(section => section.id === targetId);
+        
+        console.log(`フッターリンクがクリックされました。targetId: ${targetId}, targetIndex: ${targetIndex}`); // 追加
         
         if (targetIndex !== -1) {
           scrollToSection(targetIndex);
@@ -352,27 +354,51 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 一旦すべてリセット
     fadeElements.forEach(element => {
-      element.classList.remove('active');
+        element.classList.remove('active');
     });
     
     // 少し遅延を付けて再アニメーション
     setTimeout(() => {
-      fadeElements.forEach((element, index) => {
-        // データ属性から遅延時間を取得、なければインデックスに基づいて計算
-        const delay = element.dataset.delay ? parseInt(element.dataset.delay) : (index * 150); // 100msから150msに変更
+        fadeElements.forEach((element, index) => {
+            // データ属性から遅延時間を取得、なければインデックスに基づいて計算
+            const delay = element.dataset.delay ? parseInt(element.dataset.delay) : (index * 150);
+            
+            setTimeout(() => {
+                element.classList.add('active');
+            }, delay);
+        });
         
-        setTimeout(() => {
-          element.classList.add('active');
-        }, delay);
-      });
-      
-      // 進捗バーのアニメーション（存在すれば）
-      const progressBar = section.querySelector('.efficiency-progress');
-      if (progressBar) {
-        const percentage = progressBar.dataset.percent || '0';
-        progressBar.style.width = `${percentage}%`;
-      }
-    }, 200); // 100msから200msに変更
+        // 削減バーのアニメーション - シンプル化
+        const reductionBar = section.querySelector('.reduction-bar');
+        if (reductionBar) {
+            // テキスト要素を取得
+            const textElement = section.querySelector('.reduction-text');
+            if (textElement) {
+                textElement.textContent = '-80%';
+            }
+            
+            // 最初から緑色で設定
+            reductionBar.style.transition = 'none';
+            reductionBar.style.width = '100%';
+            reductionBar.style.backgroundColor = '#00B900'; // 緑色
+            
+            // 強制的にレイアウト計算を実行させる
+            void reductionBar.offsetWidth;
+            
+            // 幅の変更アニメーションのみ実行
+            setTimeout(() => {
+                reductionBar.style.transition = 'width 2s ease-in-out';
+                reductionBar.style.width = '20%';
+                
+                // アニメーション完了後にテキスト更新
+                setTimeout(() => {
+                    if (textElement) {
+                        textElement.textContent = '効率化完了!';
+                    }
+                }, 2000);
+            }, 300);
+        }
+    }, 200);
   }
   
   /**

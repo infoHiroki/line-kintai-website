@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LINEでカンタン勤怠 - 警備業界に特化した勤怠管理システム</title>
     
+    <!-- GitHub Pages用のベースパス設定 -->
+    <base href="./">
+    
     <!-- SEO対策 -->
     <meta name="description" content="警備業界に特化した、LINEで完結する勤怠管理システム。複数現場の一元管理、紙の勤務表の集計・確認の手間を削減、急な人員変更にも対応。ITリテラシーが低い方でも簡単に使えます。">
     <meta name="keywords" content="勤怠管理, LINE, 警備業, 勤怠システム, 勤務表, 現場管理, 経理業務効率化">
@@ -111,15 +114,21 @@
         transform: translate(0);
         transition: opacity 0.8s ease, transform 0.8s ease;
       }
-      .efficiency-progress {
-        transition: width 2s ease-in-out;
+      
+      /* 削減バーのスタイル - クラスを排除しJavaScriptで完全制御 */
+      .reduction-bar {
+        /* JavaScriptによって完全に制御 */
+      }
+      
+      .text-shadow {
+        text-shadow: 0px 0px 3px rgba(0,0,0,0.5);
       }
       
       /* スクロール防止（アクティブセクションの表示中） */
       html.no-scroll {
         overflow: hidden;
       }
-
+      
       /* ナビゲーション目印のカスタムスタイル */
       .section-navigation li {
         transition: all 0.5s ease;
@@ -394,11 +403,22 @@
                 </div>
                 <div class="mt-20 text-center fade-in delay-3 max-w-4xl mx-auto">
                     <h3 class="text-2xl md:text-3xl font-bold mb-6">勤怠管理の時間を<span class="text-primary-600 mx-1">最大80%削減</span>できます</h3>
-                    <div class="relative h-8 bg-gray-200 rounded-full max-w-2xl mx-auto overflow-hidden">
-                        <div class="absolute top-0 left-0 h-full bg-primary-600 rounded-full" style="width: 80%" data-percent="80"></div>
-                        <div class="flex justify-between px-4 py-1 relative z-10 text-sm font-medium">
-                            <span>Before: 40時間/月</span>
-                            <span>After: 8時間/月</span>
+                    <div class="flex flex-col max-w-2xl mx-auto">
+                        <div class="flex justify-between mb-2">
+                            <div class="text-left">
+                                <span class="font-medium text-red-500">Before: 40時間/月</span>
+                                <span class="text-sm text-gray-500 ml-2">(100%)</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-medium text-primary-600">After: 8時間/月</span>
+                                <span class="text-sm text-gray-500 ml-2">(20%)</span>
+                            </div>
+                        </div>
+                        <div class="relative h-10 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="reduction-bar absolute top-0 left-0 h-full rounded-full w-full bg-primary-600"></div>
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 h-full flex items-center justify-center font-bold text-white text-shadow z-10">
+                                <span class="reduction-text">-80%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -658,37 +678,26 @@
         </section>
 
         <!-- セクション7: フッター -->
-        <section id="section7" class="bg-gradient-to-b from-white to-gray-50 flex flex-col items-center justify-center min-h-[50vh] relative">
+        <section id="section7" class="bg-gradient-to-b from-gray-50 to-white flex flex-col items-center justify-center min-h-[50vh] relative">
             <div class="w-full">
-                <footer class="bg-gray-900 text-white py-8 rounded-xl">
+                <footer class="bg-light text-dark py-8 rounded-xl">
                     <div class="max-w-6xl mx-auto px-6 md:px-8 w-full">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-gray-700">
-                            <div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-gray-200">
+                            <div class="text-center">
                                 <h2 class="text-xl font-bold text-primary mb-2">LINEでカンタン勤怠</h2>
-                                <p class="text-gray-400 text-sm">警備業界に特化した勤怠管理システム</p>
+                                <p class="text-gray-600 text-sm">警備業界に特化した勤怠管理システム</p>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-bold mb-2">サイトマップ</h3>
-                                <ul class="space-y-1 text-sm">
-                                    <li><a href="#section1" class="text-gray-400 hover:text-primary transition-colors duration-300">トップ</a></li>
-                                    <li><a href="#section2" class="text-gray-400 hover:text-primary transition-colors duration-300">課題</a></li>
-                                    <li><a href="#section3" class="text-gray-400 hover:text-primary transition-colors duration-300">解決策</a></li>
-                                    <li><a href="#section4" class="text-gray-400 hover:text-primary transition-colors duration-300">機能</a></li>
-                                    <li><a href="#section5" class="text-gray-400 hover:text-primary transition-colors duration-300">料金</a></li>
-                                    <li><a href="#section6" class="text-gray-400 hover:text-primary transition-colors duration-300">お問い合わせ</a></li>
-                                </ul>
-                            </div>
-                            <div>
+                            <div class="text-center">
                                 <h3 class="text-lg font-bold mb-2">お問い合わせ</h3>
-                                <ul class="space-y-2 text-sm">
-                                    <li class="flex items-center text-gray-400"><i class="fas fa-phone text-primary w-6"></i> 03-1234-5678</li>
-                                    <li class="flex items-center text-gray-400"><i class="fas fa-envelope text-primary w-6"></i> info@keibi-line.co.jp</li>
-                                    <li class="flex items-center text-gray-400"><i class="fas fa-map-marker-alt text-primary w-6"></i> 東京都渋谷区〇〇町1-2-3</li>
+                                <ul class="space-y-2 text-sm inline-block text-left">
+                                    <li class="flex items-center text-gray-600"><i class="fas fa-phone text-primary w-6"></i> 03-1234-5678</li>
+                                    <li class="flex items-center text-gray-600"><i class="fas fa-envelope text-primary w-6"></i> info@keibi-line.co.jp</li>
+                                    <li class="flex items-center text-gray-600"><i class="fas fa-map-marker-alt text-primary w-6"></i> 東京都渋谷区〇〇町1-2-3</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="text-center text-gray-500 text-xs">
-                            <p>&copy; 2023 LINEでカンタン勤怠 All Rights Reserved.</p>
+                            <p>&copy; 2025 LINEでカンタン勤怠 All Rights Reserved.</p>
                         </div>
                     </div>
                 </footer>
