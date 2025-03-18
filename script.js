@@ -33,15 +33,34 @@ let scrollAnimations = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded イベント発火 - ページ読み込み完了');
     
+    // デバッグ用にHTML構造をログ出力
+    logHtmlStructure();
+    
     // パフォーマンス最適化のためにrequestAnimationFrameを使用
     requestAnimationFrame(() => {
         initApp();
     });
 });
 
+// HTMLの構造をログに出力（デバッグ用）
+function logHtmlStructure() {
+    console.log('=== HTML構造の検証 ===');
+    console.log('スワイパーコンテナ:', DOM.swiperContainer);
+    console.log('スワイパーラッパー:', DOM.swiperWrapper);
+    console.log('スワイパースライド数:', DOM.swiperSlides.length);
+    
+    // 各スライドのIDとクラスをログ出力
+    DOM.swiperSlides.forEach((slide, index) => {
+        console.log(`スライド[${index}]:`, slide.id, 'クラス:', slide.className);
+    });
+}
+
 // アプリケーションの初期化
 function initApp() {
     console.log('アプリケーション初期化開始');
+    
+    // 表示を確実にするための初期スタイル適用
+    ensureVisibility();
     
     // スクロールアニメーションの初期化（最初に実行）
     initScrollAnimations();
@@ -75,6 +94,36 @@ function initApp() {
     }
 
     console.log('アプリケーション初期化完了');
+}
+
+// 表示を確実にする関数
+function ensureVisibility() {
+    // 全セクションの表示を強制
+    const allSections = document.querySelectorAll('section');
+    allSections.forEach(section => {
+        section.style.visibility = 'visible';
+        section.style.opacity = '1';
+        section.style.display = 'block';
+        console.log(`セクション表示強制: ${section.id}`);
+    });
+    
+    // すべてのカード要素の表示を強制
+    const allCards = document.querySelectorAll('.problem-card, .feature-card, .pricing-card');
+    allCards.forEach(card => {
+        card.style.visibility = 'visible';
+        card.style.opacity = '1';
+        card.style.display = 'flex';
+        console.log('カード表示強制');
+    });
+    
+    // コンタクトフォームの表示を強制
+    const contactForm = document.querySelector('.contact-form');
+    if (contactForm) {
+        contactForm.style.visibility = 'visible';
+        contactForm.style.opacity = '1';
+        contactForm.style.display = 'block';
+        console.log('コンタクトフォーム表示強制');
+    }
 }
 
 // デバイスタイプの検出
@@ -154,6 +203,7 @@ function initSwiper() {
         // コールバック関数
         on: {
             init: function() {
+                console.log('Swiper初期化イベント発火');
                 updateSwipeIndicators(this.activeIndex, this.slides.length);
                 updateProgressBar(this.activeIndex / (this.slides.length - 1));
                 
@@ -162,8 +212,12 @@ function initSwiper() {
                 
                 // スワイプ可能な方向を示すARIA属性を設定
                 updateAriaAttributes(this.activeIndex, this.slides.length);
+                
+                // 現在のスライドを強制的に表示
+                forceActiveSlideVisibility(this.activeIndex);
             },
             slideChange: function() {
+                console.log('スライド変更イベント発火:', this.activeIndex);
                 updateSwipeIndicators(this.activeIndex, this.slides.length);
                 updateProgressBar(this.activeIndex / (this.slides.length - 1));
                 
@@ -182,6 +236,9 @@ function initSwiper() {
                 // スライド内のアニメーションを観察
                 observeSlideAnimations(this.slides[this.activeIndex]);
                 
+                // 現在のスライドを強制的に表示
+                forceActiveSlideVisibility(this.activeIndex);
+                
                 // アナリティクスイベントの送信（実装されている場合）
                 if (typeof trackPageView === 'function') {
                     trackPageView(`Slide ${this.activeIndex + 1}`);
@@ -199,9 +256,16 @@ function initSwiper() {
             },
             transitionStart: function() {
                 isScrolling = true;
+                console.log('スライド遷移開始');
             },
             transitionEnd: function() {
                 isScrolling = false;
+                console.log('スライド遷移完了');
+                
+                // 遷移後に再度アクティブスライドの表示を確認
+                setTimeout(() => {
+                    forceActiveSlideVisibility(this.activeIndex);
+                }, 100);
             }
         }
     };
@@ -219,6 +283,70 @@ function initSwiper() {
     swiper = new Swiper('.swiper-container', swiperOptions);
     
     console.log('Swiper初期化完了');
+}
+
+// 現在のスライドを強制的に表示する関数
+function forceActiveSlideVisibility(activeIndex) {
+    console.log('アクティブスライドの表示を強制:', activeIndex);
+    
+    // すべてのスライドを一度非表示に
+    DOM.swiperSlides.forEach((slide, index) => {
+        if (index !== activeIndex) {
+            slide.style.visibility = 'hidden';
+            slide.style.opacity = '0';
+            slide.classList.remove('swiper-slide-visible');
+        }
+    });
+    
+    // アクティブスライドを表示
+    const activeSlide = DOM.swiperSlides[activeIndex];
+    
+    if (activeSlide) {
+        activeSlide.style.visibility = 'visible';
+        activeSlide.style.opacity = '1';
+        activeSlide.style.display = 'flex';
+        activeSlide.classList.add('swiper-slide-visible');
+        
+        // スライド内のすべての要素を確実に表示
+        const allElements = activeSlide.querySelectorAll('*');
+        allElements.forEach(el => {
+            if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+                el.style.visibility = 'visible';
+                el.style.opacity = '1';
+                
+                // 特定の要素は表示方法を維持
+                if (el.classList.contains('container') || el.tagName === 'DIV') {
+                    el.style.display = el.style.display || 'block';
+                }
+                
+                // セクションの見出しと説明を確実に表示
+                if (el.classList.contains('section-title') || 
+                    el.tagName === 'H2' || 
+                    el.tagName === 'H3' || 
+                    el.tagName === 'P') {
+                    el.style.display = 'block';
+                }
+                
+                // グリッドレイアウトを維持
+                if (el.classList.contains('problems-grid') || 
+                    el.classList.contains('features-grid') || 
+                    el.classList.contains('pricing-cards')) {
+                    el.style.display = 'grid';
+                }
+                
+                // カード要素はフレックス表示を維持
+                if (el.classList.contains('problem-card') || 
+                    el.classList.contains('feature-card') || 
+                    el.classList.contains('pricing-card')) {
+                    el.style.display = 'flex';
+                }
+            }
+        });
+        
+        console.log(`アクティブスライド[${activeIndex}]を表示強制: ${activeSlide.id}`);
+    } else {
+        console.error('アクティブスライドが見つかりません:', activeIndex);
+    }
 }
 
 // スライド内のアニメーション要素を観察する関数を強化
@@ -527,6 +655,13 @@ function setupEventListeners() {
         handleResize();
     }, 200));
     
+    // スライドの表示を強制するイベントリスナーを追加
+    window.addEventListener('resize', debounce(() => {
+        if (swiper) {
+            forceActiveSlideVisibility(swiper.activeIndex);
+        }
+    }, 200));
+    
     console.log('イベントリスナー設定完了');
 }
 
@@ -675,333 +810,50 @@ function isElementInSwiper(element) {
     return false;
 }
 
-// スライド内のアニメーションのトリガー
-function triggerAnimations(activeSlide) {
-    // アクティブスライド内のアニメーション要素を取得
-    const animateElements = activeSlide.querySelectorAll('.animate-on-scroll:not(.animated)');
+// スライドのアニメーション要素をリセットする関数（非アクティブスライド用）
+function resetSlideAnimations(slide) {
+    console.log('スライドのアニメーションをリセット:', slide.id);
     
-    if (animateElements.length === 0) return;
+    const animateElements = slide.querySelectorAll('.animate-on-scroll, .scroll-animate');
     
-    // IntersectionObserverの設定
-    const options = {
-        root: activeSlide,
-        rootMargin: '0px',
-        threshold: 0.15
-    };
-    
-    // IntersectionObserverの作成
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            // 動きの低減設定が有効な場合はアニメーションをスキップ
-            if (isReducedMotion) {
-                entry.target.classList.add('animated');
-                return;
-            }
-            
-            if (entry.isIntersecting) {
-                // 要素が画面内に入った場合
-                const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
-                setTimeout(() => {
-                    entry.target.classList.add('animated');
-                }, delay * 1000);
-                
-                // 一度アニメーションが発火したら監視を解除
-                observer.unobserve(entry.target);
-            }
-        });
-    }, options);
-    
-    // 各要素を監視
     animateElements.forEach(element => {
-        observer.observe(element);
-    });
-}
-
-// 初期アニメーションのトリガー
-function triggerInitialAnimations() {
-    // すべてのanimate-on-scroll要素に対してIntersectionObserverを使用
-    const animateElements = document.querySelectorAll('.animate-on-scroll');
-    
-    // IntersectionObserverの設定
-    const options = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15 // 要素が15%見えたらアニメーション開始
-    };
-    
-    // IntersectionObserverの作成
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            // 動きの低減設定が有効な場合はアニメーションをスキップ
-            if (isReducedMotion) {
-                entry.target.classList.add('animated');
-                return;
-            }
-            
-            if (entry.isIntersecting) {
-                // 要素が画面内に入った場合
-                const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
-                setTimeout(() => {
-                    entry.target.classList.add('animated');
-                }, delay * 1000);
-                
-                // 一度アニメーションが発火したら監視を解除
-                observer.unobserve(entry.target);
-            }
-        });
-    }, options);
-    
-    // 各要素を監視
-    animateElements.forEach(element => {
-        observer.observe(element);
-    });
-}
-
-// テキスト分割アニメーションの初期化
-function initSplitTextAnimations() {
-    // 動きの低減設定が有効な場合はスキップ
-    if (isReducedMotion) return;
-    
-    // 分割アニメーション対象の要素を取得
-    const splitTextElements = document.querySelectorAll('.split-text');
-    
-    splitTextElements.forEach(element => {
-        // テキストを取得
-        const text = element.textContent;
-        // 要素を空にする
-        element.textContent = '';
+        element.classList.remove('animated');
+        element.classList.remove('active');
+        element.style.transition = 'none';
+        element.style.transitionDelay = '0s';
         
-        // 文字ごとにspanで囲む
-        for (let i = 0; i < text.length; i++) {
-            const span = document.createElement('span');
-            span.textContent = text[i];
-            span.style.animationDelay = `${0.05 * i}s`;
-            element.appendChild(span);
-        }
-    });
-}
-
-// 画像の遅延読み込み
-function lazyLoadImages() {
-    const lazyImages = document.querySelectorAll('.lazy-image');
-    
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.addEventListener('load', () => {
-                        img.classList.add('loaded');
-                    });
-                    observer.unobserve(img);
-                }
-            });
-        });
+        // フェードアニメーションの初期状態に
+        element.style.opacity = '0';
         
-        lazyImages.forEach(img => {
-            imageObserver.observe(img);
-        });
-    } else {
-        // IntersectionObserverがサポートされていない場合のフォールバック
-        lazyImages.forEach(img => {
-            img.src = img.dataset.src;
-            img.addEventListener('load', () => {
-                img.classList.add('loaded');
-            });
-        });
-    }
-}
-
-// アクセシビリティの強化
-function enhanceAccessibility() {
-    // スワイパーコンテナにARIA属性を追加
-    DOM.swiperContainer.setAttribute('role', 'region');
-    DOM.swiperContainer.setAttribute('aria-label', 'コンテンツスライダー');
-    
-    // スライドにARIA属性を追加
-    DOM.swiperSlides.forEach((slide, index) => {
-        slide.setAttribute('role', 'group');
-        slide.setAttribute('aria-label', `スライド ${index + 1}`);
-        slide.setAttribute('aria-roledescription', 'スライド');
-        
-        // 最初のスライドにaria-current属性を追加
-        if (index === 0) {
-            slide.setAttribute('aria-current', 'true');
-        }
-    });
-    
-    // スワイプインジケーターにARIA属性を追加
-    DOM.swipeIndicators.forEach((indicator, index) => {
-        indicator.setAttribute('role', 'button');
-        indicator.setAttribute('tabindex', '0');
-        
-        if (index === DOM.swiperSlides.length - 1) {
-            indicator.setAttribute('aria-label', 'トップに戻る');
-        } else {
-            indicator.setAttribute('aria-label', '次のスライドへ');
-        }
-    });
-}
-
-// ユーティリティ関数: スロットリング
-function throttle(func, delay) {
-    let lastCall = 0;
-    return function(...args) {
-        const now = Date.now();
-        if (now - lastCall >= delay) {
-            lastCall = now;
-            func.apply(this, args);
-        }
-    };
-}
-
-// ユーティリティ関数: デバウンス
-function debounce(func, delay) {
-    let timeoutId;
-    return function(...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            func.apply(this, args);
-        }, delay);
-    };
-}
-
-// ユーティリティ関数: アナリティクスイベントの送信（実装例）
-function trackPageView(pageName) {
-    // アナリティクスが実装されている場合に使用
-    if (window.gtag) {
-        gtag('event', 'page_view', {
-            page_title: pageName,
-            page_location: window.location.href,
-            page_path: `/${pageName.toLowerCase().replace(/\s+/g, '-')}`
-        });
-    }
-}
-
-// ブラウザのサポート状況をチェック
-function checkBrowserSupport() {
-    const features = {
-        intersectionObserver: 'IntersectionObserver' in window,
-        passiveEvents: (function() {
-            let supportsPassive = false;
-            try {
-                window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
-                    get: function() { supportsPassive = true; }
-                }));
-            } catch(e) {}
-            return supportsPassive;
-        })(),
-        touchEvents: 'ontouchstart' in window,
-        customProperties: CSS.supports('(--test: 0)'),
-        webp: (function() {
-            const elem = document.createElement('canvas');
-            if (elem.getContext && elem.getContext('2d')) {
-                return elem.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        // データアニメーションに基づいて適切な変形を設定
+        const animation = element.dataset.animation;
+        if (animation) {
+            switch (animation) {
+                case 'animate__fadeInDown':
+                    element.style.transform = 'translateY(-20px)';
+                    break;
+                case 'animate__fadeInUp':
+                    element.style.transform = 'translateY(20px)';
+                    break;
+                case 'animate__fadeInLeft':
+                    element.style.transform = 'translateX(-20px)';
+                    break;
+                case 'animate__fadeInRight':
+                    element.style.transform = 'translateX(20px)';
+                    break;
+                case 'animate__zoomIn':
+                    element.style.transform = 'scale(0.9)';
+                    break;
+                default:
+                    element.style.transform = 'translateY(20px)';
             }
-            return false;
-        })()
-    };
-    
-    // サポート状況に基づいてクラスを追加
-    for (const feature in features) {
-        if (features[feature]) {
-            document.documentElement.classList.add(`has-${feature}`);
-        } else {
-            document.documentElement.classList.add(`no-${feature}`);
         }
-    }
-    
-    return features;
-}
-
-// ブラウザのサポート状況をチェック
-const browserSupport = checkBrowserSupport();
-
-// スクロールプログレスバーの初期化
-function initScrollProgressBar() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'scroll-progress';
-    document.body.appendChild(progressBar);
-}
-
-// スクロールプログレスバーの更新
-function updateScrollProgressBar() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const progress = scrollTop / scrollHeight;
-    
-    const progressBar = document.querySelector('.scroll-progress');
-    if (progressBar) {
-        progressBar.style.width = `${progress * 100}%`;
-    }
-}
-
-// GSAP アニメーションの初期化関数を修正
-function initGSAPAnimations() {
-    // GSAP と ScrollTrigger を登録
-    gsap.registerPlugin(ScrollTrigger);
-    
-    console.log('GSAP アニメーション初期化開始');
-    
-    // LINEメッセージフロー表示のアニメーション - マーカーを削除
-    if (DOM.lineMessagingSection) {
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: '.line-messaging-section',
-                start: 'top center',
-                end: 'bottom center',
-                scrub: true, // スクロールに完全同期
-                markers: false, // マーカーを非表示に変更
-                onEnter: () => console.log('LINE メッセージフローアニメーション開始'),
-                onLeave: () => console.log('LINE メッセージフローアニメーション終了')
-            }
-        })
-        .from('.line-message-1', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
-        .from('.line-message-2', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
-        .from('.line-message-3', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
-        .to('.spreadsheet-icon', { scale: 1.1, duration: 0.3 }) // スケールを小さく
-        .from('.data-flow-arrow', { drawSVG: 0, duration: 1 })
-        .from('.spreadsheet-data', { opacity: 0, y: 10, stagger: 0.2, duration: 0.8 }); // 距離を短縮
-    }
-    
-    // Before/After比較アニメーション - マーカーを削除
-    if (DOM.comparisonSection) {
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: '.comparison-section',
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 1,
-                markers: false, // マーカーを非表示に変更
-                onEnter: () => console.log('比較アニメーション開始'),
-                onLeave: () => console.log('比較アニメーション終了')
-            }
-        })
-        .from('.before-image', { x: -30, opacity: 0.5, duration: 1 }) // 距離を短縮
-        .from('.after-image', { x: 30, opacity: 0, duration: 1 }, "-=0.8") // 距離を短縮
-        .from('.comparison-arrow', { opacity: 0, scale: 0.7, duration: 0.5 }, "-=0.5") // スケールを大きく
-        .from('.improvement-stats', { opacity: 0, y: 15, stagger: 0.2, duration: 0.8 }); // 距離を短縮
-    }
-    
-    // 特徴セクションのパララックス効果 - 距離を短縮
-    gsap.utils.toArray('.features-grid .feature-card').forEach((card, i) => {
-        const direction = i % 2 === 0 ? -15 : 15; // 距離を半分に
         
-        gsap.from(card, {
-            scrollTrigger: {
-                trigger: card,
-                start: 'top bottom-=100',
-                end: 'bottom top+=100',
-                scrub: 1
-            },
-            y: direction,
-            opacity: 0.8, // 不透明度を上げる
-            duration: 1.5
-        });
+        // トランジションを再設定
+        setTimeout(() => {
+            element.style.transition = '';
+        }, 50);
     });
-    
-    console.log('GSAP アニメーション初期化完了');
 }
 
 // スクロールアニメーションの処理
@@ -1395,4 +1247,164 @@ function updateScrollAnimationRects() {
     scrollAnimations.forEach(animation => {
         animation.rect = animation.element.getBoundingClientRect();
     });
+}
+
+// ユーティリティ関数: スロットリング
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function(...args) {
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            func.apply(this, args);
+        }
+    };
+}
+
+// ユーティリティ関数: デバウンス
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+// ユーティリティ関数: アナリティクスイベントの送信（実装例）
+function trackPageView(pageName) {
+    // アナリティクスが実装されている場合に使用
+    if (window.gtag) {
+        gtag('event', 'page_view', {
+            page_title: pageName,
+            page_location: window.location.href,
+            page_path: `/${pageName.toLowerCase().replace(/\s+/g, '-')}`
+        });
+    }
+}
+
+// ブラウザのサポート状況をチェック
+function checkBrowserSupport() {
+    const features = {
+        intersectionObserver: 'IntersectionObserver' in window,
+        passiveEvents: (function() {
+            let supportsPassive = false;
+            try {
+                window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+                    get: function() { supportsPassive = true; }
+                }));
+            } catch(e) {}
+            return supportsPassive;
+        })(),
+        touchEvents: 'ontouchstart' in window,
+        customProperties: CSS.supports('(--test: 0)'),
+        webp: (function() {
+            const elem = document.createElement('canvas');
+            if (elem.getContext && elem.getContext('2d')) {
+                return elem.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+            }
+            return false;
+        })()
+    };
+    
+    // サポート状況に基づいてクラスを追加
+    for (const feature in features) {
+        if (features[feature]) {
+            document.documentElement.classList.add(`has-${feature}`);
+        } else {
+            document.documentElement.classList.add(`no-${feature}`);
+        }
+    }
+    
+    return features;
+}
+
+// ブラウザのサポート状況をチェック
+const browserSupport = checkBrowserSupport();
+
+// スクロールプログレスバーの初期化
+function initScrollProgressBar() {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress';
+    document.body.appendChild(progressBar);
+}
+
+// スクロールプログレスバーの更新
+function updateScrollProgressBar() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = scrollTop / scrollHeight;
+    
+    const progressBar = document.querySelector('.scroll-progress');
+    if (progressBar) {
+        progressBar.style.width = `${progress * 100}%`;
+    }
+}
+
+// GSAP アニメーションの初期化関数を修正
+function initGSAPAnimations() {
+    // GSAP と ScrollTrigger を登録
+    gsap.registerPlugin(ScrollTrigger);
+    
+    console.log('GSAP アニメーション初期化開始');
+    
+    // LINEメッセージフロー表示のアニメーション - マーカーを削除
+    if (DOM.lineMessagingSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.line-messaging-section',
+                start: 'top center',
+                end: 'bottom center',
+                scrub: true, // スクロールに完全同期
+                markers: false, // マーカーを非表示に変更
+                onEnter: () => console.log('LINE メッセージフローアニメーション開始'),
+                onLeave: () => console.log('LINE メッセージフローアニメーション終了')
+            }
+        })
+        .from('.line-message-1', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
+        .from('.line-message-2', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
+        .from('.line-message-3', { opacity: 0, y: 20, duration: 0.5 }) // 距離を短縮
+        .to('.spreadsheet-icon', { scale: 1.1, duration: 0.3 }) // スケールを小さく
+        .from('.data-flow-arrow', { drawSVG: 0, duration: 1 })
+        .from('.spreadsheet-data', { opacity: 0, y: 10, stagger: 0.2, duration: 0.8 }); // 距離を短縮
+    }
+    
+    // Before/After比較アニメーション - マーカーを削除
+    if (DOM.comparisonSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.comparison-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+                markers: false, // マーカーを非表示に変更
+                onEnter: () => console.log('比較アニメーション開始'),
+                onLeave: () => console.log('比較アニメーション終了')
+            }
+        })
+        .from('.before-image', { x: -30, opacity: 0.5, duration: 1 }) // 距離を短縮
+        .from('.after-image', { x: 30, opacity: 0, duration: 1 }, "-=0.8") // 距離を短縮
+        .from('.comparison-arrow', { opacity: 0, scale: 0.7, duration: 0.5 }, "-=0.5") // スケールを大きく
+        .from('.improvement-stats', { opacity: 0, y: 15, stagger: 0.2, duration: 0.8 }); // 距離を短縮
+    }
+    
+    // 特徴セクションのパララックス効果 - 距離を短縮
+    gsap.utils.toArray('.features-grid .feature-card').forEach((card, i) => {
+        const direction = i % 2 === 0 ? -15 : 15; // 距離を半分に
+        
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top bottom-=100',
+                end: 'bottom top+=100',
+                scrub: 1
+            },
+            y: direction,
+            opacity: 0.8, // 不透明度を上げる
+            duration: 1.5
+        });
+    });
+    
+    console.log('GSAP アニメーション初期化完了');
 } 
