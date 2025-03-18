@@ -14,7 +14,15 @@ const DOM = {
     progressBar: document.createElement('div'),
     // GSAP用の要素を追加
     lineMessagingSection: document.querySelector('.line-messaging-section'),
-    comparisonSection: document.querySelector('.comparison-section')
+    comparisonSection: document.querySelector('.comparison-section'),
+    mainContent: document.querySelector('.main-content'),
+    sections: document.querySelectorAll('.fullscreen-section'),
+    sectionNavigation: document.querySelector('.section-navigation'),
+    sectionDots: document.querySelectorAll('.section-navigation li'),
+    scrollIndicators: document.querySelectorAll('.scroll-indicator'),
+    fadeElements: document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right'),
+    efficiencyBar: document.querySelector('.efficiency-progress'),
+    preload: document.createElement('div')
 };
 
 // グローバル変数
@@ -22,12 +30,17 @@ let swiper;
 let isScrolling = false;
 let lastScrollTime = 0;
 let touchStartY = 0;
+let touchEndY = 0;
 let deviceType = detectDeviceType();
 let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let scrollObserver;
 let lastScrollY = 0;
 let ticking = false;
 let scrollAnimations = [];
+let currentSection = 0;
+let isAnimating = false;
+let scrollThreshold = 50; // スクロールの閾値（px）
+const scrollDelay = 800; // スクロール間の遅延（ms）
 
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', () => {
@@ -1471,4 +1484,429 @@ function initGSAPAnimations() {
     });
     
     console.log('GSAP アニメーション初期化完了');
+}
+
+// プリロード画面の作成と表示
+function createPreloader() {
+    DOM.preload.className = 'preload';
+    DOM.preload.innerHTML = '<div class="loader"></div>';
+    DOM.body.appendChild(DOM.preload);
+}
+
+// ページ読み込み完了後の処理
+document.addEventListener('DOMContentLoaded', () => {
+    // プリローダーの作成
+    createPreloader();
+    
+    // 初期化処理
+    window.addEventListener('load', () => {
+        initApp();
+        
+        // ページ読み込み完了後にプリロード画面を非表示
+        setTimeout(() => {
+            DOM.preload.classList.add('hide');
+            // 最初のセクションのアニメーション実行
+            activateSection(0);
+        }, 500);
+    });
+});
+
+// アプリケーションの初期化
+function initApp() {
+    // GASPの初期化
+    initGSAP();
+    
+    // イベントリスナーの設定
+    setupEventListeners();
+    
+    // アクセシビリティの向上
+    enhanceAccessibility();
+    
+    console.log('アプリケーション初期化完了');
+}
+
+// GSAPの初期化
+function initGSAP() {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
+// イベントリスナーの設定
+function setupEventListeners() {
+    // マウスホイールイベント
+    window.addEventListener('wheel', handleWheelScroll);
+    
+    // タッチイベント（モバイル用）
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+    
+    // キーボードイベント
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // リサイズイベント
+    window.addEventListener('resize', debounce(handleResize, 200));
+    
+    // スクロールインジケータークリックイベント
+    DOM.scrollIndicators.forEach(indicator => {
+        indicator.addEventListener('click', handleScrollIndicatorClick);
+    });
+    
+    // ナビゲーションドットのクリックイベント
+    DOM.sectionDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            scrollToSection(index);
+        });
+    });
+    
+    // ナビゲーションリンクのクリックイベント
+    DOM.navLinks.forEach(link => {
+        link.addEventListener('click', handleNavLinkClick);
+    });
+    
+    // メニュートグルのクリックイベント（モバイル用）
+    DOM.menuToggle.addEventListener('click', toggleMobileMenu);
+}
+
+// ホイールスクロールハンドラー
+function handleWheelScroll(event) {
+    event.preventDefault();
+    
+    const currentTime = new Date().getTime();
+    
+    // スクロール間隔の制御（連続スクロール防止）
+    if (currentTime - lastScrollTime < scrollDelay) {
+        return;
+    }
+    
+    lastScrollTime = currentTime;
+    
+    if (isAnimating) return;
+    
+    // スクロール方向の判定
+    if (event.deltaY > 0) {
+        // 下にスクロール
+        scrollToNextSection();
+    } else {
+        // 上にスクロール
+        scrollToPrevSection();
+    }
+}
+
+// タッチ終了ハンドラー
+function handleTouchEnd(event) {
+    touchEndY = event.changedTouches[0].clientY;
+    const diffY = touchStartY - touchEndY;
+    
+    const currentTime = new Date().getTime();
+    
+    // スクロール間隔の制御
+    if (currentTime - lastScrollTime < scrollDelay) {
+        return;
+    }
+    
+    lastScrollTime = currentTime;
+    
+    if (isAnimating) return;
+    
+    // スワイプ方向の判定と閾値チェック
+    if (diffY > scrollThreshold) {
+        // 下にスワイプ
+        scrollToNextSection();
+    } else if (diffY < -scrollThreshold) {
+        // 上にスワイプ
+        scrollToPrevSection();
+    }
+}
+
+// モバイルメニューの切り替え
+function toggleMobileMenu() {
+    DOM.mainNav.classList.toggle('active');
+}
+
+// 次のセクションへスクロール
+function scrollToNextSection() {
+    if (currentSection < DOM.sections.length - 1) {
+        scrollToSection(currentSection + 1);
+    }
+}
+
+// 前のセクションへスクロール
+function scrollToPrevSection() {
+    if (currentSection > 0) {
+        scrollToSection(currentSection - 1);
+    }
+}
+
+// 特定のセクションへスクロール
+function scrollToSection(index, animate = true) {
+    if (index < 0 || index >= DOM.sections.length || index === currentSection && animate) {
+        return;
+    }
+    
+    isAnimating = animate;
+    currentSection = index;
+    
+    // ナビゲーションドットの更新
+    updateNavigationDots();
+    
+    // セクションへのスクロール
+    if (animate) {
+        gsap.to(window, {
+            duration: 0.8,
+            scrollTo: {
+                y: DOM.sections[index],
+                offsetY: 0
+            },
+            ease: 'power2.inOut',
+            onComplete: () => {
+                isAnimating = false;
+                activateSection(index);
+            }
+        });
+    } else {
+        window.scrollTo(0, DOM.sections[index].offsetTop);
+        isAnimating = false;
+        activateSection(index);
+    }
+}
+
+// ナビゲーションドットの更新
+function updateNavigationDots() {
+    DOM.sectionDots.forEach((dot, index) => {
+        if (index === currentSection) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+}
+
+// セクションのアクティブ化とアニメーション
+function activateSection(index) {
+    // 前のセクションのアニメーション要素をリセット
+    resetAnimations();
+    
+    // 現在のセクションのアニメーション要素をアクティブ化
+    const currentSectionElement = DOM.sections[index];
+    const animElements = currentSectionElement.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+    
+    animElements.forEach(element => {
+        element.classList.add('active');
+    });
+    
+    // 進捗バーのアニメーション（もし存在すれば）
+    const progressBar = currentSectionElement.querySelector('.efficiency-progress');
+    if (progressBar) {
+        const percentage = progressBar.dataset.percent || 0;
+        progressBar.style.width = `${percentage}%`;
+    }
+}
+
+// アニメーション要素のリセット
+function resetAnimations() {
+    DOM.fadeElements.forEach(element => {
+        element.classList.remove('active');
+    });
+}
+
+// アクセシビリティの向上
+function enhanceAccessibility() {
+    // フォーカス可視化の強化
+    const style = document.createElement('style');
+    style.textContent = `
+        :focus-visible {
+            outline: 3px solid #007bff !important;
+            outline-offset: 3px !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // ARIAロールの追加
+    DOM.sections.forEach((section, index) => {
+        section.setAttribute('role', 'region');
+        section.setAttribute('aria-label', `セクション ${index + 1}`);
+    });
+    
+    // キーボードナビゲーションの強化
+    DOM.sectionNavigation.setAttribute('role', 'navigation');
+    DOM.sectionNavigation.setAttribute('aria-label', 'セクションナビゲーション');
+    
+    DOM.sectionDots.forEach((dot, index) => {
+        dot.setAttribute('role', 'button');
+        dot.setAttribute('tabindex', '0');
+        dot.setAttribute('aria-label', `セクション ${index + 1} へ移動`);
+        
+        // キーボード操作のサポート
+        dot.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                scrollToSection(index);
+            }
+        });
+    });
+}
+
+// スクロールインジケーターのクリックハンドラー
+function handleScrollIndicatorClick(event) {
+    const indicator = event.currentTarget;
+    
+    if (indicator.classList.contains('top')) {
+        // トップに戻るインジケーター
+        scrollToSection(0);
+    } else {
+        // 次のセクションへ
+        scrollToNextSection();
+    }
+}
+
+// ナビゲーションリンクのクリックハンドラー
+function handleNavLinkClick(event) {
+    event.preventDefault();
+    
+    // ハッシュからセクションIDを取得
+    const targetId = event.currentTarget.getAttribute('href');
+    const targetSection = document.querySelector(targetId);
+    
+    if (targetSection) {
+        // セクションのインデックスを取得
+        const sectionIndex = Array.from(DOM.sections).indexOf(targetSection);
+        scrollToSection(sectionIndex);
+        
+        // モバイルメニューを閉じる
+        DOM.mainNav.classList.remove('active');
+    }
+}
+
+// モバイルメニューの切り替え
+function toggleMobileMenu() {
+    DOM.mainNav.classList.toggle('active');
+}
+
+// スクロールアニメーションの処理
+function handleScrollAnimation() {
+    lastScrollY = window.scrollY;
+    
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            // スクロールプログレスバーの更新
+            updateScrollProgressBar();
+            
+            // パララックス効果の更新
+            updateParallaxElements();
+            
+            // スティッキーセクションの更新
+            updateStickyElements();
+            
+            // スクロールシーケンスの更新
+            updateScrollSequence();
+            
+            // 3D回転効果の更新
+            updateRotateElements();
+            
+            // スケール効果の更新
+            updateScaleElements();
+            
+            // 不透明度効果の更新
+            updateFadeElements();
+            
+            // ぼかし効果の更新
+            updateBlurElements();
+            
+            // 位置変化効果の更新
+            updateMoveElements();
+            
+            // カウントアップアニメーションの更新
+            updateCountUpElements();
+            
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
+}
+
+// スクロールアニメーションの処理
+function handleScrollAnimation() {
+    lastScrollY = window.scrollY;
+    
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            // スクロールプログレスバーの更新
+            updateScrollProgressBar();
+            
+            // パララックス効果の更新
+            updateParallaxElements();
+            
+            // スティッキーセクションの更新
+            updateStickyElements();
+            
+            // スクロールシーケンスの更新
+            updateScrollSequence();
+            
+            // 3D回転効果の更新
+            updateRotateElements();
+            
+            // スケール効果の更新
+            updateScaleElements();
+            
+            // 不透明度効果の更新
+            updateFadeElements();
+            
+            // ぼかし効果の更新
+            updateBlurElements();
+            
+            // 位置変化効果の更新
+            updateMoveElements();
+            
+            // カウントアップアニメーションの更新
+            updateCountUpElements();
+            
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
+}
+
+// スクロールアニメーションの処理
+function handleScrollAnimation() {
+    lastScrollY = window.scrollY;
+    
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            // スクロールプログレスバーの更新
+            updateScrollProgressBar();
+            
+            // パララックス効果の更新
+            updateParallaxElements();
+            
+            // スティッキーセクションの更新
+            updateStickyElements();
+            
+            // スクロールシーケンスの更新
+            updateScrollSequence();
+            
+            // 3D回転効果の更新
+            updateRotateElements();
+            
+            // スケール効果の更新
+            updateScaleElements();
+            
+            // 不透明度効果の更新
+            updateFadeElements();
+            
+            // ぼかし効果の更新
+            updateBlurElements();
+            
+            // 位置変化効果の更新
+            updateMoveElements();
+            
+            // カウントアップアニメーションの更新
+            updateCountUpElements();
+            
+            ticking = false;
+        });
+        
+        ticking = true;
+    }
 } 

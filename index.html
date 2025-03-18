@@ -33,9 +33,7 @@
     <!-- スタイルシート -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     
     <!-- 構造化データ -->
     <script type="application/ld+json">
@@ -54,21 +52,20 @@
     </script>
 </head>
 <body>
-    <!-- ヘッダー -->
+    <!-- ヘッダー (固定) -->
     <header class="header">
-        <div class="container">
+        <div class="header-container">
             <div class="logo">
                 <h1>LINEでカンタン勤怠</h1>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#hero" class="nav-link">トップ</a></li>
-                    <li><a href="#problems" class="nav-link">課題</a></li>
-                    <li><a href="#benefits" class="nav-link">メリット</a></li>
-                    <li><a href="#features" class="nav-link">機能</a></li>
-                    <li><a href="#scroll-demo" class="nav-link">アニメーション</a></li>
-                    <li><a href="#pricing" class="nav-link">料金</a></li>
-                    <li><a href="#contact" class="nav-link">お問い合わせ</a></li>
+                    <li><a href="#section1" class="nav-link">トップ</a></li>
+                    <li><a href="#section2" class="nav-link">課題</a></li>
+                    <li><a href="#section3" class="nav-link">解決策</a></li>
+                    <li><a href="#section4" class="nav-link">機能</a></li>
+                    <li><a href="#section5" class="nav-link">料金</a></li>
+                    <li><a href="#section6" class="nav-link">お問い合わせ</a></li>
                 </ul>
             </nav>
             <div class="menu-toggle">
@@ -77,601 +74,353 @@
         </div>
     </header>
 
-    <!-- スワイプコンテナ -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <!-- セクション1: ヒーロー -->
-            <section class="swiper-slide" id="hero">
-                <div class="container">
-                    <div class="hero-content">
-                        <h1 class="animate-on-scroll" data-animation="animate__fadeInUp">警備業界に特化した<br>LINEで完結する勤怠管理</h1>
-                        <h2 class="animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.2s">複数現場の一元管理、紙の勤務表の手間を削減</h2>
-                        <p class="animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.4s">ITリテラシーが低い方でも簡単に使える<br>警備業界のための勤怠管理システム</p>
-                        <div class="hero-buttons animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.6s">
-                            <a href="#contact" class="btn-primary">無料デモを試す</a>
-                            <a href="#pricing" class="btn-secondary">料金を見る</a>
-                        </div>
-                    </div>
-                    <div class="hero-image animate-on-scroll" data-animation="animate__fadeInRight" data-delay="0.3s">
-                        <img src="images/free/hero-image.png" alt="LINEでカンタン勤怠の画面イメージ">
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション2: 課題 -->
-            <section class="swiper-slide" id="problems">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">警備業界の勤怠管理の課題</h2>
-                    <div class="problems-grid">
-                        <div class="problem-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.1s">
-                            <div class="problem-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <h3>紙の勤務表の管理が大変</h3>
-                            <p>複数の現場から集まる紙の勤務表の集計・確認に時間がかかり、ミスも発生しやすい。</p>
-                        </div>
-                        <div class="problem-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.2s">
-                            <div class="problem-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <h3>勤怠集計に時間がかかる</h3>
-                            <p>月末の給与計算前に勤怠を集計する作業が膨大で、経理担当者の負担になっている。</p>
-                        </div>
-                        <div class="problem-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.3s">
-                            <div class="problem-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <h3>急な人員変更に対応できない</h3>
-                            <p>急な欠勤や交代が発生した際に、迅速に対応できず現場に混乱が生じる。</p>
-                        </div>
-                        <div class="problem-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.4s">
-                            <div class="problem-icon">
-                                <i class="fas fa-laptop"></i>
-                            </div>
-                            <h3>ITリテラシーの問題</h3>
-                            <p>警備員の方々のITリテラシーが低く、複雑なシステムでは使いこなせない。</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション3: メリット -->
-            <section class="swiper-slide" id="benefits">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">導入後のメリット</h2>
-                    <div class="comparison-wrapper comparison-section">
-                        <div class="comparison-before animate-on-scroll" data-animation="animate__fadeInLeft">
-                            <h3>導入前</h3>
-                            <div class="comparison-image">
-                                <img src="images/free/before-image.jpg" alt="導入前の状況">
-                            </div>
-                            <ul class="comparison-list">
-                                <li><i class="fas fa-times"></i> <span>紙の勤務表を手作業で集計</span></li>
-                                <li><i class="fas fa-times"></i> <span>月末に膨大な作業が発生</span></li>
-                                <li><i class="fas fa-times"></i> <span>急な人員変更に対応できない</span></li>
-                                <li><i class="fas fa-times"></i> <span>勤怠データの分析ができない</span></li>
-                            </ul>
-                        </div>
-                        <div class="comparison-arrow animate-on-scroll" data-animation="animate__fadeIn" data-delay="0.5s">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                        <div class="comparison-after animate-on-scroll" data-animation="animate__fadeInRight">
-                            <h3>導入後</h3>
-                            <div class="comparison-image">
-                                <img src="images/free/after-image.jpg" alt="導入後の状況">
-                            </div>
-                            <ul class="comparison-list">
-                                <li><i class="fas fa-check"></i> <span>LINEで簡単に勤怠報告</span></li>
-                                <li><i class="fas fa-check"></i> <span>リアルタイムで勤怠状況を確認</span></li>
-                                <li><i class="fas fa-check"></i> <span>急な人員変更もLINEで対応</span></li>
-                                <li><i class="fas fa-check"></i> <span>勤怠データを自動で集計・分析</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="time-saved animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.6s">
-                        <h3>勤怠管理の時間を<span>最大80%削減</span>できます</h3>
-                        <div class="time-saved-graphic">
-                            <div class="time-saved-bar">
-                                <div class="time-saved-progress" data-percent="80"></div>
-                            </div>
-                            <div class="time-saved-text">
-                                <p>月間作業時間: <strong>40時間 → 8時間</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション3.5: LINEメッセージフロー -->
-            <section class="swiper-slide line-messaging-section" id="line-flow">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">LINEからスプレッドシートまで、シームレスなデータフロー</h2>
-                    <div class="line-flow-container">
-                        <div class="line-messages">
-                            <div class="line-message line-message-1">
-                                <div class="line-message-header">
-                                    <img src="images/line-checkin.png" alt="LINE出勤報告" class="line-icon">
-                                    <span class="line-username">鈴木太郎</span>
-                                    <span class="line-timestamp">08:00</span>
-                                </div>
-                                <div class="line-message-body">
-                                    <p>出勤しました。渋谷駅前現場です。</p>
-                                </div>
-                            </div>
-                            <div class="line-message line-message-2">
-                                <div class="line-message-header">
-                                    <img src="images/line-record.png" alt="LINE記録" class="line-icon">
-                                    <span class="line-username">LINEでカンタン勤怠</span>
-                                    <span class="line-timestamp">08:01</span>
-                                </div>
-                                <div class="line-message-body">
-                                    <p>【出勤記録】<br>日時: 2023/07/15 08:00<br>現場: 渋谷駅前<br>記録完了しました✓</p>
-                                </div>
-                            </div>
-                            <div class="line-message line-message-3">
-                                <div class="line-message-header">
-                                    <img src="images/line-checkout.png" alt="LINE退勤報告" class="line-icon">
-                                    <span class="line-username">鈴木太郎</span>
-                                    <span class="line-timestamp">17:00</span>
-                                </div>
-                                <div class="line-message-body">
-                                    <p>退勤します。</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="data-flow">
-                            <svg class="data-flow-arrow" viewBox="0 0 100 50">
-                                <path d="M10,25 C30,5 70,45 90,25 L95,30 L90,25 L95,20" fill="none" stroke="#00B900" stroke-width="2" />
-                            </svg>
-                            <div class="spreadsheet-icon">
-                                <img src="images/spreadsheet.png" alt="スプレッドシート" class="spreadsheet-img">
-                            </div>
-                        </div>
-                        <div class="spreadsheet-preview">
-                            <div class="spreadsheet-header">
-                                <div class="spreadsheet-cell">日付</div>
-                                <div class="spreadsheet-cell">名前</div>
-                                <div class="spreadsheet-cell">現場</div>
-                                <div class="spreadsheet-cell">出勤時間</div>
-                                <div class="spreadsheet-cell">退勤時間</div>
-                                <div class="spreadsheet-cell">勤務時間</div>
-                            </div>
-                            <div class="spreadsheet-data">
-                                <div class="spreadsheet-row">
-                                    <div class="spreadsheet-cell">2023/07/15</div>
-                                    <div class="spreadsheet-cell">鈴木太郎</div>
-                                    <div class="spreadsheet-cell">渋谷駅前</div>
-                                    <div class="spreadsheet-cell">08:00</div>
-                                    <div class="spreadsheet-cell">17:00</div>
-                                    <div class="spreadsheet-cell">9.0</div>
-                                </div>
-                                <div class="spreadsheet-row">
-                                    <div class="spreadsheet-cell">2023/07/15</div>
-                                    <div class="spreadsheet-cell">佐藤次郎</div>
-                                    <div class="spreadsheet-cell">新宿西口</div>
-                                    <div class="spreadsheet-cell">07:30</div>
-                                    <div class="spreadsheet-cell">16:30</div>
-                                    <div class="spreadsheet-cell">9.0</div>
-                                </div>
-                                <div class="spreadsheet-row">
-                                    <div class="spreadsheet-cell">2023/07/15</div>
-                                    <div class="spreadsheet-cell">田中花子</div>
-                                    <div class="spreadsheet-cell">池袋東口</div>
-                                    <div class="spreadsheet-cell">09:00</div>
-                                    <div class="spreadsheet-cell">18:00</div>
-                                    <div class="spreadsheet-cell">9.0</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション4: 機能紹介 -->
-            <section class="swiper-slide" id="features">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">主な機能</h2>
-                    <div class="features-grid">
-                        <div class="feature-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.1s">
-                            <div class="feature-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <h3>LINEで簡単打刻</h3>
-                            <p>出勤・退勤をLINEで簡単に報告。位置情報付きで不正打刻も防止できます。</p>
-                        </div>
-                        <div class="feature-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.2s">
-                            <div class="feature-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <h3>シフト管理</h3>
-                            <p>複数現場のシフトを一元管理。LINEで簡単に確認・変更ができます。</p>
-                        </div>
-                        <div class="feature-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.3s">
-                            <div class="feature-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <h3>勤怠データ分析</h3>
-                            <p>勤怠データを自動集計し、現場ごと・個人ごとの分析が可能です。</p>
-                        </div>
-                        <div class="feature-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.4s">
-                            <div class="feature-icon">
-                                <i class="fas fa-file-export"></i>
-                            </div>
-                            <h3>給与計算連携</h3>
-                            <p>給与計算ソフトと連携し、データをCSVで出力できます。</p>
-                        </div>
-                    </div>
-                    <div class="demo-content animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.5s">
-                        <div class="demo-description">
-                            <h3>無料デモを試してみませんか？</h3>
-                            <p>実際の操作感を体験いただけます。QRコードを読み取るだけで簡単に始められます。</p>
-                            <ul class="demo-features">
-                                <li><i class="fas fa-check-circle"></i> <span>クレジットカード不要</span></li>
-                                <li><i class="fas fa-check-circle"></i> <span>インストール不要</span></li>
-                                <li><i class="fas fa-check-circle"></i> <span>すぐに試せる</span></li>
-                            </ul>
-                        </div>
-                        <div class="demo-qr">
-                            <img src="images/free/demo-qr.png" alt="デモ用QRコード">
-                            <p>QRコードを読み取ってデモを開始</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション: Apple風スクロールアニメーションデモ -->
-            <section class="swiper-slide" id="scroll-demo">
-                <div class="container">
-                    <h2 class="section-title scroll-animate" data-effect="fade-up" data-trigger="top">スクロールアニメーションデモ</h2>
-                    
-                    <!-- 基本的なスクロールアニメーション -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">基本的なアニメーション</h3>
-                        <div class="demo-grid">
-                            <div class="demo-item scroll-animate" data-effect="fade-up" data-delay="200">
-                                <div class="demo-icon">
-                                    <i class="fas fa-arrow-up"></i>
-                                </div>
-                                <h4>フェードアップ</h4>
-                                <p>下から上へフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="fade-down" data-delay="300">
-                                <div class="demo-icon">
-                                    <i class="fas fa-arrow-down"></i>
-                                </div>
-                                <h4>フェードダウン</h4>
-                                <p>上から下へフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="fade-left" data-delay="400">
-                                <div class="demo-icon">
-                                    <i class="fas fa-arrow-left"></i>
-                                </div>
-                                <h4>フェードレフト</h4>
-                                <p>右から左へフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="fade-right" data-delay="500">
-                                <div class="demo-icon">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                                <h4>フェードライト</h4>
-                                <p>左から右へフェードインするアニメーション</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 高度なスクロールアニメーション -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">高度なアニメーション</h3>
-                        <div class="demo-grid">
-                            <div class="demo-item scroll-animate" data-effect="zoom-in" data-delay="200">
-                                <div class="demo-icon">
-                                    <i class="fas fa-search-plus"></i>
-                                </div>
-                                <h4>ズームイン</h4>
-                                <p>拡大しながらフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="zoom-out" data-delay="300">
-                                <div class="demo-icon">
-                                    <i class="fas fa-search-minus"></i>
-                                </div>
-                                <h4>ズームアウト</h4>
-                                <p>縮小しながらフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="blur" data-delay="400">
-                                <div class="demo-icon">
-                                    <i class="fas fa-eye"></i>
-                                </div>
-                                <h4>ブラー</h4>
-                                <p>ぼかしが解除されながらフェードインするアニメーション</p>
-                            </div>
-                            <div class="demo-item scroll-animate" data-effect="rotate" data-delay="500">
-                                <div class="demo-icon">
-                                    <i class="fas fa-sync"></i>
-                                </div>
-                                <h4>回転</h4>
-                                <p>回転しながらフェードインするアニメーション</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- パララックス効果 -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">パララックス効果</h3>
-                        <div class="parallax-demo">
-                            <div class="parallax-layer parallax-scroll" data-speed="0.2" data-direction="up">
-                                <img src="images/free/parallax-bg.jpg" alt="パララックス背景">
-                            </div>
-                            <div class="parallax-content">
-                                <h4 class="scroll-animate" data-effect="fade-up" data-delay="200">スクロールに合わせて動く背景</h4>
-                                <p class="scroll-animate" data-effect="fade-up" data-delay="300">スクロール位置に応じて異なる速度で動く要素を作成できます。</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- スクロールシーケンス -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">スクロールシーケンス</h3>
-                        <div class="scroll-sequence">
-                            <div class="scroll-sequence-item">
-                                <img src="images/free/sequence-1.jpg" alt="シーケンス1">
-                            </div>
-                            <div class="scroll-sequence-item">
-                                <img src="images/free/sequence-2.jpg" alt="シーケンス2">
-                            </div>
-                            <div class="scroll-sequence-item">
-                                <img src="images/free/sequence-3.jpg" alt="シーケンス3">
-                            </div>
-                            <div class="scroll-sequence-item">
-                                <img src="images/free/sequence-4.jpg" alt="シーケンス4">
-                            </div>
-                        </div>
-                        <p class="scroll-animate" data-effect="fade-up" data-delay="200">スクロール位置に応じて画像が切り替わります。</p>
-                    </div>
-                    
-                    <!-- 3D回転効果 -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">3D回転効果</h3>
-                        <div class="rotate-on-scroll">
-                            <div class="rotate-on-scroll-item">
-                                <img src="images/free/rotate-demo.jpg" alt="3D回転デモ">
-                            </div>
-                        </div>
-                        <p class="scroll-animate" data-effect="fade-up" data-delay="200">スクロール位置に応じて要素が3D回転します。</p>
-                    </div>
-                    
-                    <!-- スクロールに応じた色の変化 -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">色の変化</h3>
-                        <div class="color-change-on-scroll">
-                            <div class="color-demo">
-                                <h4>スクロールに応じて色が変化</h4>
-                                <p>スクロール位置に応じて背景色やテキスト色が変化します。</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- カウントアップアニメーション -->
-                    <div class="demo-section">
-                        <h3 class="scroll-animate" data-effect="fade-up" data-delay="100">カウントアップ</h3>
-                        <div class="count-demo">
-                            <div class="count-item">
-                                <div class="count-up" data-count-start="0" data-count-end="80">0</div>
-                                <span>%</span>
-                                <p>時間削減</p>
-                            </div>
-                            <div class="count-item">
-                                <div class="count-up" data-count-start="0" data-count-end="95">0</div>
-                                <span>%</span>
-                                <p>顧客満足度</p>
-                            </div>
-                            <div class="count-item">
-                                <div class="count-up" data-count-start="0" data-count-end="500">0</div>
-                                <span>+</span>
-                                <p>導入企業</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション: スティッキーセクションデモ -->
-            <section class="swiper-slide" id="sticky-demo">
-                <div class="sticky-section">
-                    <div class="sticky-container">
-                        <div class="sticky-content">
-                            <h2 class="section-title" data-sticky-animate="fade">スティッキーセクション</h2>
-                            <div class="sticky-demo">
-                                <div class="sticky-item" data-sticky-animate="slide-up">
-                                    <h3>スクロールに応じて固定表示</h3>
-                                    <p>スクロールしても要素が画面に固定され、コンテンツが入れ替わります。</p>
-                                </div>
-                                <div class="sticky-image" data-sticky-animate="scale">
-                                    <img src="images/free/sticky-demo.jpg" alt="スティッキーデモ">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション5: 料金 -->
-            <section class="swiper-slide" id="pricing">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">料金プラン</h2>
-                    <div class="pricing-cards">
-                        <div class="pricing-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.1s">
-                            <div class="pricing-header">
-                                <h3>スタンダードプラン</h3>
-                            </div>
-                            <div class="pricing-price">
-                                <span class="price-amount">¥19,800</span>
-                                <span class="price-period">/月（税込）</span>
-                            </div>
-                            <div class="pricing-initial">
-                                <p>初期費用: ¥50,000（税込）</p>
-                            </div>
-                            <div class="pricing-capacity">
-                                <p>〜50名まで利用可能</p>
-                            </div>
-                            <div class="pricing-features">
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <span>LINEで勤怠打刻</span></li>
-                                    <li><i class="fas fa-check"></i> <span>シフト管理</span></li>
-                                    <li><i class="fas fa-check"></i> <span>勤怠データ分析</span></li>
-                                    <li><i class="fas fa-check"></i> <span>CSVエクスポート</span></li>
-                                    <li><i class="fas fa-check"></i> <span>メール・チャットサポート</span></li>
-                                </ul>
-                            </div>
-                            <div class="pricing-action">
-                                <a href="#contact" class="btn-primary">お問い合わせ</a>
-                            </div>
-                        </div>
-                        <div class="pricing-card featured animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.2s">
-                            <div class="pricing-header">
-                                <h3>プレミアムプラン</h3>
-                            </div>
-                            <div class="pricing-price">
-                                <span class="price-amount">¥29,800</span>
-                                <span class="price-period">/月（税込）</span>
-                            </div>
-                            <div class="pricing-initial">
-                                <p>初期費用: ¥80,000（税込）</p>
-                            </div>
-                            <div class="pricing-capacity">
-                                <p>〜100名まで利用可能</p>
-                            </div>
-                            <div class="pricing-features">
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <span>スタンダードプランの全機能</span></li>
-                                    <li><i class="fas fa-check"></i> <span>給与計算ソフト連携</span></li>
-                                    <li><i class="fas fa-check"></i> <span>複数現場の一元管理</span></li>
-                                    <li><i class="fas fa-check"></i> <span>高度なレポート機能</span></li>
-                                    <li><i class="fas fa-check"></i> <span>電話サポート（平日9-18時）</span></li>
-                                </ul>
-                            </div>
-                            <div class="pricing-action">
-                                <a href="#contact" class="btn-primary">お問い合わせ</a>
-                            </div>
-                        </div>
-                        <div class="pricing-card animate-on-scroll" data-animation="animate__fadeInUp" data-delay="0.3s">
-                            <div class="pricing-header">
-                                <h3>エンタープライズプラン</h3>
-                            </div>
-                            <div class="pricing-price">
-                                <span class="price-amount">要問合せ</span>
-                            </div>
-                            <div class="pricing-initial">
-                                <p>初期費用: 要問合せ</p>
-                            </div>
-                            <div class="pricing-capacity">
-                                <p>100名以上の大規模導入向け</p>
-                            </div>
-                            <div class="pricing-features">
-                                <ul>
-                                    <li><i class="fas fa-check"></i> <span>プレミアムプランの全機能</span></li>
-                                    <li><i class="fas fa-check"></i> <span>API連携</span></li>
-                                    <li><i class="fas fa-check"></i> <span>カスタマイズ対応</span></li>
-                                    <li><i class="fas fa-check"></i> <span>専任サポート担当者</span></li>
-                                    <li><i class="fas fa-check"></i> <span>24時間サポート対応</span></li>
-                                </ul>
-                            </div>
-                            <div class="pricing-action">
-                                <a href="#contact" class="btn-primary">お問い合わせ</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator">
-                    <span>下にスワイプ</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-            </section>
-
-            <!-- セクション6: お問い合わせ -->
-            <section class="swiper-slide" id="contact">
-                <div class="container">
-                    <h2 class="section-title animate-on-scroll" data-animation="animate__fadeInDown">お問い合わせ</h2>
-                    <div class="contact-content">
-                        <div class="contact-info animate-on-scroll" data-animation="animate__fadeInLeft">
-                            <h3>お気軽にお問い合わせください</h3>
-                            <div class="contact-qr">
-                                <img src="images/free/contact-qr.png" alt="お問い合わせ用QRコード">
-                                <p>LINEで簡単にお問い合わせ</p>
-                            </div>
-                            <div class="contact-details">
-                                <p><i class="fas fa-phone"></i> 03-1234-5678</p>
-                                <p><i class="fas fa-envelope"></i> info@keibi-line.co.jp</p>
-                                <p><i class="fas fa-map-marker-alt"></i> 東京都渋谷区〇〇町1-2-3</p>
-                            </div>
-                        </div>
-                        <div class="contact-form animate-on-scroll" data-animation="animate__fadeInRight">
-                            <h3>お問い合わせフォーム</h3>
-                            <form id="contactForm">
-                                <div class="form-group">
-                                    <label for="name">お名前</label>
-                                    <input type="text" id="name" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="company">会社名</label>
-                                    <input type="text" id="company" name="company" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">メールアドレス</label>
-                                    <input type="email" id="email" name="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">電話番号</label>
-                                    <input type="tel" id="phone" name="phone">
-                                </div>
-                                <div class="form-group">
-                                    <label for="message">お問い合わせ内容</label>
-                                    <textarea id="message" name="message" rows="5" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn-primary">送信する</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="swipe-indicator last">
-                    <span>トップに戻る</span>
-                    <i class="fas fa-chevron-up"></i>
-                </div>
-            </section>
+    <!-- メインコンテンツ（全画面スクロール） -->
+    <main class="main-content">
+        <!-- ナビゲーション目印 -->
+        <div class="section-navigation">
+            <ul>
+                <li class="active" data-section="section1"></li>
+                <li data-section="section2"></li>
+                <li data-section="section3"></li>
+                <li data-section="section4"></li>
+                <li data-section="section5"></li>
+                <li data-section="section6"></li>
+            </ul>
         </div>
-        
-        <!-- ページネーション -->
-        <div class="swiper-pagination"></div>
-    </div>
+
+        <!-- セクション1: ヒーロー -->
+        <section id="section1" class="fullscreen-section">
+            <div class="section-container">
+                <div class="hero-content">
+                    <h2 class="fade-in">警備業界に特化した<br>LINEで完結する勤怠管理</h2>
+                    <p class="fade-in delay-1">複数現場の一元管理、紙の勤務表の手間を削減</p>
+                    <p class="fade-in delay-2">ITリテラシーが低い方でも簡単に使える<br>警備業界のための勤怠管理システム</p>
+                    <div class="hero-buttons fade-in delay-3">
+                        <a href="#section6" class="btn-primary">無料デモを試す</a>
+                        <a href="#section5" class="btn-secondary">料金を見る</a>
+                    </div>
+                </div>
+                <div class="hero-image fade-in-right">
+                    <img src="images/free/hero-image.jpg" alt="LINEでカンタン勤怠の画面イメージ">
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>下にスクロール</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- セクション2: 課題 -->
+        <section id="section2" class="fullscreen-section">
+            <div class="section-container">
+                <h2 class="section-title fade-in">警備業界の勤怠管理の課題</h2>
+                <div class="problems-container">
+                    <div class="problem-card fade-in delay-1">
+                        <div class="problem-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>紙の勤務表の管理が大変</h3>
+                        <p>複数の現場から集まる紙の勤務表の集計・確認に時間がかかり、ミスも発生しやすい。</p>
+                    </div>
+                    <div class="problem-card fade-in delay-2">
+                        <div class="problem-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>勤怠集計に時間がかかる</h3>
+                        <p>月末の給与計算前に勤怠を集計する作業が膨大で、経理担当者の負担になっている。</p>
+                    </div>
+                    <div class="problem-card fade-in delay-3">
+                        <div class="problem-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>急な人員変更に対応できない</h3>
+                        <p>急な欠勤や交代が発生した際に、迅速に対応できず現場に混乱が生じる。</p>
+                    </div>
+                    <div class="problem-card fade-in delay-4">
+                        <div class="problem-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <h3>ITリテラシーの問題</h3>
+                        <p>警備員の方々のITリテラシーが低く、複雑なシステムでは使いこなせない。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>下にスクロール</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- セクション3: 解決策 (Before/After) -->
+        <section id="section3" class="fullscreen-section">
+            <div class="section-container">
+                <h2 class="section-title fade-in">導入後のメリット</h2>
+                <div class="comparison-container">
+                    <div class="comparison-item before fade-in-left">
+                        <h3>導入前</h3>
+                        <div class="comparison-image">
+                            <img src="images/free/before-image.jpg" alt="導入前の状況">
+                        </div>
+                        <ul class="comparison-list">
+                            <li><i class="fas fa-times"></i> 紙の勤務表を手作業で集計</li>
+                            <li><i class="fas fa-times"></i> 月末に膨大な作業が発生</li>
+                            <li><i class="fas fa-times"></i> 急な人員変更に対応できない</li>
+                            <li><i class="fas fa-times"></i> 勤怠データの分析ができない</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-arrow fade-in">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="comparison-item after fade-in-right">
+                        <h3>導入後</h3>
+                        <div class="comparison-image">
+                            <img src="images/free/after-image.jpg" alt="導入後の状況">
+                        </div>
+                        <ul class="comparison-list">
+                            <li><i class="fas fa-check"></i> LINEで簡単に勤怠報告</li>
+                            <li><i class="fas fa-check"></i> リアルタイムで勤怠状況を確認</li>
+                            <li><i class="fas fa-check"></i> 急な人員変更もLINEで対応</li>
+                            <li><i class="fas fa-check"></i> 勤怠データを自動で集計・分析</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="efficiency-stat fade-in delay-3">
+                    <h3>勤怠管理の時間を<span>最大80%削減</span>できます</h3>
+                    <div class="efficiency-bar">
+                        <div class="efficiency-progress" data-percent="80"></div>
+                        <div class="efficiency-labels">
+                            <span>Before: 40時間/月</span>
+                            <span>After: 8時間/月</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>下にスクロール</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- セクション4: 機能紹介（LINEメッセージフロー） -->
+        <section id="section4" class="fullscreen-section">
+            <div class="section-container">
+                <h2 class="section-title fade-in">主な機能</h2>
+                <div class="line-flow-container fade-in delay-1">
+                    <div class="line-messages">
+                        <div class="line-message">
+                            <div class="line-message-header">
+                                <div class="line-user-icon"><img src="images/free/line-checkin.jpg" alt="警備員アイコン"></div>
+                                <span class="line-username">鈴木太郎</span>
+                                <span class="line-time">08:00</span>
+                            </div>
+                            <div class="line-message-content">
+                                <p>出勤しました。渋谷駅前現場です。</p>
+                            </div>
+                        </div>
+                        <div class="line-message line-message-bot">
+                            <div class="line-message-header">
+                                <div class="line-user-icon"><img src="images/free/line-record.jpg" alt="システムアイコン"></div>
+                                <span class="line-username">LINEでカンタン勤怠</span>
+                                <span class="line-time">08:01</span>
+                            </div>
+                            <div class="line-message-content">
+                                <p>【出勤記録】<br>日時: 2023/07/15 08:00<br>現場: 渋谷駅前<br>記録完了しました✓</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-flow fade-in delay-2">
+                        <svg class="flow-arrow" width="100" height="50" viewBox="0 0 100 50">
+                            <path d="M10,25 C30,5 70,45 90,25 L95,30 L90,25 L95,20" fill="none" stroke="#00B900" stroke-width="2" />
+                        </svg>
+                    </div>
+                    <div class="spreadsheet-container fade-in delay-3">
+                        <div class="spreadsheet-header">
+                            <div class="spreadsheet-cell">日付</div>
+                            <div class="spreadsheet-cell">名前</div>
+                            <div class="spreadsheet-cell">現場</div>
+                            <div class="spreadsheet-cell">出勤</div>
+                            <div class="spreadsheet-cell">退勤</div>
+                        </div>
+                        <div class="spreadsheet-row">
+                            <div class="spreadsheet-cell">2023/07/15</div>
+                            <div class="spreadsheet-cell">鈴木太郎</div>
+                            <div class="spreadsheet-cell">渋谷駅前</div>
+                            <div class="spreadsheet-cell">08:00</div>
+                            <div class="spreadsheet-cell">17:00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="features-grid fade-in delay-4">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>LINEで簡単打刻</h3>
+                        <p>出勤・退勤をLINEで簡単に報告。位置情報付きで不正打刻も防止。</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>シフト管理</h3>
+                        <p>複数現場のシフトを一元管理。LINEで簡単に確認・変更。</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>勤怠データ分析</h3>
+                        <p>勤怠データを自動集計し、現場ごと・個人ごとの分析が可能。</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <h3>給与計算連携</h3>
+                        <p>給与計算ソフトと連携し、データをCSVで出力可能。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>下にスクロール</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- セクション5: 料金 -->
+        <section id="section5" class="fullscreen-section">
+            <div class="section-container">
+                <h2 class="section-title fade-in">料金プラン</h2>
+                <div class="pricing-container">
+                    <div class="pricing-card fade-in-left">
+                        <div class="pricing-header">
+                            <h3>スタンダードプラン</h3>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="price-amount">¥19,800</span>
+                            <span class="price-period">/月（税込）</span>
+                        </div>
+                        <div class="pricing-details">
+                            <p>初期費用: ¥50,000（税込）</p>
+                            <p>〜50名まで利用可能</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> LINEで勤怠打刻</li>
+                            <li><i class="fas fa-check"></i> シフト管理</li>
+                            <li><i class="fas fa-check"></i> 勤怠データ分析</li>
+                            <li><i class="fas fa-check"></i> CSVエクスポート</li>
+                            <li><i class="fas fa-check"></i> メール・チャットサポート</li>
+                        </ul>
+                        <div class="pricing-action">
+                            <a href="#section6" class="btn-primary">お問い合わせ</a>
+                        </div>
+                    </div>
+                    <div class="pricing-card featured fade-in">
+                        <div class="pricing-header">
+                            <h3>プレミアムプラン</h3>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="price-amount">¥29,800</span>
+                            <span class="price-period">/月（税込）</span>
+                        </div>
+                        <div class="pricing-details">
+                            <p>初期費用: ¥80,000（税込）</p>
+                            <p>〜100名まで利用可能</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> スタンダードプランの全機能</li>
+                            <li><i class="fas fa-check"></i> 給与計算ソフト連携</li>
+                            <li><i class="fas fa-check"></i> 複数現場の一元管理</li>
+                            <li><i class="fas fa-check"></i> 高度なレポート機能</li>
+                            <li><i class="fas fa-check"></i> 電話サポート（平日9-18時）</li>
+                        </ul>
+                        <div class="pricing-action">
+                            <a href="#section6" class="btn-primary">お問い合わせ</a>
+                        </div>
+                    </div>
+                    <div class="pricing-card fade-in-right">
+                        <div class="pricing-header">
+                            <h3>エンタープライズプラン</h3>
+                        </div>
+                        <div class="pricing-price">
+                            <span class="price-amount">要問合せ</span>
+                        </div>
+                        <div class="pricing-details">
+                            <p>初期費用: 要問合せ</p>
+                            <p>100名以上の大規模導入向け</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> プレミアムプランの全機能</li>
+                            <li><i class="fas fa-check"></i> API連携</li>
+                            <li><i class="fas fa-check"></i> カスタマイズ対応</li>
+                            <li><i class="fas fa-check"></i> 専任サポート担当者</li>
+                            <li><i class="fas fa-check"></i> 24時間サポート対応</li>
+                        </ul>
+                        <div class="pricing-action">
+                            <a href="#section6" class="btn-primary">お問い合わせ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>下にスクロール</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- セクション6: お問い合わせ -->
+        <section id="section6" class="fullscreen-section">
+            <div class="section-container">
+                <h2 class="section-title fade-in">お問い合わせ</h2>
+                <div class="contact-container">
+                    <div class="contact-info fade-in-left">
+                        <h3>お気軽にお問い合わせください</h3>
+                        <div class="contact-qr">
+                            <img src="images/free/qr-code.jpg" alt="お問い合わせ用QRコード">
+                            <p>LINEで簡単にお問い合わせ</p>
+                        </div>
+                        <div class="contact-details">
+                            <p><i class="fas fa-phone"></i> 03-1234-5678</p>
+                            <p><i class="fas fa-envelope"></i> info@keibi-line.co.jp</p>
+                            <p><i class="fas fa-map-marker-alt"></i> 東京都渋谷区〇〇町1-2-3</p>
+                        </div>
+                    </div>
+                    <div class="contact-form fade-in-right">
+                        <h3>お問い合わせフォーム</h3>
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <label for="name">お名前</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="company">会社名</label>
+                                <input type="text" id="company" name="company" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">メールアドレス</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">電話番号</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="message">お問い合わせ内容</label>
+                                <textarea id="message" name="message" rows="4" required></textarea>
+                            </div>
+                            <div class="form-action">
+                                <button type="submit" class="btn-primary">送信する</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator top">
+                <span>トップに戻る</span>
+                <i class="fas fa-chevron-up"></i>
+            </div>
+        </section>
+    </main>
 
     <!-- フッター -->
     <footer class="footer">
@@ -684,25 +433,15 @@
                 <div class="footer-links">
                     <h3>サイトマップ</h3>
                     <ul>
-                        <li><a href="#hero">トップ</a></li>
-                        <li><a href="#problems">課題</a></li>
-                        <li><a href="#benefits">メリット</a></li>
-                        <li><a href="#features">機能</a></li>
-                        <li><a href="#pricing">料金</a></li>
-                        <li><a href="#contact">お問い合わせ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h3>会社情報</h3>
-                    <ul>
-                        <li><a href="#">会社概要</a></li>
-                        <li><a href="#">プライバシーポリシー</a></li>
-                        <li><a href="#">利用規約</a></li>
-                        <li><a href="#">特定商取引法に基づく表記</a></li>
+                        <li><a href="#section1">トップ</a></li>
+                        <li><a href="#section2">課題</a></li>
+                        <li><a href="#section3">解決策</a></li>
+                        <li><a href="#section4">機能</a></li>
+                        <li><a href="#section5">料金</a></li>
+                        <li><a href="#section6">お問い合わせ</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h3>お問い合わせ</h3>
                     <p><i class="fas fa-phone"></i> 03-1234-5678</p>
                     <p><i class="fas fa-envelope"></i> info@keibi-line.co.jp</p>
                     <p><i class="fas fa-map-marker-alt"></i> 東京都渋谷区〇〇町1-2-3</p>
@@ -715,10 +454,8 @@
     </footer>
 
     <!-- スクリプト -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/DrawSVGPlugin.min.js"></script>
     <script src="script.js"></script>
 </body>
-</html> 
+</html>
