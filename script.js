@@ -39,9 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // アプリケーションの初期化
 function initApp() {
-    // スワイプ進行状況バーの追加
-    initProgressBar();
-                
+    console.log('アプリケーション初期化開始');
+    
+    // スクロールアニメーションの初期化（最初に実行）
+    initScrollAnimations();
+    
     // Swiperの初期化
     initSwiper();
     
@@ -53,28 +55,24 @@ function initApp() {
                 
     // ブラウザサポートのチェック
     checkBrowserSupport();
-                
-    // スクロール進行状況バーの初期化
-    initScrollProgressBar();
-                
+    
+    // GSAP アニメーションの初期化
+    if (!isReducedMotion) {
+        initGSAPAnimations();
+    }
+    
     // 画像の遅延読み込み
     lazyLoadImages();
     
-    // アニメーションの初期化（動きの低減設定がない場合のみ）
-    if (!isReducedMotion) {
-        initScrollAnimations(); // スクロールアニメーションの初期化
-        triggerInitialAnimations(); // 初期アニメーションをスクロールベースに
-        initSplitTextAnimations(); // テキスト分割アニメーション
-        initGSAPAnimations(); // GSAP アニメーションの初期化
-    }
-                
+    // スクロール進行状況バーの初期化
+    initScrollProgressBar();
+    
     // パフォーマンス追跡の初期化
     if (window.performance && window.performance.mark) {
         window.performance.mark('app-initialized');
     }
-    
-    // 初期ページビューの追跡
-    trackPageView('home');
+
+    console.log('アプリケーション初期化完了');
 }
 
 // デバイスタイプの検出
@@ -97,14 +95,14 @@ function updateProgressBar(progress) {
     DOM.progressBar.style.width = `${progress * 100}%`;
 }
 
-    // Swiperの初期化
-    function initSwiper() {
+// Swiperの初期化
+function initSwiper() {
     // Swiperのオプション設定
     const swiperOptions = {
-            direction: 'vertical',
-            slidesPerView: 1,
+        direction: 'vertical',
+        slidesPerView: 1,
         spaceBetween: 0,
-            speed: 800,
+        speed: 800,
         threshold: 20,
         resistanceRatio: 0,
         followFinger: true,
@@ -117,7 +115,7 @@ function updateProgressBar(progress) {
         longSwipesMs: 300,
         
         // マウスホイール設定
-            mousewheel: {
+        mousewheel: {
             enabled: true,
             sensitivity: deviceType === 'mobile' ? 0.8 : 1,
             thresholdDelta: deviceType === 'mobile' ? 70 : 50,
@@ -126,16 +124,16 @@ function updateProgressBar(progress) {
         },
         
         // キーボードナビゲーション
-            keyboard: {
-                enabled: true,
+        keyboard: {
+            enabled: true,
             onlyInViewport: true
-            },
+        },
         
         // ページネーション
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-                renderBullet: function (index, className) {
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+            renderBullet: function (index, className) {
                 return `<span class="${className}" role="button" aria-label="ページ ${index + 1}へ移動" tabindex="0"></span>`;
             }
         },
@@ -148,35 +146,17 @@ function updateProgressBar(progress) {
             nextSlideMessage: '次のスライドへ',
             firstSlideMessage: '最初のスライドです',
             lastSlideMessage: '最後のスライドです',
-            paginationBulletMessage: '{{index}}番目のスライドへ移動'
+            paginationBulletMessage: '{{index}}番目のスライドへ'
         },
         
-        // パフォーマンス設定
-        observer: true,
-        observeParents: true,
-        watchSlidesProgress: true,
-        preventInteractionOnTransition: true,
-        autoHeight: false,
-        preloadImages: false,
-        lazy: {
-            loadPrevNext: true,
-            loadPrevNextAmount: 2,
-            loadOnTransitionStart: true
-        },
-        
-        // イベントハンドラ
+        // コールバック関数
         on: {
-                init: function() {
+            init: function() {
                 updateSwipeIndicators(this.activeIndex, this.slides.length);
-                updateProgressBar(0);
+                updateProgressBar(this.activeIndex / (this.slides.length - 1));
                 
-                // アクティブスライドにaria-current属性を追加
-                this.slides[this.activeIndex].setAttribute('aria-current', 'true');
-                
-                // 初期アニメーションのトリガー
-                if (!isReducedMotion) {
-                    triggerAnimations(this.slides[this.activeIndex]);
-                }
+                // スライド内のアニメーションを観察
+                observeSlideAnimations(this.slides[this.activeIndex]);
                 
                 // スワイプ可能な方向を示すARIA属性を設定
                 updateAriaAttributes(this.activeIndex, this.slides.length);
@@ -197,20 +177,8 @@ function updateProgressBar(progress) {
                 // スワイプ可能な方向を示すARIA属性を更新
                 updateAriaAttributes(this.activeIndex, this.slides.length);
                 
-                // スライド内のアニメーションを再初期化
-                if (!isReducedMotion) {
-                    // 現在のスライドを取得
-                    const currentSlide = this.slides[this.activeIndex];
-                    
-                    // 一度監視を解除
-                    const animateElements = currentSlide.querySelectorAll('.animate-on-scroll');
-                    animateElements.forEach(element => {
-                        if (!element.classList.contains('animated')) {
-                            // アニメーションがまだ実行されていない要素のみ
-                            triggerAnimations(currentSlide);
-                        }
-                    });
-                }
+                // スライド内のアニメーションを観察
+                observeSlideAnimations(this.slides[this.activeIndex]);
                 
                 // アナリティクスイベントの送信（実装されている場合）
                 if (typeof trackPageView === 'function') {
@@ -232,9 +200,6 @@ function updateProgressBar(progress) {
             },
             transitionEnd: function() {
                 isScrolling = false;
-            },
-            progress: function(swiper, progress) {
-                updateProgressBar(progress);
             }
         }
     };
@@ -250,6 +215,118 @@ function updateProgressBar(progress) {
     
     // Swiperインスタンスの作成
     swiper = new Swiper('.swiper-container', swiperOptions);
+    
+    console.log('Swiper初期化完了');
+}
+
+// スライド内のアニメーション要素を観察する関数
+function observeSlideAnimations(slide) {
+    console.log('スライド内のアニメーション要素を観察:', slide.id);
+    
+    // アニメーション要素を取得
+    const animateElements = slide.querySelectorAll('.animate-on-scroll:not(.animated)');
+    
+    if (animateElements.length === 0) {
+        console.log('アニメーション要素が見つかりません');
+        return;
+    }
+    
+    console.log(`${animateElements.length}個のアニメーション要素を検出`);
+    
+    // IntersectionObserverの設定
+    const options = {
+        root: null, // ビューポート全体を監視
+        rootMargin: '0px',
+        threshold: 0.1 // 要素が10%見えたらアニメーション開始
+    };
+    
+    // IntersectionObserverの作成
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                console.log('要素が画面に入りました:', entry.target);
+                
+                // アニメーションクラスを追加
+                const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
+                
+                setTimeout(() => {
+                    entry.target.classList.add('animated');
+                    console.log('アニメーションを適用:', entry.target, 'delay:', delay);
+                }, delay * 1000);
+                
+                // 一度アニメーションが発火したら監視を解除
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+    
+    // 各要素を監視
+    animateElements.forEach(element => {
+        observer.observe(element);
+        console.log('監視開始:', element);
+    });
+}
+
+// スクロールアニメーションの初期化（全ページ共通）
+function initScrollAnimations() {
+    console.log('スクロールアニメーション初期化開始');
+    
+    // すべてのanimate-on-scroll要素を取得
+    const allAnimateElements = document.querySelectorAll('.animate-on-scroll, .scroll-animate');
+    
+    if (allAnimateElements.length === 0) {
+        console.log('アニメーション要素が見つかりません');
+        return;
+    }
+    
+    console.log(`${allAnimateElements.length}個のアニメーション要素を検出`);
+    
+    // IntersectionObserverの設定
+    const options = {
+        root: null, // ビューポート全体を監視
+        rootMargin: '0px',
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] // 複数の閾値で検出
+    };
+    
+    // IntersectionObserverの作成
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            // 動きの低減設定が有効な場合はすべての要素に即座にアニメーションを適用
+            if (isReducedMotion) {
+                entry.target.classList.add('animated');
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+                return;
+            }
+            
+            if (entry.isIntersecting) {
+                const ratio = entry.intersectionRatio;
+                console.log('要素が画面に入りました:', entry.target, '可視率:', ratio);
+                
+                if (ratio >= 0.1) { // 10%以上見えている場合
+                    // アニメーションクラスを追加
+                    const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
+                    
+                    setTimeout(() => {
+                        entry.target.classList.add('animated');
+                        entry.target.classList.add('active');
+                        console.log('アニメーションを適用:', entry.target, 'delay:', delay);
+                    }, delay * 1000);
+                    
+                    // 一度アニメーションが発火したら監視を解除
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, options);
+    
+    // 各要素を監視
+    allAnimateElements.forEach(element => {
+        observer.observe(element);
+        console.log('監視開始:', element);
+    });
+    
+    console.log('スクロールアニメーション初期化完了');
 }
 
 // スワイプインジケーターの更新
@@ -354,6 +431,8 @@ function setupEventListeners() {
         // その他のリサイズ処理
         handleResize();
     }, 200));
+    
+    console.log('イベントリスナー設定完了');
 }
 
 // スクロール処理
@@ -584,7 +663,7 @@ function triggerInitialAnimations() {
 }
 
 // テキスト分割アニメーションの初期化
-    function initSplitTextAnimations() {
+function initSplitTextAnimations() {
     // 動きの低減設定が有効な場合はスキップ
     if (isReducedMotion) return;
     
@@ -593,21 +672,21 @@ function triggerInitialAnimations() {
     
     splitTextElements.forEach(element => {
         // テキストを取得
-            const text = element.textContent;
+        const text = element.textContent;
         // 要素を空にする
-            element.textContent = '';
-            
+        element.textContent = '';
+        
         // 文字ごとにspanで囲む
-            for (let i = 0; i < text.length; i++) {
-                const span = document.createElement('span');
-                span.textContent = text[i];
+        for (let i = 0; i < text.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = text[i];
             span.style.animationDelay = `${0.05 * i}s`;
-                element.appendChild(span);
-            }
-        });
-    }
+            element.appendChild(span);
+        }
+    });
+}
 
-    // 画像の遅延読み込み
+// 画像の遅延読み込み
 function lazyLoadImages() {
     const lazyImages = document.querySelectorAll('.lazy-image');
     
@@ -618,7 +697,7 @@ function lazyLoadImages() {
                     const img = entry.target;
                     img.src = img.dataset.src;
                     img.addEventListener('load', () => {
-                    img.classList.add('loaded');
+                        img.classList.add('loaded');
                     });
                     observer.unobserve(img);
                 }
@@ -763,64 +842,138 @@ function updateScrollProgressBar() {
     }
 }
 
-// スクロールアニメーションの初期化
-function initScrollAnimations() {
-    // IntersectionObserverの設定
-    const options = {
-        root: null,
-        rootMargin: '0px',
-        threshold: buildThresholdList()
-    };
+// GSAP アニメーションの初期化
+function initGSAPAnimations() {
+    // GSAP と ScrollTrigger を登録
+    gsap.registerPlugin(ScrollTrigger);
     
-    // スクロールアニメーション要素の取得
-    const scrollAnimateElements = document.querySelectorAll('.scroll-animate');
+    console.log('GSAP アニメーション初期化開始');
     
-    // 各要素の情報を保存
-    scrollAnimations = Array.from(scrollAnimateElements).map(element => {
-        return {
-            element: element,
-            rect: element.getBoundingClientRect(),
-            triggered: false,
-            triggerPoint: parseFloat(getComputedStyle(element).getPropertyValue('--scroll-trigger-point') || 0.5)
-        };
+    // 仕様書に記載された LINEメッセージフロー表示のアニメーション
+    if (DOM.lineMessagingSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.line-messaging-section',
+                start: 'top center',
+                end: 'bottom center',
+                scrub: true, // スクロールに完全同期
+                markers: true, // 開発時に表示して確認
+                onEnter: () => console.log('LINE メッセージフローアニメーション開始'),
+                onLeave: () => console.log('LINE メッセージフローアニメーション終了')
+            }
+        })
+        .from('.line-message-1', { opacity: 0, y: 50, duration: 0.5 })
+        .from('.line-message-2', { opacity: 0, y: 50, duration: 0.5 })
+        .from('.line-message-3', { opacity: 0, y: 50, duration: 0.5 })
+        .to('.spreadsheet-icon', { scale: 1.2, duration: 0.3 })
+        .from('.data-flow-arrow', { drawSVG: 0, duration: 1 })
+        .from('.spreadsheet-data', { opacity: 0, y: 20, stagger: 0.2, duration: 0.8 });
+    }
+    
+    // Before/After比較アニメーション
+    if (DOM.comparisonSection) {
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: '.comparison-section',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+                markers: true, // 開発時に表示して確認
+                onEnter: () => console.log('比較アニメーション開始'),
+                onLeave: () => console.log('比較アニメーション終了')
+            }
+        })
+        .from('.before-image', { x: -100, opacity: 0.5, duration: 1 })
+        .from('.after-image', { x: 100, opacity: 0, duration: 1 }, "-=0.8")
+        .from('.comparison-arrow', { opacity: 0, scale: 0.5, duration: 0.5 }, "-=0.5")
+        .from('.improvement-stats', { opacity: 0, y: 30, stagger: 0.2, duration: 0.8 });
+    }
+    
+    // 特徴セクションのパララックス効果
+    gsap.utils.toArray('.features-grid .feature-card').forEach((card, i) => {
+        const direction = i % 2 === 0 ? -30 : 30;
+        
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top bottom-=100',
+                end: 'bottom top+=100',
+                scrub: 1
+            },
+            y: direction,
+            opacity: 0.5,
+            duration: 1.5
+        });
     });
     
-    // IntersectionObserverの作成
-    scrollObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const element = entry.target;
-            const animation = scrollAnimations.find(anim => anim.element === element);
-            
-            if (entry.isIntersecting) {
-                // 要素が画面内に入った時の処理
-                if (!animation.triggered) {
-                    // 要素の位置に基づいてアニメーションを適用
-                    updateElementAnimation(element, entry.intersectionRatio);
-                    
-                    // 完全に表示された場合はトリガーフラグを設定
-                    if (entry.intersectionRatio >= animation.triggerPoint) {
-                        animation.triggered = true;
-                        element.classList.add('active');
-                    }
-                }
-            } else {
-                // 要素が画面外に出た時の処理
-                // 上方向にスクロールして要素が画面外に出た場合
-                if (lastScrollY > window.scrollY && animation.triggered) {
-                    animation.triggered = false;
-                    element.classList.remove('active');
-                }
+    // ヒーローセクションのパララックス効果
+    gsap.timeline({
+        scrollTrigger: {
+            trigger: '.hero',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true
+        }
+    })
+    .to('.hero-image', { y: 100, duration: 1 })
+    .to('.hero-content', { y: 50, opacity: 0.8, duration: 1 }, 0);
+    
+    // ユーザー別メリットセクションのスティッキー表示
+    if (document.querySelector('.roles-benefits')) {
+        const rolesSection = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.roles-benefits',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: true,
+                pin: '.roles-heading', // 見出しを固定
+                pinSpacing: true
             }
         });
-    }, options);
+        
+        gsap.utils.toArray('.role-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top bottom-=100',
+                    end: 'center center',
+                    scrub: 1
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.2
+            });
+        });
+    }
     
-    // 各要素をIntersectionObserverで監視
-    scrollAnimateElements.forEach(element => {
-        scrollObserver.observe(element);
+    // 導入手順のステップバイステップアニメーション
+    gsap.utils.toArray('.implementation-step').forEach((step, i) => {
+        gsap.from(step, {
+            scrollTrigger: {
+                trigger: step,
+                start: 'top bottom-=50',
+                end: 'center center+=100',
+                scrub: 0.5
+            },
+            x: i % 2 === 0 ? -50 : 50,
+            opacity: 0,
+            duration: 1
+        });
     });
     
-    // スクロールイベントリスナーの追加
-    window.addEventListener('scroll', handleScrollAnimation);
+    // スクロールダウン矢印のアニメーション
+    if (document.querySelector('.scroll-down')) {
+        gsap.to('.scroll-down-arrow', {
+            y: 10,
+            repeat: -1,
+            yoyo: true,
+            duration: 0.8,
+            ease: 'power1.inOut'
+        });
+    }
+    
+    console.log('GSAP アニメーション初期化完了');
 }
 
 // スクロールアニメーションの処理
@@ -1214,135 +1367,4 @@ function updateScrollAnimationRects() {
     scrollAnimations.forEach(animation => {
         animation.rect = animation.element.getBoundingClientRect();
     });
-}
-
-// GSAP アニメーションの初期化
-function initGSAPAnimations() {
-    // GSAP と ScrollTrigger を登録
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // 仕様書に記載された LINEメッセージフロー表示のアニメーション
-    if (DOM.lineMessagingSection) {
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: '.line-messaging-section',
-                start: 'top center',
-                end: 'bottom center',
-                scrub: true, // スクロールに完全同期
-                markers: false, // 開発時のみ true に設定
-                pin: true, // セクションを画面に固定
-                anticipatePin: 1, // ピン留めをスムーズに
-                onEnter: () => console.log('LINE メッセージフローアニメーション開始'),
-                onLeave: () => console.log('LINE メッセージフローアニメーション終了')
-            }
-        })
-        .from('.line-message-1', { opacity: 0, y: 50, duration: 0.5 })
-        .from('.line-message-2', { opacity: 0, y: 50, duration: 0.5 })
-        .from('.line-message-3', { opacity: 0, y: 50, duration: 0.5 })
-        .to('.spreadsheet-icon', { scale: 1.2, duration: 0.3 })
-        .from('.data-flow-arrow', { drawSVG: 0, duration: 1 })
-        .from('.spreadsheet-data', { opacity: 0, y: 20, stagger: 0.2, duration: 0.8 });
-    }
-    
-    // Before/After比較アニメーション
-    if (DOM.comparisonSection) {
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: '.comparison-section',
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 1,
-                onEnter: () => console.log('比較アニメーション開始'),
-                onLeave: () => console.log('比較アニメーション終了')
-            }
-        })
-        .from('.before-image', { x: -100, opacity: 0.5, duration: 1 })
-        .from('.after-image', { x: 100, opacity: 0, duration: 1 }, "-=0.8")
-        .from('.comparison-arrow', { opacity: 0, scale: 0.5, duration: 0.5 }, "-=0.5")
-        .from('.improvement-stats', { opacity: 0, y: 30, stagger: 0.2, duration: 0.8 });
-    }
-    
-    // 特徴セクションのパララックス効果
-    gsap.utils.toArray('.features-grid .feature-card').forEach((card, i) => {
-        const direction = i % 2 === 0 ? -30 : 30;
-        
-        gsap.from(card, {
-            scrollTrigger: {
-                trigger: card,
-                start: 'top bottom-=100',
-                end: 'bottom top+=100',
-                scrub: 1
-            },
-            y: direction,
-            opacity: 0.5,
-            duration: 1.5
-        });
-    });
-    
-    // ヒーローセクションのパララックス効果
-    gsap.timeline({
-        scrollTrigger: {
-            trigger: '.hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-        }
-    })
-    .to('.hero-image', { y: 100, duration: 1 })
-    .to('.hero-content', { y: 50, opacity: 0.8, duration: 1 }, 0);
-    
-    // ユーザー別メリットセクションのスティッキー表示
-    if (document.querySelector('.roles-benefits')) {
-        const rolesSection = gsap.timeline({
-            scrollTrigger: {
-                trigger: '.roles-benefits',
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: true,
-                pin: '.roles-heading', // 見出しを固定
-                pinSpacing: true
-            }
-        });
-        
-        gsap.utils.toArray('.role-card').forEach((card, i) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top bottom-=100',
-                    end: 'center center',
-                    scrub: 1
-                },
-                y: 50,
-                opacity: 0,
-                duration: 0.8,
-                delay: i * 0.2
-            });
-        });
-    }
-    
-    // 導入手順のステップバイステップアニメーション
-    gsap.utils.toArray('.implementation-step').forEach((step, i) => {
-        gsap.from(step, {
-            scrollTrigger: {
-                trigger: step,
-                start: 'top bottom-=50',
-                end: 'center center+=100',
-                scrub: 0.5
-            },
-            x: i % 2 === 0 ? -50 : 50,
-            opacity: 0,
-            duration: 1
-        });
-    });
-    
-    // スクロールダウン矢印のアニメーション
-    if (document.querySelector('.scroll-down')) {
-        gsap.to('.scroll-down-arrow', {
-            y: 10,
-            repeat: -1,
-            yoyo: true,
-            duration: 0.8,
-            ease: 'power1.inOut'
-        });
-    }
 } 
