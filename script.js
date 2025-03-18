@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     navLinks: document.querySelectorAll('.nav-link'),
     menuToggle: document.querySelector('.menu-toggle'),
     mainNav: document.querySelector('.main-nav'),
+    mobileMenu: document.querySelector('.mobile-menu'),
+    mobileNavLinks: document.querySelectorAll('.mobile-nav-link'),
     scrollIndicators: document.querySelectorAll('.scroll-indicator'),
     header: document.querySelector('.header'),
     efficiencyBar: document.querySelector('.efficiency-progress')
@@ -29,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     touchEndY: 0,
     wheelDirection: 0,
     scrollDelay: 1000, // ms（800msから1000msに変更）
-    touchThreshold: 50 // px
+    touchThreshold: 50, // px
+    isMobileMenuOpen: false
   };
   
   /**
@@ -166,6 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
+    // モバイルメニューのナビゲーションリンク
+    elements.mobileNavLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        const targetIndex = Array.from(elements.sections).findIndex(section => section.id === targetId);
+        
+        if (targetIndex !== -1) {
+          scrollToSection(targetIndex);
+          
+          // モバイルメニューを閉じる
+          toggleMobileMenu(false);
+        }
+      });
+    });
+    
     // スクロールインジケーター - インジケーター全体とその中の要素にもイベントを追加
     elements.scrollIndicators.forEach(indicator => {
       // インジケーター自体のクリックイベント
@@ -213,11 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // メニュートグル
     if (elements.menuToggle) {
       elements.menuToggle.addEventListener('click', () => {
-        elements.mainNav.classList.toggle('active');
-        
-        // アクセシビリティのため aria-expanded を更新
-        const isExpanded = elements.mainNav.classList.contains('active');
-        elements.menuToggle.setAttribute('aria-expanded', isExpanded);
+        toggleMobileMenu();
       });
     }
     
@@ -238,6 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
         checkScrollPosition();
       }
     }, 100));
+    
+    // モバイルメニューが開いているときに画面外をクリックしたらメニューを閉じる
+    document.addEventListener('click', (e) => {
+      if (state.isMobileMenuOpen && 
+          !elements.mobileMenu.contains(e.target) && 
+          !elements.menuToggle.contains(e.target)) {
+        toggleMobileMenu(false);
+      }
+    });
   }
   
   /**
@@ -556,8 +580,17 @@ document.addEventListener('DOMContentLoaded', () => {
    * リサイズイベントのハンドラー
    */
   function handleResize() {
-    // 現在のセクションを再表示
-    activateSection(state.currentSection);
+    console.log('ウィンドウリサイズを検知');
+    
+    // 画面サイズが大きくなった場合、モバイルメニューを閉じる
+    if (window.innerWidth >= 768 && state.isMobileMenuOpen) {
+      toggleMobileMenu(false);
+    }
+    
+    // 必要に応じてセクションのサイズを調整
+    elements.sections.forEach(section => {
+      section.style.minHeight = '100vh';
+    });
   }
   
   /**
@@ -640,6 +673,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, limit - (Date.now() - lastRan));
       }
     };
+  }
+  
+  /**
+   * モバイルメニューの開閉を制御する関数
+   * @param {boolean|undefined} forceState - 強制的に開くか閉じるかの状態 (未指定の場合はトグル)
+   */
+  function toggleMobileMenu(forceState) {
+    const newState = forceState !== undefined ? forceState : !state.isMobileMenuOpen;
+    
+    if (newState) {
+      elements.mobileMenu.classList.add('active');
+      elements.menuToggle.classList.add('active');
+      elements.menuToggle.setAttribute('aria-expanded', 'true');
+    } else {
+      elements.mobileMenu.classList.remove('active');
+      elements.menuToggle.classList.remove('active');
+      elements.menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    
+    state.isMobileMenuOpen = newState;
   }
   
   // アプリケーション初期化

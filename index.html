@@ -129,6 +129,105 @@
         transform: scale(1.5);
         box-shadow: 0 0 0 2px rgba(0, 185, 0, 0.3);
       }
+      
+      /* モバイルメニューのスタイル */
+      .mobile-menu {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background-color: white;
+        z-index: 50;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        height: auto;
+        max-height: 0;
+        overflow: hidden;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .mobile-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        max-height: 300px;
+      }
+      
+      .mobile-menu ul {
+        padding: 1rem 0;
+      }
+      
+      .mobile-menu ul li {
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .mobile-menu ul li:last-child {
+        border-bottom: none;
+      }
+      
+      .mobile-menu ul li a {
+        display: block;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      
+      .mobile-menu ul li a:hover,
+      .mobile-menu ul li a:focus {
+        background-color: #f8f9fa;
+        color: #00B900;
+      }
+      
+      /* ハンバーガーアイコンのアニメーション */
+      .menu-toggle {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      
+      .menu-icon {
+        position: relative;
+        width: 24px;
+        height: 2px;
+        background-color: #333;
+        transition: all 0.3s ease;
+      }
+      
+      .menu-icon::before,
+      .menu-icon::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 2px;
+        background-color: #333;
+        transition: all 0.3s ease;
+      }
+      
+      .menu-icon::before {
+        transform: translateY(-8px);
+      }
+      
+      .menu-icon::after {
+        transform: translateY(8px);
+      }
+      
+      .menu-toggle.active .menu-icon {
+        background-color: transparent;
+      }
+      
+      .menu-toggle.active .menu-icon::before {
+        transform: rotate(45deg);
+      }
+      
+      .menu-toggle.active .menu-icon::after {
+        transform: rotate(-45deg);
+      }
     </style>
     
     <!-- 構造化データ -->
@@ -164,9 +263,21 @@
                     <li><a href="#section6" class="nav-link font-medium relative py-2 text-dark hover:text-primary transition-colors duration-300 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">お問い合わせ</a></li>
                 </ul>
             </nav>
-            <div class="menu-toggle md:hidden text-2xl cursor-pointer">
-                <i class="fas fa-bars"></i>
+            <div class="menu-toggle md:hidden">
+                <div class="menu-icon"></div>
             </div>
+        </div>
+        
+        <!-- モバイルメニュー (スマホ専用) -->
+        <div class="mobile-menu md:hidden">
+            <ul>
+                <li><a href="#section1" class="mobile-nav-link">トップ</a></li>
+                <li><a href="#section2" class="mobile-nav-link">課題</a></li>
+                <li><a href="#section3" class="mobile-nav-link">解決策</a></li>
+                <li><a href="#section4" class="mobile-nav-link">機能</a></li>
+                <li><a href="#section5" class="mobile-nav-link">料金</a></li>
+                <li><a href="#section6" class="mobile-nav-link">お問い合わせ</a></li>
+            </ul>
         </div>
     </header>
 
