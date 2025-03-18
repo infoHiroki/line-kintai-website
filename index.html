@@ -292,6 +292,7 @@
                 <li class="w-3 h-3 rounded-full bg-gray-300 hover:bg-primary cursor-pointer transition-all duration-300 data-[section=section4]:bg-primary data-[section=section4]:scale-125" data-section="section4"></li>
                 <li class="w-3 h-3 rounded-full bg-gray-300 hover:bg-primary cursor-pointer transition-all duration-300 data-[section=section5]:bg-primary data-[section=section5]:scale-125" data-section="section5"></li>
                 <li class="w-3 h-3 rounded-full bg-gray-300 hover:bg-primary cursor-pointer transition-all duration-300 data-[section=section6]:bg-primary data-[section=section6]:scale-125" data-section="section6"></li>
+                <li class="w-3 h-3 rounded-full bg-gray-300 hover:bg-primary cursor-pointer transition-all duration-300 data-[section=section7]:bg-primary data-[section=section7]:scale-125" data-section="section7"></li>
             </ul>
         </div>
 
@@ -602,7 +603,7 @@
         <section id="section6" class="py-24 px-4 bg-gradient-to-b from-gray-50 to-white flex flex-col items-center justify-center min-h-[90vh] relative">
             <div class="w-full max-w-6xl mx-auto py-8 px-4">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 text-primary-800 fade-in">お問い合わせ</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 justify-items-center max-w-5xl mx-auto mb-24">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 justify-items-center max-w-5xl mx-auto">
                     <!-- お問い合わせ情報 -->
                     <div class="bg-white rounded-xl shadow-lg p-6 fade-in-left w-full max-w-md">
                         <h3 class="text-xl font-bold mb-6 text-center text-gray-800">お気軽にお問い合わせください</h3>
@@ -649,9 +650,17 @@
                         </form>
                     </div>
                 </div>
+            </div>
+            <div class="scroll-indicator absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center animate-bounce-slow cursor-pointer hover:text-primary transition-colors duration-300">
+                <span class="block mb-2 text-sm cursor-pointer">下にスクロール</span>
+                <i class="fas fa-chevron-down text-xl cursor-pointer"></i>
+            </div>
+        </section>
 
-                <!-- フッター -->
-                <footer class="bg-gray-900 text-white py-8 rounded-xl mt-16">
+        <!-- セクション7: フッター -->
+        <section id="section7" class="bg-gradient-to-b from-white to-gray-50 flex flex-col items-center justify-center min-h-[50vh] relative">
+            <div class="w-full">
+                <footer class="bg-gray-900 text-white py-8 rounded-xl">
                     <div class="max-w-6xl mx-auto px-6 md:px-8 w-full">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-gray-700">
                             <div>
