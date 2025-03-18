@@ -166,8 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // スクロールインジケーター
+    // スクロールインジケーター - インジケーター全体とその中の要素にもイベントを追加
     elements.scrollIndicators.forEach(indicator => {
+      // インジケーター自体のクリックイベント
       indicator.addEventListener('click', () => {
         const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
         
@@ -176,6 +177,36 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           scrollToSection(state.currentSection + 1);
         }
+      });
+      
+      // インジケーター内のテキスト要素のクリックイベント（イベント伝播を防止）
+      const textElements = indicator.querySelectorAll('span');
+      textElements.forEach(textElement => {
+        textElement.addEventListener('click', (e) => {
+          e.stopPropagation(); // イベント伝播を防止
+          const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
+        
+          if (hasUpArrow) {
+            scrollToSection(0);
+          } else {
+            scrollToSection(state.currentSection + 1);
+          }
+        });
+      });
+      
+      // インジケーター内のアイコン要素のクリックイベント（イベント伝播を防止）
+      const iconElements = indicator.querySelectorAll('i');
+      iconElements.forEach(iconElement => {
+        iconElement.addEventListener('click', (e) => {
+          e.stopPropagation(); // イベント伝播を防止
+          const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
+        
+          if (hasUpArrow) {
+            scrollToSection(0);
+          } else {
+            scrollToSection(state.currentSection + 1);
+          }
+        });
       });
     });
     
