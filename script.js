@@ -44,15 +44,7 @@ function initApp() {
                 
     // Swiperの初期化
     initSwiper();
-                
-    // アニメーションの初期化
-    if (!isReducedMotion) {
-        triggerInitialAnimations();
-        initSplitTextAnimations();
-        initScrollAnimations(); // スクロールアニメーションの初期化
-        initGSAPAnimations(); // GSAP アニメーションの初期化を追加
-    }
-                
+    
     // イベントリスナーの設定
     setupEventListeners();
                 
@@ -67,6 +59,14 @@ function initApp() {
                 
     // 画像の遅延読み込み
     lazyLoadImages();
+    
+    // アニメーションの初期化（動きの低減設定がない場合のみ）
+    if (!isReducedMotion) {
+        initScrollAnimations(); // スクロールアニメーションの初期化
+        triggerInitialAnimations(); // 初期アニメーションをスクロールベースに
+        initSplitTextAnimations(); // テキスト分割アニメーション
+        initGSAPAnimations(); // GSAP アニメーションの初期化
+    }
                 
     // パフォーマンス追跡の初期化
     if (window.performance && window.performance.mark) {
@@ -197,9 +197,19 @@ function updateProgressBar(progress) {
                 // スワイプ可能な方向を示すARIA属性を更新
                 updateAriaAttributes(this.activeIndex, this.slides.length);
                 
-                // アニメーションのトリガー
+                // スライド内のアニメーションを再初期化
                 if (!isReducedMotion) {
-                    triggerAnimations(this.slides[this.activeIndex]);
+                    // 現在のスライドを取得
+                    const currentSlide = this.slides[this.activeIndex];
+                    
+                    // 一度監視を解除
+                    const animateElements = currentSlide.querySelectorAll('.animate-on-scroll');
+                    animateElements.forEach(element => {
+                        if (!element.classList.contains('animated')) {
+                            // アニメーションがまだ実行されていない要素のみ
+                            triggerAnimations(currentSlide);
+                        }
+                    });
                 }
                 
                 // アナリティクスイベントの送信（実装されている場合）
@@ -491,45 +501,85 @@ function isElementInSwiper(element) {
     return false;
 }
 
-// アニメーションのトリガー
+// スライド内のアニメーションのトリガー
 function triggerAnimations(activeSlide) {
     // アクティブスライド内のアニメーション要素を取得
-    const animateElements = activeSlide.querySelectorAll('.animate-on-scroll');
+    const animateElements = activeSlide.querySelectorAll('.animate-on-scroll:not(.animated)');
     
-    // アニメーション要素にクラスを追加
-    animateElements.forEach((element, index) => {
-        // 動きの低減設定が有効な場合はアニメーションをスキップ
-        if (isReducedMotion) {
-            element.classList.add('animated');
-            return;
-        }
-        
-        // 遅延を適用してアニメーションを順番に実行
-        const delay = index * 0.1;
-        setTimeout(() => {
-                    element.classList.add('animated');
+    if (animateElements.length === 0) return;
+    
+    // IntersectionObserverの設定
+    const options = {
+        root: activeSlide,
+        rootMargin: '0px',
+        threshold: 0.15
+    };
+    
+    // IntersectionObserverの作成
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // 動きの低減設定が有効な場合はアニメーションをスキップ
+            if (isReducedMotion) {
+                entry.target.classList.add('animated');
+                return;
+            }
+            
+            if (entry.isIntersecting) {
+                // 要素が画面内に入った場合
+                const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
+                setTimeout(() => {
+                    entry.target.classList.add('animated');
                 }, delay * 1000);
+                
+                // 一度アニメーションが発火したら監視を解除
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+    
+    // 各要素を監視
+    animateElements.forEach(element => {
+        observer.observe(element);
     });
 }
 
 // 初期アニメーションのトリガー
 function triggerInitialAnimations() {
-    // 最初のスライドのアニメーション要素を取得
-    const firstSlideAnimateElements = DOM.swiperSlides[0].querySelectorAll('.animate-on-scroll');
+    // すべてのanimate-on-scroll要素に対してIntersectionObserverを使用
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
     
-    // アニメーション要素にクラスを追加
-    firstSlideAnimateElements.forEach((element, index) => {
-        // 動きの低減設定が有効な場合はアニメーションをスキップ
-        if (isReducedMotion) {
-            element.classList.add('animated');
-            return;
-        }
-        
-        // 遅延を適用してアニメーションを順番に実行
-        const delay = 0.5 + (index * 0.1);
-        setTimeout(() => {
-            element.classList.add('animated');
-        }, delay * 1000);
+    // IntersectionObserverの設定
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15 // 要素が15%見えたらアニメーション開始
+    };
+    
+    // IntersectionObserverの作成
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // 動きの低減設定が有効な場合はアニメーションをスキップ
+            if (isReducedMotion) {
+                entry.target.classList.add('animated');
+                return;
+            }
+            
+            if (entry.isIntersecting) {
+                // 要素が画面内に入った場合
+                const delay = entry.target.dataset.delay ? parseFloat(entry.target.dataset.delay) : 0;
+                setTimeout(() => {
+                    entry.target.classList.add('animated');
+                }, delay * 1000);
+                
+                // 一度アニメーションが発火したら監視を解除
+                observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+    
+    // 各要素を監視
+    animateElements.forEach(element => {
+        observer.observe(element);
     });
 }
 

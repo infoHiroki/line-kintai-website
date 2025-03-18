@@ -1438,9 +1438,9 @@ img {
     opacity: 0;
     transform: translateY(var(--animation-distance));
     transition: 
-        opacity var(--animation-duration) var(--ease-out-expo), 
-        transform var(--animation-duration) var(--ease-out-expo),
-        filter var(--animation-duration) var(--ease-out-expo);
+        opacity var(--animation-duration) var(--ease-out-expo) 0.1s, 
+        transform var(--animation-duration) var(--ease-out-expo) 0.1s,
+        filter var(--animation-duration) var(--ease-out-expo) 0.1s;
     will-change: opacity, transform, filter;
     backface-visibility: hidden;
     perspective: 1000px;
