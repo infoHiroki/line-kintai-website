@@ -115,6 +115,16 @@
       html.no-scroll {
         overflow: hidden;
       }
+
+      /* ナビゲーション目印のカスタムスタイル */
+      .section-navigation li {
+        transition: all 0.3s ease;
+      }
+      .section-navigation li.active {
+        background-color: #00B900;
+        transform: scale(1.5);
+        box-shadow: 0 0 0 2px rgba(0, 185, 0, 0.3);
+      }
     </style>
     
     <!-- 構造化データ -->

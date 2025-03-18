@@ -224,14 +224,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // リサイズイベント
     window.addEventListener('resize', debounce(handleResize, 200));
     
-    // スクロール時のヘッダー表示制御
+    // スクロール時のヘッダー表示制御とナビゲーション目印の更新
     window.addEventListener('scroll', throttle(() => {
+      // ヘッダー表示制御
       if (window.scrollY > 50) {
         elements.header.classList.add('scrolled');
       } else {
         elements.header.classList.remove('scrolled');
       }
+      
+      // スクロール位置に基づいてナビゲーション目印を更新
+      if (!state.isScrolling) {
+        checkScrollPosition();
+      }
     }, 100));
+  }
+  
+  /**
+   * ナビゲーション目印の状態を更新
+   * @param {number} index - アクティブなセクションのインデックス
+   */
+  function updateNavigationDots(index) {
+    console.log(`ナビゲーション目印を更新: セクション ${index + 1}`);
+    
+    elements.navDots.forEach((dot, i) => {
+      // ナビゲーションドットとセクションの数が一致しない場合の対策
+      if (i >= elements.sections.length) return;
+      
+      if (i === index) {
+        // アクティブなドットの設定
+        dot.classList.add('active');
+        dot.setAttribute('aria-current', 'true');
+        
+        // Tailwindのdata-* スタイルが適用されるよう明示的にdata属性を設定
+        const sectionId = elements.sections[i].id;
+        dot.setAttribute('data-section', sectionId);
+        
+        console.log(`ナビドット ${i+1} をアクティブにしました (セクション: ${sectionId})`);
+      } else {
+        // 非アクティブなドットの設定
+        dot.classList.remove('active');
+        dot.setAttribute('aria-current', 'false');
+      }
+    });
   }
   
   /**
@@ -264,28 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // ナビゲーションドットの状態を更新
-    elements.navDots.forEach((dot, i) => {
-      // ナビゲーションドットとセクションの数が一致しない場合の対策
-      if (i >= elements.sections.length) return;
-      
-      if (i === index) {
-        // アクティブなドットの設定
-        dot.classList.add('active');
-        dot.setAttribute('aria-current', 'true');
-        dot.setAttribute('data-section', elements.sections[i].id);
-        
-        // Tailwindのdata-* スタイルが適用されるよう明示的にdata属性を設定
-        const sectionId = elements.sections[i].id;
-        dot.setAttribute('data-section', sectionId);
-        
-        console.log(`ナビドット ${i+1} をアクティブにしました (セクション: ${sectionId})`);
-      } else {
-        // 非アクティブなドットの設定
-        dot.classList.remove('active');
-        dot.setAttribute('aria-current', 'false');
-      }
-    });
+    // ナビゲーション目印の更新
+    updateNavigationDots(index);
     
     // スクロールインジケーターの表示を更新
     updateScrollIndicators(index);
@@ -558,6 +573,30 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           activateSection(targetIndex);
         }, 100);
+      }
+    }
+  }
+  
+  /**
+   * スクロール位置に基づいてナビゲーション目印を更新
+   */
+  function checkScrollPosition() {
+    const scrollPosition = window.scrollY + window.innerHeight / 2;
+    
+    // 各セクションをチェックして、現在のスクロール位置に最も近いセクションを特定
+    for (let i = 0; i < elements.sections.length; i++) {
+      const section = elements.sections[i];
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const sectionBottom = sectionTop + section.offsetHeight;
+      
+      // スクロール位置がセクション内にある場合、そのセクションをアクティブにする
+      if (scrollPosition >= sectionTop && scrollPosition <= sectionBottom) {
+        if (state.currentSection !== i) {
+          // スクロール位置に基づいて現在のセクションが変更された場合のみナビゲーション目印を更新
+          updateNavigationDots(i);
+          state.currentSection = i;
+        }
+        break;
       }
     }
   }
