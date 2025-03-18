@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     touchStartY: 0,
     touchEndY: 0,
     wheelDirection: 0,
-    scrollDelay: 800, // ms
+    scrollDelay: 1000, // ms（800msから1000msに変更）
     touchThreshold: 50 // px
   };
   
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       fadeElements.forEach((element, index) => {
         // データ属性から遅延時間を取得、なければインデックスに基づいて計算
-        const delay = element.dataset.delay ? parseInt(element.dataset.delay) : (index * 100);
+        const delay = element.dataset.delay ? parseInt(element.dataset.delay) : (index * 150); // 100msから150msに変更
         
         setTimeout(() => {
           element.classList.add('active');
@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const percentage = progressBar.dataset.percent || '0';
         progressBar.style.width = `${percentage}%`;
       }
-    }, 100);
+    }, 200); // 100msから200msに変更
   }
   
   /**

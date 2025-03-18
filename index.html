@@ -94,21 +94,25 @@
       .fade-in:not(.active) {
         opacity: 0;
         transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
       }
       .fade-in-left:not(.active) {
         opacity: 0;
         transform: translateX(-30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
       }
       .fade-in-right:not(.active) {
         opacity: 0;
         transform: translateX(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
       }
       .fade-in.active, .fade-in-left.active, .fade-in-right.active {
         opacity: 1;
         transform: translate(0);
+        transition: opacity 0.8s ease, transform 0.8s ease;
       }
       .efficiency-progress {
-        transition: width 1.5s ease-in-out;
+        transition: width 2s ease-in-out;
       }
       
       /* スクロール防止（アクティブセクションの表示中） */
@@ -118,7 +122,7 @@
 
       /* ナビゲーション目印のカスタムスタイル */
       .section-navigation li {
-        transition: all 0.3s ease;
+        transition: all 0.5s ease;
       }
       .section-navigation li.active {
         background-color: #00B900;
