@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // DOM要素の取得
   const elements = {
-    sections: document.querySelectorAll('.fullscreen-section'),
+    // section要素のうち、id属性が'section1'から始まるものすべてを取得
+    sections: document.querySelectorAll('section[id^="section"]'),
     navDots: document.querySelectorAll('.section-navigation li'),
     navLinks: document.querySelectorAll('.nav-link'),
     menuToggle: document.querySelector('.menu-toggle'),
@@ -36,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function init() {
     console.log('縦型スワイプLP初期化');
+    
+    // セクションの数をコンソールに出力
+    console.log(`検出されたセクション数: ${elements.sections.length}`);
+    elements.sections.forEach((section, i) => {
+      console.log(`セクション ${i+1}: id=${section.id}, class=${section.className}`);
+    });
     
     // セクションの初期配置
     setupSections();
@@ -69,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupSections() {
     // 各セクションを非表示に初期化
     elements.sections.forEach((section, index) => {
+      // セクションのスタイルを調整して全画面表示に
+      if (!section.classList.contains('fullscreen-section')) {
+        section.classList.add('fullscreen-section');
+      }
+      
       if (index !== 0) {
         section.style.display = 'none';
       }
@@ -136,7 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // スクロールインジケーター
     elements.scrollIndicators.forEach(indicator => {
       indicator.addEventListener('click', () => {
-        if (indicator.querySelector('.fas.fa-chevron-up')) {
+        const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
+        
+        if (hasUpArrow) {
           scrollToSection(0);
         } else {
           scrollToSection(state.currentSection + 1);
@@ -175,14 +189,24 @@ document.addEventListener('DOMContentLoaded', () => {
   function activateSection(index) {
     if (index < 0 || index >= elements.sections.length) return;
     
+    console.log(`セクション ${index + 1} をアクティブにします...`);
+    
     // 全セクションのアクティブ状態をリセット
     elements.sections.forEach((section, i) => {
       if (i === index) {
+        // アクティブなセクションの設定
         section.style.display = 'flex';
+        section.style.visibility = 'visible';
+        section.style.opacity = '1';
+        section.style.zIndex = '10';
         section.classList.add('active');
         section.setAttribute('aria-hidden', 'false');
       } else {
+        // 非アクティブなセクションの設定
         section.style.display = 'none';
+        section.style.visibility = 'hidden';
+        section.style.opacity = '0';
+        section.style.zIndex = '1';
         section.classList.remove('active');
         section.setAttribute('aria-hidden', 'true');
       }
@@ -213,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectionId = elements.sections[index].id;
     history.replaceState(null, null, `#${sectionId}`);
 
-    console.log(`セクション ${index + 1} (${sectionId}) をアクティベート`);
+    console.log(`セクション ${index + 1} (${sectionId}) をアクティベート完了`);
   }
   
   /**
@@ -257,12 +281,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLastSection = index === elements.sections.length - 1;
     
     elements.scrollIndicators.forEach(indicator => {
+      const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
+      const hasDownArrow = indicator.innerHTML.includes('fa-chevron-down');
+      
       // 最後のセクションでかつ上向き矢印を持つインジケーター
-      if (isLastSection && indicator.querySelector('.fas.fa-chevron-up')) {
+      if (isLastSection && hasUpArrow) {
         indicator.style.display = 'flex';
       } 
       // 最後のセクション以外で下向き矢印を持つインジケーター
-      else if (!isLastSection && indicator.querySelector('.fas.fa-chevron-down')) {
+      else if (!isLastSection && hasDownArrow) {
         indicator.style.display = 'flex';
       }
       // それ以外は非表示
