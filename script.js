@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function init() {
     console.log('縦型スワイプLP初期化');
     
+    // セクションの初期配置
+    setupSections();
+    
     // 初期セクションをアクティブに
     activateSection(0);
     
@@ -53,6 +56,33 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.efficiencyBar.style.width = `${percentage}%`;
       }, 1000);
     }
+
+    // 初期セクションを強制的に表示
+    setTimeout(() => {
+      scrollToSection(0, false);
+    }, 100);
+  }
+  
+  /**
+   * セクションの初期配置を設定
+   */
+  function setupSections() {
+    // 各セクションを非表示に初期化
+    elements.sections.forEach((section, index) => {
+      if (index !== 0) {
+        section.style.display = 'none';
+      }
+      section.setAttribute('aria-hidden', index !== 0 ? 'true' : 'false');
+    });
+
+    // 最初のセクションだけ表示
+    if (elements.sections[0]) {
+      elements.sections[0].style.display = 'flex';
+      elements.sections[0].classList.add('active');
+    }
+
+    // bodyにno-scrollクラスを追加してスクロールを防止
+    document.documentElement.classList.add('no-scroll');
   }
   
   /**
@@ -106,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // スクロールインジケーター
     elements.scrollIndicators.forEach(indicator => {
       indicator.addEventListener('click', () => {
-        if (indicator.classList.contains('top')) {
+        if (indicator.querySelector('.fas.fa-chevron-up')) {
           scrollToSection(0);
         } else {
           scrollToSection(state.currentSection + 1);
@@ -148,9 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 全セクションのアクティブ状態をリセット
     elements.sections.forEach((section, i) => {
       if (i === index) {
+        section.style.display = 'flex';
         section.classList.add('active');
         section.setAttribute('aria-hidden', 'false');
       } else {
+        section.style.display = 'none';
         section.classList.remove('active');
         section.setAttribute('aria-hidden', 'true');
       }
@@ -161,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (i === index) {
         dot.classList.add('active');
         dot.setAttribute('aria-current', 'true');
+        dot.setAttribute('data-section', elements.sections[i].id);
       } else {
         dot.classList.remove('active');
         dot.setAttribute('aria-current', 'false');
@@ -179,6 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // URLハッシュの更新
     const sectionId = elements.sections[index].id;
     history.replaceState(null, null, `#${sectionId}`);
+
+    console.log(`セクション ${index + 1} (${sectionId}) をアクティベート`);
   }
   
   /**
@@ -222,12 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLastSection = index === elements.sections.length - 1;
     
     elements.scrollIndicators.forEach(indicator => {
-      // 最後のセクションの場合「トップに戻る」インジケーターを表示
-      if (isLastSection && indicator.classList.contains('top')) {
+      // 最後のセクションでかつ上向き矢印を持つインジケーター
+      if (isLastSection && indicator.querySelector('.fas.fa-chevron-up')) {
         indicator.style.display = 'flex';
       } 
-      // 最後のセクション以外では「下にスクロール」インジケーターを表示
-      else if (!indicator.classList.contains('top') && !isLastSection) {
+      // 最後のセクション以外で下向き矢印を持つインジケーター
+      else if (!isLastSection && indicator.querySelector('.fas.fa-chevron-down')) {
         indicator.style.display = 'flex';
       }
       // それ以外は非表示
@@ -240,8 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * 特定のセクションにスクロール
    * @param {number} index - スクロール先のセクションインデックス
+   * @param {boolean} useDelay - 遅延を使用するか
    */
-  function scrollToSection(index) {
+  function scrollToSection(index, useDelay = true) {
     // 範囲外、同じセクション、スクロール中はスキップ
     if (
       index < 0 || 
@@ -255,20 +291,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // スクロール状態を更新
     state.isScrolling = true;
     
-    // スクロール処理
-    const targetSection = elements.sections[index];
-    const scrollOptions = {
-      top: targetSection.offsetTop,
-      behavior: 'smooth'
-    };
+    // セクション活性化
+    activateSection(index);
     
-    window.scrollTo(scrollOptions);
-    
-    // セクション活性化と状態リセット
-    setTimeout(() => {
-      activateSection(index);
+    // 遅延後にスクロール状態をリセット
+    if (useDelay) {
+      setTimeout(() => {
+        state.isScrolling = false;
+      }, state.scrollDelay);
+    } else {
       state.isScrolling = false;
-    }, state.scrollDelay);
+    }
   }
   
   /**
@@ -412,14 +445,8 @@ document.addEventListener('DOMContentLoaded', () => {
    * リサイズイベントのハンドラー
    */
   function handleResize() {
-    // 現在のセクションが画面内に表示されるよう調整
-    if (!state.isScrolling) {
-      const targetSection = elements.sections[state.currentSection];
-      window.scrollTo({
-        top: targetSection.offsetTop,
-        behavior: 'auto'
-      });
-    }
+    // 現在のセクションを再表示
+    activateSection(state.currentSection);
   }
   
   /**
@@ -433,11 +460,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (targetIndex !== -1) {
         // 遅延を付けて初期セクションを設定
         setTimeout(() => {
-          // スムーズスクロールなしで直接位置を設定
-          window.scrollTo({
-            top: elements.sections[targetIndex].offsetTop,
-            behavior: 'auto'
-          });
           activateSection(targetIndex);
         }, 100);
       }
