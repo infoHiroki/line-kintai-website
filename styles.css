@@ -14,8 +14,8 @@
     
     /* アニメーション変数 - 拡張 */
     --animation-duration: 0.8s;
-    --animation-distance: 50px;
-    --animation-scale: 0.9; /* スケールアニメーション用 */
+    --animation-distance: 30px; /* 距離を短くして重なりを防止 */
+    --animation-scale: 0.95; /* スケールアニメーション用 */
     --animation-rotate: 4deg; /* 回転アニメーション用 */
     --animation-blur: 5px; /* ブラー効果用 */
     
@@ -23,53 +23,17 @@
     --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
     --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
     
-    /* スタッガー遅延 */
-    --stagger-delay-1: 0.05s;
-    --stagger-delay-2: 0.1s;
-    --stagger-delay-3: 0.15s;
-    --stagger-delay-4: 0.2s;
+    /* スタッガーアニメーション用の遅延 */
+    --stagger-delay-1: 0.1s;
+    --stagger-delay-2: 0.2s;
+    --stagger-delay-3: 0.3s;
+    --stagger-delay-4: 0.4s;
     
-    /* スワイプ関連の変数 */
-    --swipe-transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-    --swipe-indicator-size: 50px;
-    
-    /* フォントサイズ変数 */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
-    --font-size-md: 1rem;
-    --font-size-lg: 1.25rem;
-    --font-size-xl: 1.5rem;
-    --font-size-2xl: 2rem;
-    --font-size-3xl: 2.5rem;
-    
-    /* スペーシング変数 */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    
-    /* ブレイクポイント */
-    --breakpoint-xs: 576px;
-    --breakpoint-sm: 768px;
-    --breakpoint-md: 992px;
-    --breakpoint-lg: 1200px;
-    
-    /* Apple風スクロールアニメーション用変数 */
-    --scroll-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-    --scroll-animation-duration: 1s;
-    --scroll-animation-distance-short: 50px;
-    --scroll-animation-distance-medium: 100px;
-    --scroll-animation-distance-long: 150px;
-    --scroll-animation-scale-start: 0.9;
-    --scroll-animation-scale-end: 1;
-    --scroll-animation-opacity-start: 0;
-    --scroll-animation-opacity-end: 1;
-    --scroll-animation-blur-start: 10px;
-    --scroll-animation-blur-end: 0px;
+    /* 間隔と余白の調整 */
+    --content-spacing: 2rem; /* コンテンツ間の間隔 */
+    --section-padding: 5rem; /* セクションの内部余白 */
+    --card-padding: 1.5rem; /* カードの内部余白 */
 }
 
 * {
@@ -1442,10 +1406,12 @@ img {
         opacity var(--animation-duration) var(--ease-out-expo), 
         transform var(--animation-duration) var(--ease-out-expo),
         filter var(--animation-duration) var(--ease-out-expo);
-    will-change: opacity, transform, filter;
+    will-change: opacity, transform;
     backface-visibility: hidden;
     perspective: 1000px;
     filter: blur(0);
+    padding: 0.25rem 0; /* パディングを追加して重なりを防止 */
+    margin: 0.25rem 0; /* マージンを追加して要素間の間隔を確保 */
 }
 
 .animate-on-scroll.animated,
@@ -1570,7 +1536,12 @@ img {
     }
 }
 
-/* スワイパースライドのアニメーション調整 */
+/* スワイパースライドのアニメーション調整 - 重なり防止 */
+.swiper-slide {
+    padding: 1.5rem; /* スライド内の余白を増やして重なりを防止 */
+    overflow: hidden; /* 必要に応じてオーバーフローを制御 */
+}
+
 .swiper-slide:not(.swiper-slide-active) .animate-on-scroll.animated {
     opacity: 0 !important;
     transform: translateY(var(--animation-distance)) !important;
@@ -1578,6 +1549,28 @@ img {
 
 .swiper-slide-active .animate-on-scroll {
     transition-delay: 0.3s !important;
+}
+
+/* カード要素の間隔調整 - 重なり防止 */
+.feature-card, 
+.problem-card,
+.pricing-card,
+.role-card {
+    margin-bottom: 1.5rem !important; /* 下部マージンを確保 */
+    overflow: visible !important; /* アニメーション中の要素が見えるようにする */
+}
+
+/* フレームに対する要素の配置調整 - 重なり防止 */
+section {
+    padding: var(--section-padding) 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.container {
+    position: relative;
+    z-index: 1; /* 背景要素より前面に表示 */
+    padding: 0 1rem; /* 左右の余白を確保 */
 }
 
 /* スクロールダウンアニメーション - モダン化 */
@@ -2194,33 +2187,37 @@ img {
 /* ダークモードサポート */
 @media (prefers-color-scheme: dark) {
     :root {
-        --dark-color: #f8f9fa;
-        --light-color: #333333;
+        /* ダークモード変数を上書きしてライトモードに固定 */
+        --primary-color: #00B900; /* 変更なし */
+        --dark-color: #333333; /* 変更なし */
+        --light-color: #F8F9FA; /* 変更なし */
     }
     
     body {
-        background-color: #121212;
-        color: var(--dark-color);
+        background-color: var(--light-color); /* 明示的に背景色を指定 */
+        color: var(--dark-color); /* 明示的にテキスト色を指定 */
     }
     
     .header, .swiper-container {
-        background-color: rgba(18, 18, 18, 0.95);
+        background-color: var(--light-color);
+        box-shadow: var(--box-shadow);
     }
     
     .swiper-pagination-bullet {
-        background-color: rgba(18, 18, 18, 0.7);
+        background-color: var(--gray-color);
     }
     
     .swipe-indicator {
-        background-color: rgba(18, 18, 18, 0.9);
+        background-color: rgba(255, 255, 255, 0.5);
     }
     
     .swipe-indicator span {
-        color: var(--dark-color);
+        background-color: var(--primary-color);
     }
     
     .btn-secondary {
-        background-color: #121212;
+        background-color: var(--secondary-color);
+        color: var(--light-color);
     }
 }
 
