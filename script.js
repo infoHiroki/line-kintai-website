@@ -79,17 +79,38 @@ document.addEventListener('DOMContentLoaded', () => {
       // セクションのスタイルを調整して全画面表示に
       if (!section.classList.contains('fullscreen-section')) {
         section.classList.add('fullscreen-section');
+        
+        // スタイルを修正 - すべてのセクションが同じスタイルを持つよう調整
+        if (!section.style.position || section.style.position !== 'relative') {
+          section.style.position = 'relative';
+        }
+        
+        if (!section.style.minHeight || section.style.minHeight !== '100vh') {
+          section.style.minHeight = '100vh';
+        }
+        
+        if (!section.style.width || section.style.width !== '100%') {
+          section.style.width = '100%';
+        }
+        
+        if (!section.style.overflow || section.style.overflow !== 'hidden') {
+          section.style.overflow = 'hidden';
+        }
       }
       
       if (index !== 0) {
         section.style.display = 'none';
+      } else {
+        // section.style.display = 'flex'だと、もともとdisplay: blockなどで設計されたセクションに
+        // 問題が生じる可能性があるため、元のdisplayプロパティを尊重
+        section.style.display = '';
       }
       section.setAttribute('aria-hidden', index !== 0 ? 'true' : 'false');
     });
 
     // 最初のセクションだけ表示
     if (elements.sections[0]) {
-      elements.sections[0].style.display = 'flex';
+      elements.sections[0].style.display = '';
       elements.sections[0].classList.add('active');
     }
 
@@ -195,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.sections.forEach((section, i) => {
       if (i === index) {
         // アクティブなセクションの設定
-        section.style.display = 'flex';
+        section.style.display = '';
         section.style.visibility = 'visible';
         section.style.opacity = '1';
         section.style.zIndex = '10';
@@ -214,11 +235,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ナビゲーションドットの状態を更新
     elements.navDots.forEach((dot, i) => {
+      // ナビゲーションドットとセクションの数が一致しない場合の対策
+      if (i >= elements.sections.length) return;
+      
       if (i === index) {
+        // アクティブなドットの設定
         dot.classList.add('active');
         dot.setAttribute('aria-current', 'true');
         dot.setAttribute('data-section', elements.sections[i].id);
+        
+        // Tailwindのdata-* スタイルが適用されるよう明示的にdata属性を設定
+        const sectionId = elements.sections[i].id;
+        dot.setAttribute('data-section', sectionId);
+        
+        console.log(`ナビドット ${i+1} をアクティブにしました (セクション: ${sectionId})`);
       } else {
+        // 非アクティブなドットの設定
         dot.classList.remove('active');
         dot.setAttribute('aria-current', 'false');
       }
@@ -280,17 +312,23 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateScrollIndicators(index) {
     const isLastSection = index === elements.sections.length - 1;
     
+    console.log(`スクロールインジケーター更新: 現在のセクション=${index+1}, 最終セクション=${isLastSection}`);
+    
     elements.scrollIndicators.forEach(indicator => {
       const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
       const hasDownArrow = indicator.innerHTML.includes('fa-chevron-down');
       
+      console.log(`インジケーター: 上矢印=${hasUpArrow}, 下矢印=${hasDownArrow}`);
+      
       // 最後のセクションでかつ上向き矢印を持つインジケーター
       if (isLastSection && hasUpArrow) {
         indicator.style.display = 'flex';
+        console.log('最終セクション用の上矢印インジケーターを表示');
       } 
       // 最後のセクション以外で下向き矢印を持つインジケーター
       else if (!isLastSection && hasDownArrow) {
         indicator.style.display = 'flex';
+        console.log('通常セクション用の下矢印インジケーターを表示');
       }
       // それ以外は非表示
       else {
