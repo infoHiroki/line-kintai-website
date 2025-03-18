@@ -146,285 +146,349 @@ function updateProgressBar(progress) {
     DOM.progressBar.style.width = `${progress * 100}%`;
 }
 
-// Swiperの初期化
+// Swiperの初期化を最適化
 function initSwiper() {
-    // Swiperのオプション設定
-    const swiperOptions = {
+    console.log('スワイパー初期化開始');
+
+    // 古いswiper instanceがあれば破棄
+    if (window.mySwiper) {
+        window.mySwiper.destroy(true, true);
+        console.log('既存のスワイパーインスタンスを破棄しました');
+    }
+
+    // スワイパーの初期化パラメータを最適化
+    window.mySwiper = new Swiper('.swiper-container', {
         direction: 'vertical',
         slidesPerView: 1,
         spaceBetween: 0,
-        speed: 800,
-        threshold: 20,
-        resistanceRatio: 0,
-        followFinger: true,
-        touchRatio: 1,
-        touchAngle: 45,
-        simulateTouch: true,
-        shortSwipes: true,
-        longSwipes: true,
-        longSwipesRatio: 0.5,
-        longSwipesMs: 300,
-        
-        // マウスホイール設定
+        speed: 800, // スライド遷移速度を調整
         mousewheel: {
-            enabled: true,
-            sensitivity: deviceType === 'mobile' ? 0.8 : 1,
-            thresholdDelta: deviceType === 'mobile' ? 70 : 50,
-            thresholdTime: deviceType === 'mobile' ? 400 : 300,
-            releaseOnEdges: false
+            sensitivity: 1,
+            thresholdDelta: 50, // ホイールイベントのしきい値を高く設定
+            thresholdTime: 800, // しきい値時間を増加
+            releaseOnEdges: true
         },
-        
-        // キーボードナビゲーション
         keyboard: {
             enabled: true,
-            onlyInViewport: true
+            onlyInViewport: true,
         },
-        
-        // ページネーション
         pagination: {
             el: '.swiper-pagination',
             clickable: true,
             renderBullet: function (index, className) {
-                return `<span class="${className}" role="button" aria-label="ページ ${index + 1}へ移動" tabindex="0"></span>`;
+                return '<span class="' + className + '" data-index="' + index + '"></span>';
             }
         },
-        
-        // アクセシビリティ
+        effect: 'fade', // フェードエフェクトを使用
+        fadeEffect: {
+            crossFade: true // クロスフェード有効化
+        },
+        hashNavigation: {
+            watchState: true,
+        },
         a11y: {
             enabled: true,
-            notificationClass: 'swiper-notification',
-            prevSlideMessage: '前のスライドへ',
-            nextSlideMessage: '次のスライドへ',
             firstSlideMessage: '最初のスライドです',
             lastSlideMessage: '最後のスライドです',
-            paginationBulletMessage: '{{index}}番目のスライドへ'
+            prevSlideMessage: '前のスライドへ',
+            nextSlideMessage: '次のスライドへ',
         },
-        
-        // コールバック関数
         on: {
             init: function() {
-                console.log('Swiper初期化イベント発火');
-                updateSwipeIndicators(this.activeIndex, this.slides.length);
-                updateProgressBar(this.activeIndex / (this.slides.length - 1));
-                
-                // スライド内のアニメーションを観察
-                observeSlideAnimations(this.slides[this.activeIndex]);
-                
-                // スワイプ可能な方向を示すARIA属性を設定
-                updateAriaAttributes(this.activeIndex, this.slides.length);
-                
-                // 現在のスライドを強制的に表示
-                forceActiveSlideVisibility(this.activeIndex);
+                console.log('スワイパーが初期化されました');
+                updateSectionVisibility(this.activeIndex);
+                highlightActiveNavItem(this.activeIndex);
+                document.documentElement.style.overflow = 'hidden'; // スクロールバーを非表示
             },
             slideChange: function() {
-                console.log('スライド変更イベント発火:', this.activeIndex);
-                updateSwipeIndicators(this.activeIndex, this.slides.length);
-                updateProgressBar(this.activeIndex / (this.slides.length - 1));
+                console.log('スライド変更: ' + this.activeIndex);
+                updateSectionVisibility(this.activeIndex);
+                highlightActiveNavItem(this.activeIndex);
                 
-                // ARIA属性の更新
-                this.slides.forEach((slide, index) => {
-                    if (index === this.activeIndex) {
-                        slide.setAttribute('aria-current', 'true');
-                    } else {
-                        slide.removeAttribute('aria-current');
-                    }
-                });
-                
-                // スワイプ可能な方向を示すARIA属性を更新
-                updateAriaAttributes(this.activeIndex, this.slides.length);
-                
-                // スライド内のアニメーションを観察
-                observeSlideAnimations(this.slides[this.activeIndex]);
-                
-                // 現在のスライドを強制的に表示
-                forceActiveSlideVisibility(this.activeIndex);
-                
-                // アナリティクスイベントの送信（実装されている場合）
-                if (typeof trackPageView === 'function') {
-                    trackPageView(`Slide ${this.activeIndex + 1}`);
+                // アニメーション要素の再設定
+                const activeSlide = this.slides[this.activeIndex];
+                if (activeSlide) {
+                    resetAndAnimateElements(activeSlide);
+                }
+
+                // 現在のスライドがフッターに到達したらスワイプインジケータを非表示
+                updateSwipeIndicator(this.isEnd);
+            },
+            slideChangeTransitionStart: function() {
+                console.log('スライド遷移開始');
+                const activeSlide = this.slides[this.activeIndex];
+                if (activeSlide) {
+                    // スライド内のすべての要素が確実に表示されるようにする
+                    ensureSlideContentVisibility(activeSlide);
                 }
             },
-            touchStart: function() {
-                DOM.swiperContainer.classList.add('grabbing');
-                DOM.swiperContainer.classList.add('swiping');
-            },
-            touchEnd: function() {
-                DOM.swiperContainer.classList.remove('grabbing');
-                setTimeout(() => {
-                    DOM.swiperContainer.classList.remove('swiping');
-                }, 300);
-            },
-            transitionStart: function() {
-                isScrolling = true;
-                console.log('スライド遷移開始');
-            },
-            transitionEnd: function() {
-                isScrolling = false;
+            slideChangeTransitionEnd: function() {
                 console.log('スライド遷移完了');
+                const activeIndex = this.activeIndex;
                 
-                // 遷移後に再度アクティブスライドの表示を確認
+                // URLハッシュを更新
+                const slideId = this.slides[activeIndex].id;
+                if (slideId && history.pushState) {
+                    history.pushState(null, null, '#' + slideId);
+                }
+            },
+            resize: function() {
+                console.log('リサイズ検知: スワイパーを更新します');
+                this.update();
+                
+                // リサイズ後にアクティブスライドの表示を最適化
                 setTimeout(() => {
-                    forceActiveSlideVisibility(this.activeIndex);
-                }, 100);
+                    const activeSlide = this.slides[this.activeIndex];
+                    if (activeSlide) {
+                        ensureSlideContentVisibility(activeSlide);
+                    }
+                }, 300);
             }
         }
-    };
-    
-    // 動きの低減設定が有効な場合、アニメーション速度を調整
-    if (isReducedMotion) {
-        swiperOptions.speed = 400;
-        swiperOptions.effect = 'fade';
-        swiperOptions.fadeEffect = {
-            crossFade: true
-        };
-    }
-    
-    // Swiperインスタンスの作成
-    swiper = new Swiper('.swiper-container', swiperOptions);
-    
-    console.log('Swiper初期化完了');
+    });
+
+    console.log('スワイパー初期化完了');
+    return window.mySwiper;
 }
 
-// 現在のスライドを強制的に表示する関数
-function forceActiveSlideVisibility(activeIndex) {
-    console.log('アクティブスライドの表示を強制:', activeIndex);
+// スライド内のコンテンツの表示を確実にする関数
+function ensureSlideContentVisibility(slide) {
+    if (!slide) return;
     
-    // すべてのスライドを一度非表示に
-    DOM.swiperSlides.forEach((slide, index) => {
-        if (index !== activeIndex) {
+    console.log('スライドコンテンツの表示を確認:', slide.id);
+    
+    // スライドを表示
+    slide.style.display = 'flex';
+    slide.style.visibility = 'visible';
+    slide.style.opacity = '1';
+    
+    // 全てのカード要素を表示
+    const cardElements = slide.querySelectorAll('.problem-card, .feature-card, .pricing-card, .role-card, .step-card');
+    cardElements.forEach(card => {
+        card.style.display = 'flex';
+        card.style.visibility = 'visible';
+        card.style.opacity = '1';
+    });
+    
+    // コンテナ要素を表示
+    const containers = slide.querySelectorAll('.container, .content-wrapper');
+    containers.forEach(container => {
+        container.style.display = 'flex';
+        container.style.visibility = 'visible';
+        container.style.opacity = '1';
+    });
+    
+    // グリッド要素を表示
+    const grids = slide.querySelectorAll('.problems-grid, .features-grid, .pricing-cards');
+    grids.forEach(grid => {
+        grid.style.display = 'grid';
+        grid.style.visibility = 'visible';
+        grid.style.opacity = '1';
+    });
+    
+    // アニメーション要素をリセットして再アニメーション
+    resetAndAnimateElements(slide);
+}
+
+// アニメーション要素をリセットして再アニメーションする関数
+function resetAndAnimateElements(slide) {
+    // アニメーション対象要素を取得
+    const animElements = slide.querySelectorAll('.animate-on-scroll, .scroll-animate');
+    
+    console.log(`${slide.id} 内のアニメーション要素数: ${animElements.length}`);
+    
+    // 各要素のアニメーションをリセットして再適用
+    animElements.forEach((element, index) => {
+        // 一度リセット
+        element.classList.remove('active');
+        
+        // ディレイを付けて再表示
+        setTimeout(() => {
+            element.classList.add('active');
+        }, 100 + (index * 150)); // 順番に表示
+    });
+}
+
+// セクションの表示を更新する関数
+function updateSectionVisibility(activeIndex) {
+    const allSlides = document.querySelectorAll('.swiper-slide');
+    
+    allSlides.forEach((slide, index) => {
+        if (index === activeIndex) {
+            // アクティブスライドは表示
+            slide.style.display = 'flex';
+            slide.style.visibility = 'visible';
+            slide.style.opacity = '1';
+            slide.style.zIndex = '20';
+        } else {
+            // 非アクティブスライドは非表示
+            slide.style.display = 'none';
             slide.style.visibility = 'hidden';
             slide.style.opacity = '0';
-            slide.classList.remove('swiper-slide-visible');
+            slide.style.zIndex = '1';
         }
     });
+}
+
+// ナビゲーションアイテムのハイライト
+function highlightActiveNavItem(activeIndex) {
+    const navItems = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.swiper-slide');
     
-    // アクティブスライドを表示
-    const activeSlide = DOM.swiperSlides[activeIndex];
-    
-    if (activeSlide) {
-        activeSlide.style.visibility = 'visible';
-        activeSlide.style.opacity = '1';
-        activeSlide.style.display = 'flex';
-        activeSlide.classList.add('swiper-slide-visible');
+    if (sections[activeIndex]) {
+        const activeId = sections[activeIndex].id;
         
-        // スライド内のすべての要素を確実に表示
-        const allElements = activeSlide.querySelectorAll('*');
-        allElements.forEach(el => {
-            if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
-                el.style.visibility = 'visible';
-                el.style.opacity = '1';
-                
-                // 特定の要素は表示方法を維持
-                if (el.classList.contains('container') || el.tagName === 'DIV') {
-                    el.style.display = el.style.display || 'block';
-                }
-                
-                // セクションの見出しと説明を確実に表示
-                if (el.classList.contains('section-title') || 
-                    el.tagName === 'H2' || 
-                    el.tagName === 'H3' || 
-                    el.tagName === 'P') {
-                    el.style.display = 'block';
-                }
-                
-                // グリッドレイアウトを維持
-                if (el.classList.contains('problems-grid') || 
-                    el.classList.contains('features-grid') || 
-                    el.classList.contains('pricing-cards')) {
-                    el.style.display = 'grid';
-                }
-                
-                // カード要素はフレックス表示を維持
-                if (el.classList.contains('problem-card') || 
-                    el.classList.contains('feature-card') || 
-                    el.classList.contains('pricing-card')) {
-                    el.style.display = 'flex';
-                }
+        navItems.forEach(item => {
+            // href属性から#を除いた部分を取得
+            const targetId = item.getAttribute('href').substring(1);
+            
+            if (targetId === activeId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
             }
         });
-        
-        console.log(`アクティブスライド[${activeIndex}]を表示強制: ${activeSlide.id}`);
-    } else {
-        console.error('アクティブスライドが見つかりません:', activeIndex);
     }
 }
 
-// スライド内のアニメーション要素を観察する関数を強化
-function observeSlideAnimations(slide) {
-    console.log('スライド内のアニメーション要素を観察:', slide.id);
+// スワイプインジケータの表示更新
+function updateSwipeIndicator(isLastSlide) {
+    const indicator = document.querySelector('.swipe-indicator');
+    if (!indicator) return;
     
-    // アニメーション要素を取得
-    const animateElements = slide.querySelectorAll('.animate-on-scroll:not(.animated)');
+    if (isLastSlide) {
+        indicator.style.display = 'none';
+    } else {
+        indicator.style.display = 'flex';
+    }
+}
+
+// ページ読み込み時の処理を最適化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded イベント発火');
     
-    if (animateElements.length === 0) {
-        console.log('アニメーション要素が見つかりません');
-        return;
+    // スワイパーの初期化
+    const mySwiper = initSwiper();
+    
+    // URLハッシュに基づいて初期スライドを設定
+    if (window.location.hash) {
+        const targetId = window.location.hash.substring(1);
+        const slides = document.querySelectorAll('.swiper-slide');
+        
+        for (let i = 0; i < slides.length; i++) {
+            if (slides[i].id === targetId) {
+                console.log(`初期スライドを ${targetId} (インデックス: ${i}) に設定`);
+                mySwiper.slideTo(i, 0);
+                break;
+            }
+        }
     }
     
-    console.log(`${animateElements.length}個のアニメーション要素を検出`);
-    
-    // 位置に基づいて要素をグループ化（垂直位置順にソート）
-    const sortedElements = Array.from(animateElements).sort((a, b) => {
-        const aRect = a.getBoundingClientRect();
-        const bRect = b.getBoundingClientRect();
-        return aRect.top - bRect.top;
+    // ナビゲーションリンクのクリックイベント
+    document.querySelectorAll('.nav-link, .logo').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href').substring(1);
+            const slides = document.querySelectorAll('.swiper-slide');
+            
+            for (let i = 0; i < slides.length; i++) {
+                if (slides[i].id === targetId) {
+                    console.log(`ナビゲーションリンクから ${targetId} (インデックス: ${i}) へスライド`);
+                    mySwiper.slideTo(i);
+                    break;
+                }
+            }
+        });
     });
     
-    // グループ分けして表示（垂直位置が近い要素は同じグループに）
-    const groups = [];
-    let currentGroup = [];
-    let lastPosition = -1;
+    // スワイプインジケータのクリックイベント
+    const swipeIndicator = document.querySelector('.swipe-indicator');
+    if (swipeIndicator) {
+        swipeIndicator.addEventListener('click', function() {
+            console.log('スワイプインジケータがクリックされました');
+            mySwiper.slideNext();
+        });
+    }
     
-    sortedElements.forEach(element => {
-        const rect = element.getBoundingClientRect();
-        
-        // 新しいグループを開始する条件
-        if (lastPosition === -1 || rect.top - lastPosition > 50) {
-            if (currentGroup.length > 0) {
-                groups.push(currentGroup);
-            }
-            currentGroup = [element];
-        } else {
-            currentGroup.push(element);
+    // ウィンドウのリサイズイベント - スワイパーの更新
+    window.addEventListener('resize', function() {
+        console.log('ウィンドウリサイズイベント');
+        if (mySwiper) {
+            mySwiper.update();
+        }
+    });
+    
+    // 初期アニメーション
+    setTimeout(() => {
+        console.log('初期アニメーションを実行');
+        const activeSlide = document.querySelector('.swiper-slide-active');
+        if (activeSlide) {
+            resetAndAnimateElements(activeSlide);
         }
         
-        lastPosition = rect.top;
-    });
-    
-    // 最後のグループを追加
-    if (currentGroup.length > 0) {
-        groups.push(currentGroup);
+        // ヘッダーのアニメーション
+        const header = document.querySelector('header');
+        if (header) {
+            header.classList.add('visible');
+        }
+    }, 500);
+});
+
+// モバイルメニューの処理
+document.addEventListener('click', function(e) {
+    // モバイルメニュートグル
+    if (e.target.closest('.mobile-menu-toggle')) {
+        console.log('モバイルメニュートグルがクリックされました');
+        document.body.classList.toggle('menu-open');
     }
     
-    console.log(`${groups.length}個のアニメーショングループを作成`);
+    // モバイルメニュー内のリンク
+    if (e.target.closest('.mobile-menu .nav-link')) {
+        console.log('モバイルメニュー内のリンクがクリックされました');
+        document.body.classList.remove('menu-open');
+    }
+});
+
+// スクロールアニメーションのデバッグ
+function debugScrollAnimations() {
+    console.log('スクロールアニメーションのデバッグを開始');
     
-    // グループごとに遅延を設定して表示
-    groups.forEach((group, groupIndex) => {
-        // グループの基本遅延（上のグループから順に表示）
-        const groupDelay = groupIndex * 0.15;
+    const animElements = document.querySelectorAll('.animate-on-scroll, .scroll-animate');
+    console.log(`合計アニメーション要素数: ${animElements.length}`);
+    
+    // 各要素の状態を確認
+    animElements.forEach((el, index) => {
+        const rect = el.getBoundingClientRect();
+        const isVisible = (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= window.innerHeight &&
+            rect.right <= window.innerWidth
+        );
         
-        console.log(`グループ${groupIndex + 1}: ${group.length}個の要素、基本遅延: ${groupDelay}s`);
-        
-        // グループ内の各要素にさらに小さな追加遅延を適用
-        group.forEach((element, elementIndex) => {
-            // 要素の遅延 = グループ遅延 + 要素ごとの追加遅延
-            const baseDelay = element.dataset.delay ? parseFloat(element.dataset.delay) : 0;
-            const additionalDelay = elementIndex * 0.05; // 各要素に50msの追加遅延
-            const totalDelay = baseDelay + groupDelay + additionalDelay;
-            
-            // 要素に明示的に遅延を設定
-            element.style.transitionDelay = `${totalDelay}s`;
-            
-            console.log(`  - 要素${elementIndex + 1}: 合計遅延=${totalDelay}s (base=${baseDelay}, group=${groupDelay}, add=${additionalDelay})`);
-            
-            // アニメーションクラスを追加
-            setTimeout(() => {
-                element.classList.add('animated');
-                console.log(`アニメーションを適用: ${element.tagName}.${element.className}, 遅延: ${totalDelay}s`);
-            }, totalDelay * 1000);
+        console.log(`要素 ${index + 1}:`, {
+            id: el.id || 'No ID',
+            className: el.className,
+            isVisible: isVisible,
+            position: {
+                top: rect.top,
+                bottom: rect.bottom
+            },
+            isActive: el.classList.contains('active')
         });
     });
 }
+
+// デバッグ機能を公開
+window.debugApp = {
+    debugScrollAnimations: debugScrollAnimations,
+    goToSlide: function(index) {
+        if (window.mySwiper) {
+            window.mySwiper.slideTo(index);
+        }
+    }
+};
 
 // スクロールアニメーションの初期化関数を強化
 function initScrollAnimations() {
