@@ -44,100 +44,394 @@ const scrollDelay = 800; // スクロール間の遅延（ms）
 
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded イベント発火 - ページ読み込み完了');
+    console.log('DOMContentLoaded イベント発火 - ページ初期化開始');
     
-    // デバッグ用にHTML構造をログ出力
-    logHtmlStructure();
+    // 要素の取得
+    const sections = document.querySelectorAll('.fullscreen-section');
+    const sectionNavDots = document.querySelectorAll('.section-navigation li');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    const scrollIndicators = document.querySelectorAll('.scroll-indicator');
+    const fadeElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+    const efficiencyBar = document.querySelector('.efficiency-progress');
     
-    // パフォーマンス最適化のためにrequestAnimationFrameを使用
-    requestAnimationFrame(() => {
-        initApp();
-    });
-});
-
-// HTMLの構造をログに出力（デバッグ用）
-function logHtmlStructure() {
-    console.log('=== HTML構造の検証 ===');
-    console.log('スワイパーコンテナ:', DOM.swiperContainer);
-    console.log('スワイパーラッパー:', DOM.swiperWrapper);
-    console.log('スワイパースライド数:', DOM.swiperSlides.length);
+    // 現在のセクションインデックス
+    let currentSectionIndex = 0;
+    let isScrolling = false;
+    let lastScrollTime = 0;
+    const scrollDelay = 800; // スクロール間の遅延（ms）
     
-    // 各スライドのIDとクラスをログ出力
-    DOM.swiperSlides.forEach((slide, index) => {
-        console.log(`スライド[${index}]:`, slide.id, 'クラス:', slide.className);
-    });
-}
-
-// アプリケーションの初期化
-function initApp() {
-    console.log('アプリケーション初期化開始');
+    // 初期化
+    init();
     
-    // 表示を確実にするための初期スタイル適用
-    ensureVisibility();
+    // 初期化関数
+    function init() {
+        console.log('初期化処理開始');
+        
+        // 最初のセクションをアクティブに
+        activateSection(0);
+        
+        // 進行バーの初期化（存在する場合）
+        if (efficiencyBar) {
+            initProgressBar();
+        }
+        
+        // イベントリスナーの設定
+        setupEventListeners();
+        
+        // 初期アニメーション実行
+        setTimeout(() => {
+            resetAndAnimateElements(sections[0]);
+        }, 300);
+        
+        console.log('初期化処理完了');
+    }
     
-    // スクロールアニメーションの初期化（最初に実行）
-    initScrollAnimations();
-    
-    // Swiperの初期化
-    initSwiper();
+    // 進行バーの初期化
+    function initProgressBar() {
+        if (efficiencyBar) {
+            const percentage = efficiencyBar.dataset.percent || "0";
+            setTimeout(() => {
+                efficiencyBar.style.width = `${percentage}%`;
+            }, 1000);
+        }
+    }
     
     // イベントリスナーの設定
-    setupEventListeners();
+    function setupEventListeners() {
+        // ホイールイベント
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        
+        // タッチイベント
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+        
+        // ナビゲーションドットのクリック
+        sectionNavDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                scrollToSection(index);
+            });
+        });
+        
+        // ナビゲーションリンクのクリック
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetIndex = Array.from(sections).findIndex(section => section.id === targetId);
                 
-    // アクセシビリティの向上
-    enhanceAccessibility();
+                if (targetIndex !== -1) {
+                    scrollToSection(targetIndex);
+                }
                 
-    // ブラウザサポートのチェック
-    checkBrowserSupport();
-    
-    // GSAP アニメーションの初期化
-    if (!isReducedMotion) {
-        initGSAPAnimations();
+                // モバイルメニューを閉じる
+                mainNav.classList.remove('active');
+            });
+        });
+        
+        // スクロールインジケーターのクリック
+        scrollIndicators.forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                if (indicator.classList.contains('top')) {
+                    scrollToSection(0);
+                } else {
+                    scrollToNextSection();
+                }
+            });
+        });
+        
+        // メニュートグル
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+        }
+        
+        // ウィンドウリサイズ
+        window.addEventListener('resize', debounce(handleResize, 200));
+        
+        console.log('イベントリスナー設定完了');
     }
     
-    // 画像の遅延読み込み
-    lazyLoadImages();
-    
-    // スクロール進行状況バーの初期化
-    initScrollProgressBar();
-    
-    // パフォーマンス追跡の初期化
-    if (window.performance && window.performance.mark) {
-        window.performance.mark('app-initialized');
+    // セクションをアクティブにする
+    function activateSection(index) {
+        if (index < 0 || index >= sections.length) return;
+        
+        // 全セクションの表示状態をリセット
+        sections.forEach((section, i) => {
+            if (i === index) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        
+        // ナビゲーションドットの状態を更新
+        sectionNavDots.forEach((dot, i) => {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        // スクロールインジケーターの表示を更新
+        updateScrollIndicators(index);
+        
+        // 現在のセクションの要素をアニメーション
+        resetAndAnimateElements(sections[index]);
+        
+        // 現在のインデックスを更新
+        currentSectionIndex = index;
+        
+        console.log(`セクション ${index + 1} をアクティブ化`);
     }
+    
+    // スクロールインジケーターの表示更新
+    function updateScrollIndicators(index) {
+        scrollIndicators.forEach(indicator => {
+            // 最後のセクションでは上向きインジケーターを表示
+            if (index === sections.length - 1 && indicator.classList.contains('top')) {
+                indicator.style.display = 'flex';
+            } 
+            // 最後のセクション以外では下向きインジケーターを表示
+            else if (!indicator.classList.contains('top') && index !== sections.length - 1) {
+                indicator.style.display = 'flex';
+            }
+            // それ以外は非表示
+            else {
+                indicator.style.display = 'none';
+            }
+        });
+    }
+    
+    // 次のセクションへスクロール
+    function scrollToNextSection() {
+        if (currentSectionIndex < sections.length - 1) {
+            scrollToSection(currentSectionIndex + 1);
+        }
+    }
+    
+    // 前のセクションへスクロール
+    function scrollToPrevSection() {
+        if (currentSectionIndex > 0) {
+            scrollToSection(currentSectionIndex - 1);
+        }
+    }
+    
+    // 特定のセクションへスクロール
+    function scrollToSection(index) {
+        if (index < 0 || index >= sections.length || index === currentSectionIndex || isScrolling) {
+            return;
+        }
+        
+        isScrolling = true;
+        
+        // URLハッシュ更新
+        const targetSection = sections[index];
+        history.replaceState(null, null, `#${targetSection.id}`);
+        
+        // スクロール処理
+        const scrollOptions = {
+            top: targetSection.offsetTop,
+            behavior: 'smooth'
+        };
+        
+        window.scrollTo(scrollOptions);
+        
+        // セクションのアクティブ化とスクロールロック解除
+        setTimeout(() => {
+            activateSection(index);
+            isScrolling = false;
+        }, 800);
+        
+        console.log(`セクション ${index + 1} へスクロール`);
+    }
+    
+    // ホイールイベントハンドラー
+    function handleWheel(e) {
+        e.preventDefault();
+        
+        const currentTime = new Date().getTime();
+        
+        // スクロール間隔の制御（連続スクロール防止）
+        if (currentTime - lastScrollTime < scrollDelay || isScrolling) {
+            return;
+        }
+        
+        lastScrollTime = currentTime;
+        
+        // スクロール方向の判定
+        if (e.deltaY > 0) {
+            // 下にスクロール
+            scrollToNextSection();
+        } else {
+            // 上にスクロール
+            scrollToPrevSection();
+        }
+    }
+    
+    // タッチ関連の変数
+    let touchStartY = 0;
+    const touchThreshold = 50;
+    
+    // タッチスタートハンドラー
+    function handleTouchStart(e) {
+        touchStartY = e.touches[0].clientY;
+    }
+    
+    // タッチ移動ハンドラー
+    function handleTouchMove(e) {
+        if (isScrolling) {
+            e.preventDefault();
+        }
+    }
+    
+    // タッチ終了ハンドラー
+    function handleTouchEnd(e) {
+        if (isScrolling) return;
+        
+        const touchEndY = e.changedTouches[0].clientY;
+        const diffY = touchStartY - touchEndY;
+        
+        // スワイプが十分な距離があるか確認
+        if (Math.abs(diffY) > touchThreshold) {
+            if (diffY > 0) {
+                // 下にスワイプ
+                scrollToNextSection();
+            } else {
+                // 上にスワイプ
+                scrollToPrevSection();
+            }
+        }
+    }
+    
+    // リサイズハンドラー
+    function handleResize() {
+        // 現在のセクションが画面内に表示されるよう調整
+        if (!isScrolling) {
+            const targetSection = sections[currentSectionIndex];
+            window.scrollTo({
+                top: targetSection.offsetTop,
+                behavior: 'auto'
+            });
+        }
+    }
+    
+    // アニメーション要素をリセットして再アニメーション
+    function resetAndAnimateElements(section) {
+        console.log('アニメーション要素のリセットと再アニメーション:', section.id);
+        
+        // フェードイン要素を検索
+        const fadeElements = section.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+        
+        // 一旦すべてリセット
+        fadeElements.forEach(element => {
+            element.classList.remove('active');
+        });
+        
+        // 少し遅延を付けて再アニメーション
+        setTimeout(() => {
+            fadeElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.classList.add('active');
+                }, index * 100); // 順番に表示
+            });
+            
+            // プログレスバーのアニメーション
+            const progressBar = section.querySelector('.efficiency-progress');
+            if (progressBar) {
+                const percentage = progressBar.dataset.percent || "0";
+                progressBar.style.width = `${percentage}%`;
+            }
+        }, 100);
+    }
+    
+    // ユーティリティ関数: デバウンス
+    function debounce(func, delay) {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
+    
+    // URLハッシュによるセクション表示（ページロード時）
+    if (window.location.hash) {
+        const targetId = window.location.hash.substring(1);
+        const targetIndex = Array.from(sections).findIndex(section => section.id === targetId);
+        
+        if (targetIndex !== -1) {
+            // ページロード時は遅延を付けて実行
+            setTimeout(() => {
+                scrollToSection(targetIndex);
+            }, 500);
+        }
+    }
+});
 
-    console.log('アプリケーション初期化完了');
+// セクション表示を強制するCSS追加
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+.fullscreen-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-// 表示を確実にする関数
-function ensureVisibility() {
-    // 全セクションの表示を強制
-    const allSections = document.querySelectorAll('section');
-    allSections.forEach(section => {
-        section.style.visibility = 'visible';
-        section.style.opacity = '1';
-        section.style.display = 'block';
-        console.log(`セクション表示強制: ${section.id}`);
-    });
-    
-    // すべてのカード要素の表示を強制
-    const allCards = document.querySelectorAll('.problem-card, .feature-card, .pricing-card');
-    allCards.forEach(card => {
-        card.style.visibility = 'visible';
-        card.style.opacity = '1';
-        card.style.display = 'flex';
-        console.log('カード表示強制');
-    });
-    
-    // コンタクトフォームの表示を強制
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.style.visibility = 'visible';
-        contactForm.style.opacity = '1';
-        contactForm.style.display = 'block';
-        console.log('コンタクトフォーム表示強制');
-    }
+.fullscreen-section:not(.active) {
+    display: flex;
 }
+
+.fade-in, .fade-in-left, .fade-in-right {
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-in-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in-right.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-in:not(.active) {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.fade-in-left:not(.active) {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.fade-in-right:not(.active) {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.efficiency-progress {
+    transition: width 1.5s ease-in-out;
+}
+</style>
+`);
 
 // デバイスタイプの検出
 function detectDeviceType() {
