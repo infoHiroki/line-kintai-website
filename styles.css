@@ -3118,3 +3118,199 @@ body, html, .swiper-container, .swiper-slide {
     opacity: 0 !important;
     visibility: hidden !important;
 } 
+
+/* カードの表示を強制する設定 */
+.problem-card, 
+.feature-card,
+.pricing-card {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: white !important;
+    border-radius: var(--border-radius) !important;
+    padding: var(--space-md) !important;
+    box-shadow: var(--box-shadow) !important;
+    margin-bottom: var(--space-md) !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* カード内のヘッダー部分 */
+.problem-icon,
+.feature-icon {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 70px !important;
+    height: 70px !important;
+    border-radius: 50% !important;
+    margin: 0 auto var(--space-sm) !important;
+    background-color: var(--light-color) !important;
+    color: var(--primary-color) !important;
+    font-size: 2rem !important;
+}
+
+/* カードタイトル */
+.problem-card h3,
+.feature-card h3 {
+    margin-bottom: var(--space-xs) !important;
+    color: var(--dark-color) !important;
+    text-align: center !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+}
+
+/* カード内のテキスト */
+.problem-card p,
+.feature-card p {
+    text-align: center !important;
+    color: var(--gray-color) !important;
+    margin-bottom: 0 !important;
+}
+
+/* カードグリッドレイアウト */
+.problems-grid,
+.features-grid,
+.pricing-cards {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: var(--space-md) !important;
+    width: 100% !important;
+    margin-top: var(--space-lg) !important;
+    margin-bottom: var(--space-lg) !important;
+}
+
+/* セクション全体の表示強制 */
+#problems, 
+#benefits,
+#features,
+#pricing,
+#contact,
+#line-flow {
+    background-color: var(--light-color) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+}
+
+/* セクションタイトル */
+.section-title {
+    text-align: center !important;
+    margin-bottom: var(--space-lg) !important;
+    position: relative !important;
+    padding-bottom: var(--space-sm) !important;
+    color: var(--dark-color) !important;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    z-index: 10 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* プライシングカード特有のスタイル */
+.pricing-card {
+    padding: var(--space-lg) var(--space-md) !important;
+}
+
+.pricing-header {
+    text-align: center !important;
+    margin-bottom: var(--space-md) !important;
+    padding-bottom: var(--space-sm) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.pricing-price {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    color: var(--dark-color) !important;
+    margin-bottom: var(--space-xs) !important;
+    text-align: center !important;
+}
+
+.pricing-features ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: var(--space-md) 0 !important;
+}
+
+.pricing-features ul li {
+    display: flex !important;
+    align-items: flex-start !important;
+    margin-bottom: var(--space-xs) !important;
+    color: var(--dark-color) !important;
+}
+
+.pricing-features ul li i {
+    color: var(--success-color) !important;
+    margin-right: var(--space-xs) !important;
+    margin-top: 5px !important;
+}
+
+/* スワイパースライドの表示を確実にする */
+.swiper-slide-active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 20 !important;
+}
+
+/* スワイパーコンテナの設定 */
+.swiper-container {
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    z-index: 10 !important;
+    background-color: var(--light-color) !important;
+}
+
+/* コンタクトフォームの表示を強制 */
+.contact-form {
+    background-color: white !important;
+    border-radius: var(--border-radius) !important;
+    padding: var(--space-lg) !important;
+    box-shadow: var(--box-shadow) !important;
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.contact-form h3 {
+    margin-bottom: var(--space-md) !important;
+    text-align: center !important;
+    color: var(--dark-color) !important;
+}
+
+.form-group {
+    margin-bottom: var(--space-md) !important;
+}
+
+.form-group label {
+    display: block !important;
+    margin-bottom: var(--space-xs) !important;
+    color: var(--dark-color) !important;
+    font-weight: 500 !important;
+}
+
+.form-group input,
+.form-group select {
+    width: 100% !important;
+    padding: 10px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 5px !important;
+    font-size: 1rem !important;
+}
+
+.form-group textarea {
+    width: 100% !important;
+    padding: 10px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 5px !important;
+    height: 120px !important;
+}
