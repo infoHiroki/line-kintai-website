@@ -235,21 +235,66 @@ function observeSlideAnimations(slide) {
     
     console.log(`${animateElements.length}個のアニメーション要素を検出`);
     
-    // 各要素の配置が重ならないように順番に表示
-    animateElements.forEach((element, index) => {
-        // インデックスに基づいて遅延を計算（要素ごとに遅延を少しずつ増やす）
-        const baseDelay = element.dataset.delay ? parseFloat(element.dataset.delay) : 0;
-        const additionalDelay = index * 0.05; // 各要素に50msの追加遅延
-        const totalDelay = baseDelay + additionalDelay;
+    // 位置に基づいて要素をグループ化（垂直位置順にソート）
+    const sortedElements = Array.from(animateElements).sort((a, b) => {
+        const aRect = a.getBoundingClientRect();
+        const bRect = b.getBoundingClientRect();
+        return aRect.top - bRect.top;
+    });
+    
+    // グループ分けして表示（垂直位置が近い要素は同じグループに）
+    const groups = [];
+    let currentGroup = [];
+    let lastPosition = -1;
+    
+    sortedElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
         
-        // 要素に遅延を設定
-        element.style.transitionDelay = `${totalDelay}s`;
+        // 新しいグループを開始する条件
+        if (lastPosition === -1 || rect.top - lastPosition > 50) {
+            if (currentGroup.length > 0) {
+                groups.push(currentGroup);
+            }
+            currentGroup = [element];
+        } else {
+            currentGroup.push(element);
+        }
         
-        // アニメーションクラスを追加
-        setTimeout(() => {
-            element.classList.add('animated');
-            console.log(`アニメーションを適用: ${element.className}, 遅延: ${totalDelay}s`);
-        }, totalDelay * 1000);
+        lastPosition = rect.top;
+    });
+    
+    // 最後のグループを追加
+    if (currentGroup.length > 0) {
+        groups.push(currentGroup);
+    }
+    
+    console.log(`${groups.length}個のアニメーショングループを作成`);
+    
+    // グループごとに遅延を設定して表示
+    groups.forEach((group, groupIndex) => {
+        // グループの基本遅延（上のグループから順に表示）
+        const groupDelay = groupIndex * 0.15;
+        
+        console.log(`グループ${groupIndex + 1}: ${group.length}個の要素、基本遅延: ${groupDelay}s`);
+        
+        // グループ内の各要素にさらに小さな追加遅延を適用
+        group.forEach((element, elementIndex) => {
+            // 要素の遅延 = グループ遅延 + 要素ごとの追加遅延
+            const baseDelay = element.dataset.delay ? parseFloat(element.dataset.delay) : 0;
+            const additionalDelay = elementIndex * 0.05; // 各要素に50msの追加遅延
+            const totalDelay = baseDelay + groupDelay + additionalDelay;
+            
+            // 要素に明示的に遅延を設定
+            element.style.transitionDelay = `${totalDelay}s`;
+            
+            console.log(`  - 要素${elementIndex + 1}: 合計遅延=${totalDelay}s (base=${baseDelay}, group=${groupDelay}, add=${additionalDelay})`);
+            
+            // アニメーションクラスを追加
+            setTimeout(() => {
+                element.classList.add('animated');
+                console.log(`アニメーションを適用: ${element.tagName}.${element.className}, 遅延: ${totalDelay}s`);
+            }, totalDelay * 1000);
+        });
     });
 }
 
@@ -270,8 +315,8 @@ function initScrollAnimations() {
     // IntersectionObserverの設定
     const options = {
         root: null, // ビューポート全体を監視
-        rootMargin: '10px', // 少し余裕を持たせる
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5] // より細かく検出
+        rootMargin: '30px', // 余裕を持たせる
+        threshold: [0, 0.1, 0.2, 0.3] // 一定間隔で検出
     };
     
     // IntersectionObserverの作成
@@ -289,11 +334,12 @@ function initScrollAnimations() {
             
             if (entry.isIntersecting) {
                 const ratio = entry.intersectionRatio;
-                console.log('要素が画面に入りました:', entry.target, '可視率:', ratio);
+                console.log(`要素が画面に入りました: ${entry.target.tagName}.${entry.target.className}, 可視率: ${ratio.toFixed(2)}`);
                 
                 // 要素の位置を考慮して重なりを防止
                 const rect = element.getBoundingClientRect();
-                const verticalPosition = rect.top / window.innerHeight;
+                const viewportHeight = window.innerHeight;
+                const verticalPosition = rect.top / viewportHeight;
                 
                 // 上部から下部にかけて徐々に遅延を増やす (0.0s～0.3s)
                 const positionDelay = Math.min(0.3, verticalPosition * 0.3);
@@ -302,6 +348,8 @@ function initScrollAnimations() {
                 const baseDelay = element.dataset.delay ? parseFloat(element.dataset.delay) : 0;
                 const totalDelay = baseDelay + positionDelay;
                 
+                console.log(`  - 位置: ${(verticalPosition * 100).toFixed(0)}%, 位置による遅延: ${positionDelay.toFixed(2)}s, 合計遅延: ${totalDelay.toFixed(2)}s`);
+                
                 if (ratio >= 0.1) { // 10%以上見えている場合
                     // 遅延を明示的に設定
                     element.style.transitionDelay = `${totalDelay}s`;
@@ -309,7 +357,7 @@ function initScrollAnimations() {
                     setTimeout(() => {
                         element.classList.add('animated');
                         element.classList.add('active');
-                        console.log(`アニメーションを適用: ${element.className}, 遅延: ${totalDelay}s`);
+                        console.log(`アニメーションを適用: ${element.tagName}.${element.className}, 遅延: ${totalDelay}s`);
                     }, totalDelay * 1000);
                     
                     // 一度アニメーションが発火したら監視を解除
@@ -325,17 +373,19 @@ function initScrollAnimations() {
     
     // グループごとに監視を開始
     elementGroups.forEach((group, groupIndex) => {
+        console.log(`グループ${groupIndex + 1}の監視を開始: ${group.length}個の要素`);
+        
         group.forEach((element, elementIndex) => {
             // グループとグループ内のインデックスに基づいて監視を開始
             observer.observe(element);
-            console.log(`監視開始: グループ ${groupIndex + 1}, 要素 ${elementIndex + 1}: ${element.className}`);
+            console.log(`  - 監視開始: ${element.tagName}.${element.className}`);
         });
     });
     
     console.log('スクロールアニメーション初期化完了');
 }
 
-// 位置に基づいて要素をグループ化する新しい関数
+// 位置に基づいて要素をグループ化する関数を最適化
 function groupElementsByPosition(elements) {
     // 画面を縦に4つのエリアに分割
     const groups = [[], [], [], []];
@@ -348,15 +398,27 @@ function groupElementsByPosition(elements) {
         const centerY = rect.top + rect.height / 2;
         const relativePosition = centerY / viewportHeight;
         
+        // デバッグ出力
+        console.log(`要素 ${element.tagName}.${element.className}: 相対位置=${(relativePosition * 100).toFixed(0)}%`);
+        
         if (relativePosition < 0.25) {
             groups[0].push(element);
+            console.log('  -> グループ1に配置（上部）');
         } else if (relativePosition < 0.5) {
             groups[1].push(element);
+            console.log('  -> グループ2に配置（上中部）');
         } else if (relativePosition < 0.75) {
             groups[2].push(element);
+            console.log('  -> グループ3に配置（下中部）');
         } else {
             groups[3].push(element);
+            console.log('  -> グループ4に配置（下部）');
         }
+    });
+    
+    // 各グループの要素数を出力
+    groups.forEach((group, index) => {
+        console.log(`グループ${index + 1}: ${group.length}個の要素`);
     });
     
     return groups;
