@@ -504,54 +504,59 @@
         </section>
 
         <!-- セクション6: お問い合わせ -->
-        <section id="section6" class="fullscreen-section">
-            <div class="section-container">
-                <h2 class="section-title fade-in">お問い合わせ</h2>
-                <div class="contact-container">
-                    <div class="contact-info fade-in-left">
-                        <h3>お気軽にお問い合わせください</h3>
-                        <div class="contact-qr">
-                            <img src="images/free/qr-code.jpg" alt="お問い合わせ用QRコード">
-                            <p>LINEで簡単にお問い合わせ</p>
+        <section id="section6" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
+            <div class="w-full max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-primary-800 fade-in">お問い合わせ</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+                    <!-- お問い合わせ情報 -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 fade-in-left">
+                        <h3 class="text-2xl font-bold mb-8 text-center text-gray-800">お気軽にお問い合わせください</h3>
+                        <div class="flex flex-col items-center mb-10">
+                            <div class="bg-white p-3 border-2 border-primary rounded-xl shadow-md mb-4 w-48 h-48 flex items-center justify-center">
+                                <img src="images/qr-code.png" alt="お問い合わせ用QRコード" class="w-full h-auto">
+                            </div>
+                            <p class="text-center font-medium text-primary">LINEで簡単にお問い合わせ</p>
                         </div>
-                        <div class="contact-details">
-                            <p><i class="fas fa-phone"></i> 03-1234-5678</p>
-                            <p><i class="fas fa-envelope"></i> info@keibi-line.co.jp</p>
-                            <p><i class="fas fa-map-marker-alt"></i> 東京都渋谷区〇〇町1-2-3</p>
+                        <div class="space-y-4 mt-8">
+                            <p class="flex items-center text-gray-700"><i class="fas fa-phone text-primary w-8"></i> 03-1234-5678</p>
+                            <p class="flex items-center text-gray-700"><i class="fas fa-envelope text-primary w-8"></i> info@keibi-line.co.jp</p>
+                            <p class="flex items-center text-gray-700"><i class="fas fa-map-marker-alt text-primary w-8"></i> 東京都渋谷区〇〇町1-2-3</p>
                         </div>
                     </div>
-                    <div class="contact-form fade-in-right">
-                        <h3>お問い合わせフォーム</h3>
+                    
+                    <!-- お問い合わせフォーム -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 fade-in-right">
+                        <h3 class="text-2xl font-bold mb-8 text-center text-gray-800">お問い合わせフォーム</h3>
                         <form id="contactForm">
-                            <div class="form-group">
-                                <label for="name">お名前</label>
-                                <input type="text" id="name" name="name" required>
+                            <div class="mb-5">
+                                <label for="name" class="block text-gray-700 font-medium mb-2">お名前</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
                             </div>
-                            <div class="form-group">
-                                <label for="company">会社名</label>
-                                <input type="text" id="company" name="company" required>
+                            <div class="mb-5">
+                                <label for="company" class="block text-gray-700 font-medium mb-2">会社名</label>
+                                <input type="text" id="company" name="company" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
                             </div>
-                            <div class="form-group">
-                                <label for="email">メールアドレス</label>
-                                <input type="email" id="email" name="email" required>
+                            <div class="mb-5">
+                                <label for="email" class="block text-gray-700 font-medium mb-2">メールアドレス</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" required>
                             </div>
-                            <div class="form-group">
-                                <label for="phone">電話番号</label>
-                                <input type="tel" id="phone" name="phone">
+                            <div class="mb-5">
+                                <label for="phone" class="block text-gray-700 font-medium mb-2">電話番号</label>
+                                <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                             </div>
-                            <div class="form-group">
-                                <label for="message">お問い合わせ内容</label>
-                                <textarea id="message" name="message" rows="4" required></textarea>
+                            <div class="mb-6">
+                                <label for="message" class="block text-gray-700 font-medium mb-2">お問い合わせ内容</label>
+                                <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" required></textarea>
                             </div>
-                            <div class="form-action">
-                                <button type="submit" class="btn-primary">送信する</button>
+                            <div class="text-center">
+                                <button type="submit" class="inline-block py-3 px-8 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300">送信する</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="scroll-indicator top">
-                <span>トップに戻る</span>
+            <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center text-gray-600 animate-bounce">
+                <span class="mb-2">トップに戻る</span>
                 <i class="fas fa-chevron-up"></i>
             </div>
         </section>
