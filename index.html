@@ -411,82 +411,94 @@
         </section>
 
         <!-- セクション5: 料金 -->
-        <section id="section5" class="fullscreen-section">
-            <div class="section-container">
-                <h2 class="section-title fade-in">料金プラン</h2>
-                <div class="pricing-container">
-                    <div class="pricing-card fade-in-left">
-                        <div class="pricing-header">
-                            <h3>スタンダードプラン</h3>
+        <section id="section5" class="min-h-screen flex flex-col justify-center items-center py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+            <div class="w-full max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-primary-800 fade-in">料金プラン</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- スタンダードプラン -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl fade-in-left">
+                        <div class="bg-gray-100 p-6 border-b border-gray-200">
+                            <h3 class="text-2xl font-bold text-center text-gray-800">スタンダードプラン</h3>
                         </div>
-                        <div class="pricing-price">
-                            <span class="price-amount">¥19,800</span>
-                            <span class="price-period">/月（税込）</span>
-                        </div>
-                        <div class="pricing-details">
-                            <p>初期費用: ¥50,000（税込）</p>
-                            <p>〜50名まで利用可能</p>
-                        </div>
-                        <ul class="pricing-features">
-                            <li><i class="fas fa-check"></i> LINEで勤怠打刻</li>
-                            <li><i class="fas fa-check"></i> シフト管理</li>
-                            <li><i class="fas fa-check"></i> 勤怠データ分析</li>
-                            <li><i class="fas fa-check"></i> CSVエクスポート</li>
-                            <li><i class="fas fa-check"></i> メール・チャットサポート</li>
-                        </ul>
-                        <div class="pricing-action">
-                            <a href="#section6" class="btn-primary">お問い合わせ</a>
-                        </div>
-                    </div>
-                    <div class="pricing-card featured fade-in">
-                        <div class="pricing-header">
-                            <h3>プレミアムプラン</h3>
-                        </div>
-                        <div class="pricing-price">
-                            <span class="price-amount">¥29,800</span>
-                            <span class="price-period">/月（税込）</span>
-                        </div>
-                        <div class="pricing-details">
-                            <p>初期費用: ¥80,000（税込）</p>
-                            <p>〜100名まで利用可能</p>
-                        </div>
-                        <ul class="pricing-features">
-                            <li><i class="fas fa-check"></i> スタンダードプランの全機能</li>
-                            <li><i class="fas fa-check"></i> 給与計算ソフト連携</li>
-                            <li><i class="fas fa-check"></i> 複数現場の一元管理</li>
-                            <li><i class="fas fa-check"></i> 高度なレポート機能</li>
-                            <li><i class="fas fa-check"></i> 電話サポート（平日9-18時）</li>
-                        </ul>
-                        <div class="pricing-action">
-                            <a href="#section6" class="btn-primary">お問い合わせ</a>
+                        <div class="p-8 text-center">
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold text-primary-600">¥19,800</span>
+                                <span class="text-gray-600">/月（税込）</span>
+                            </div>
+                            <div class="text-gray-600 mb-8 pb-6 border-b border-gray-200">
+                                <p class="mb-2">初期費用: ¥50,000（税込）</p>
+                                <p>〜50名まで利用可能</p>
+                            </div>
+                            <ul class="space-y-3 text-left mb-8">
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>LINEで勤怠打刻</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>シフト管理</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>勤怠データ分析</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>CSVエクスポート</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>メール・チャットサポート</span></li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="#section6" class="inline-block w-full py-3 px-6 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300 text-center">お問い合わせ</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="pricing-card fade-in-right">
-                        <div class="pricing-header">
-                            <h3>エンタープライズプラン</h3>
+                    
+                    <!-- プレミアムプラン（おすすめ） -->
+                    <div class="bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-105 hover:-translate-y-2 hover:shadow-xl relative fade-in">
+                        <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-1 font-bold text-sm">おすすめ</div>
+                        <div class="bg-primary-600 p-6 border-b border-primary-700">
+                            <h3 class="text-2xl font-bold text-center text-white">プレミアムプラン</h3>
                         </div>
-                        <div class="pricing-price">
-                            <span class="price-amount">要問合せ</span>
+                        <div class="p-8 text-center">
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold text-primary-600">¥29,800</span>
+                                <span class="text-gray-600">/月（税込）</span>
+                            </div>
+                            <div class="text-gray-600 mb-8 pb-6 border-b border-gray-200">
+                                <p class="mb-2">初期費用: ¥80,000（税込）</p>
+                                <p>〜100名まで利用可能</p>
+                            </div>
+                            <ul class="space-y-3 text-left mb-8">
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>スタンダードプランの全機能</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>給与計算ソフト連携</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>複数現場の一元管理</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>高度なレポート機能</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>電話サポート（平日9-18時）</span></li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="#section6" class="inline-block w-full py-3 px-6 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300 text-center">お問い合わせ</a>
+                            </div>
                         </div>
-                        <div class="pricing-details">
-                            <p>初期費用: 要問合せ</p>
-                            <p>100名以上の大規模導入向け</p>
+                    </div>
+                    
+                    <!-- エンタープライズプラン -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl fade-in-right">
+                        <div class="bg-gray-800 p-6 border-b border-gray-700">
+                            <h3 class="text-2xl font-bold text-center text-white">エンタープライズプラン</h3>
                         </div>
-                        <ul class="pricing-features">
-                            <li><i class="fas fa-check"></i> プレミアムプランの全機能</li>
-                            <li><i class="fas fa-check"></i> API連携</li>
-                            <li><i class="fas fa-check"></i> カスタマイズ対応</li>
-                            <li><i class="fas fa-check"></i> 専任サポート担当者</li>
-                            <li><i class="fas fa-check"></i> 24時間サポート対応</li>
-                        </ul>
-                        <div class="pricing-action">
-                            <a href="#section6" class="btn-primary">お問い合わせ</a>
+                        <div class="p-8 text-center">
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold text-primary-600">要問合せ</span>
+                            </div>
+                            <div class="text-gray-600 mb-8 pb-6 border-b border-gray-200">
+                                <p class="mb-2">初期費用: 要問合せ</p>
+                                <p>100名以上の大規模導入向け</p>
+                            </div>
+                            <ul class="space-y-3 text-left mb-8">
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>プレミアムプランの全機能</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>API連携</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>カスタマイズ対応</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>専任サポート担当者</span></li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i> <span>24時間サポート対応</span></li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="#section6" class="inline-block w-full py-3 px-6 bg-primary hover:bg-opacity-90 text-white font-bold rounded-lg transition-all duration-300 text-center">お問い合わせ</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="scroll-indicator">
-                <span>下にスクロール</span>
+            <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center text-gray-600 animate-bounce">
+                <span class="mb-2">下にスクロール</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
         </section>
