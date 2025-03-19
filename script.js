@@ -7,6 +7,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
   
+  // デバイスの判定
+  const isMobile = window.innerWidth <= 768;
+  console.log(`デバイス検出: ${isMobile ? 'モバイル' : 'PC'}`);
+  
   // DOM要素の取得
   const elements = {
     // section要素のうち、id属性が'section1'から始まるものすべてを取得
@@ -47,26 +51,157 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`セクション ${i+1}: id=${section.id}, class=${section.className}`);
     });
     
+    // PCとモバイルで別々の初期化処理
+    if (isMobile) {
+      // モバイル向け初期化: 標準のスクロールを使用
+      initMobile();
+    } else {
+      // PC向け初期化: フルスクリーンスクロールを設定
+      initDesktop();
+    }
+    
+    // 共通の初期化処理
+    setupCommonFeatures();
+  }
+  
+  /**
+   * モバイル向け初期化処理
+   */
+  function initMobile() {
+    console.log('モバイルモードで初期化');
+    
+    // HTML, Bodyのオーバーフローをautoに設定（標準スクロールを許可）
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
+    
+    // メインコンテンツをフルスクリーンスクロールから通常スクロールに変更
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.style.height = 'auto';
+      mainContent.style.overflow = 'visible';
+    }
+    
+    // 各セクションを通常表示に変更
+    elements.sections.forEach(section => {
+      section.style.position = 'relative';
+      section.style.display = 'flex';
+      section.style.opacity = '1';
+      section.style.visibility = 'visible';
+      section.classList.add('active');
+    });
+    
+    // スクロールインジケーターを非表示
+    elements.scrollIndicators.forEach(indicator => {
+      indicator.style.display = 'none';
+    });
+    
+    // ヘッダースクロール検出
+    window.addEventListener('scroll', throttle(() => {
+      if (window.scrollY > 50) {
+        elements.header.classList.add('scrolled');
+      } else {
+        elements.header.classList.remove('scrolled');
+      }
+      
+      // スクロール位置に基づいてアクティブセクションを更新
+      updateActiveSection();
+    }, 100));
+    
+    // 初期表示時にアニメーション要素を表示
+    setTimeout(() => {
+      const fadeElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+      fadeElements.forEach(element => {
+        if (isElementInViewport(element)) {
+          element.classList.add('active');
+        }
+      });
+    }, 300);
+    
+    // スクロールでアニメーション要素の表示を制御
+    window.addEventListener('scroll', throttle(() => {
+      const fadeElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+      fadeElements.forEach(element => {
+        if (isElementInViewport(element) && !element.classList.contains('active')) {
+          element.classList.add('active');
+        }
+      });
+    }, 100));
+  }
+  
+  /**
+   * 要素が表示領域内にあるかをチェック
+   * @param {HTMLElement} element - チェックする要素
+   * @return {boolean} - 要素が表示領域内にあるかどうか
+   */
+  function isElementInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+      rect.bottom >= 0
+    );
+  }
+  
+  /**
+   * スクロール位置からアクティブなセクションを更新（モバイル用）
+   */
+  function updateActiveSection() {
+    let currentSection = '';
+    const scrollPosition = window.scrollY + window.innerHeight / 2;
+    
+    elements.sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        currentSection = section.id;
+      }
+    });
+    
+    if (currentSection) {
+      // ナビゲーションドットの更新
+      elements.navDots.forEach(dot => {
+        const dotSection = dot.getAttribute('data-section');
+        if (dotSection === currentSection) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+      
+      // モバイルナビのアクティブ状態更新
+      const mobileBottomNav = document.querySelector('.mobile-bottom-nav');
+      if (mobileBottomNav) {
+        const links = mobileBottomNav.querySelectorAll('a');
+        links.forEach(link => {
+          const linkHref = link.getAttribute('href').substring(1);
+          if (linkHref === currentSection) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    }
+  }
+  
+  /**
+   * PC向け初期化処理
+   */
+  function initDesktop() {
+    console.log('PCモードで初期化');
+    
     // セクションの初期配置
     setupSections();
     
     // 初期セクションをアクティブに
     activateSection(0);
     
-    // イベントリスナーの設定
-    setupEventListeners();
+    // フルスクリーンスクロール用のイベントリスナー
+    setupDesktopEventListeners();
     
     // URLハッシュによる初期セクション表示
     handleUrlHash();
     
-    // 進捗バーの初期化（存在すれば）
-    if (elements.efficiencyBar) {
-      setTimeout(() => {
-        const percentage = elements.efficiencyBar.dataset.percent || '0';
-        elements.efficiencyBar.style.width = `${percentage}%`;
-      }, 1000);
-    }
-
     // 初期セクションを強制的に表示
     setTimeout(() => {
       scrollToSection(0, false);
@@ -74,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   /**
-   * セクションの初期配置を設定
+   * PC用のセクション初期配置を設定
    */
   function setupSections() {
     // 各セクションを非表示に初期化
@@ -104,8 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (index !== 0) {
         section.style.display = 'none';
       } else {
-        // section.style.display = 'flex'だと、もともとdisplay: blockなどで設計されたセクションに
-        // 問題が生じる可能性があるため、元のdisplayプロパティを尊重
         section.style.display = '';
       }
       section.setAttribute('aria-hidden', index !== 0 ? 'true' : 'false');
@@ -122,9 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   /**
-   * イベントリスナーの設定
+   * PC用イベントリスナーの設定
    */
-  function setupEventListeners() {
+  function setupDesktopEventListeners() {
     // ホイールスクロール
     window.addEventListener('wheel', handleWheel, { passive: false });
     
@@ -160,8 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetId = link.getAttribute('href').substring(1);
         const targetIndex = Array.from(elements.sections).findIndex(section => section.id === targetId);
         
-        console.log(`フッターリンクがクリックされました。targetId: ${targetId}, targetIndex: ${targetIndex}`); // 追加
-        
         if (targetIndex !== -1) {
           scrollToSection(targetIndex);
           
@@ -187,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // スクロールインジケーター - インジケーター全体とその中の要素にもイベントを追加
+    // スクロールインジケーター
     elements.scrollIndicators.forEach(indicator => {
       // インジケーター自体のクリックイベント
       indicator.addEventListener('click', () => {
@@ -200,25 +331,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      // インジケーター内のテキスト要素のクリックイベント（イベント伝播を防止）
-      const textElements = indicator.querySelectorAll('span');
-      textElements.forEach(textElement => {
-        textElement.addEventListener('click', (e) => {
-          e.stopPropagation(); // イベント伝播を防止
-          const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
-        
-          if (hasUpArrow) {
-            scrollToSection(0);
-          } else {
-            scrollToSection(state.currentSection + 1);
-          }
-        });
-      });
-      
-      // インジケーター内のアイコン要素のクリックイベント（イベント伝播を防止）
-      const iconElements = indicator.querySelectorAll('i');
-      iconElements.forEach(iconElement => {
-        iconElement.addEventListener('click', (e) => {
+      // インジケーター内の要素のクリックイベント
+      const childElements = indicator.querySelectorAll('span, i');
+      childElements.forEach(element => {
+        element.addEventListener('click', (e) => {
           e.stopPropagation(); // イベント伝播を防止
           const hasUpArrow = indicator.innerHTML.includes('fa-chevron-up');
         
@@ -231,17 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     
-    // メニュートグル
-    if (elements.menuToggle) {
-      elements.menuToggle.addEventListener('click', () => {
-        toggleMobileMenu();
-      });
-    }
-    
-    // リサイズイベント
-    window.addEventListener('resize', debounce(handleResize, 200));
-    
-    // スクロール時のヘッダー表示制御とナビゲーション目印の更新
+    // スクロール時のヘッダー表示制御
     window.addEventListener('scroll', throttle(() => {
       // ヘッダー表示制御
       if (window.scrollY > 50) {
@@ -255,6 +361,29 @@ document.addEventListener('DOMContentLoaded', () => {
         checkScrollPosition();
       }
     }, 100));
+  }
+  
+  /**
+   * 共通機能の設定
+   */
+  function setupCommonFeatures() {
+    // 進捗バーの初期化（存在すれば）
+    if (elements.efficiencyBar) {
+      setTimeout(() => {
+        const percentage = elements.efficiencyBar.dataset.percent || '0';
+        elements.efficiencyBar.style.width = `${percentage}%`;
+      }, 1000);
+    }
+    
+    // メニュートグル
+    if (elements.menuToggle) {
+      elements.menuToggle.addEventListener('click', () => {
+        toggleMobileMenu();
+      });
+    }
+    
+    // リサイズイベント
+    window.addEventListener('resize', debounce(handleResize, 200));
     
     // モバイルメニューが開いているときに画面外をクリックしたらメニューを閉じる
     document.addEventListener('click', (e) => {
@@ -264,6 +393,34 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleMobileMenu(false);
       }
     });
+    
+    // 料金プランのカルーセル（モバイル用）
+    const pricingGrid = document.querySelector('#section5 .grid');
+    const pricingDots = document.querySelectorAll('.scroll-dots .dot');
+    
+    if (isMobile && pricingGrid && pricingDots.length) {
+      // スクロール検出
+      pricingGrid.addEventListener('scroll', function() {
+        const scrollPosition = this.scrollLeft;
+        const cardWidth = this.querySelector('div').offsetWidth;
+        const index = Math.round(scrollPosition / cardWidth);
+        
+        pricingDots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      });
+      
+      // ドットクリックでプラン移動
+      pricingDots.forEach((dot, index) => {
+        dot.addEventListener('click', function() {
+          const cardWidth = pricingGrid.querySelector('div').offsetWidth;
+          pricingGrid.scrollTo({
+            left: index * cardWidth,
+            behavior: 'smooth'
+          });
+        });
+      });
+    }
   }
   
   /**
@@ -606,17 +763,14 @@ document.addEventListener('DOMContentLoaded', () => {
    * リサイズイベントのハンドラー
    */
   function handleResize() {
-    console.log('ウィンドウリサイズを検知');
+    // 新しいビューポートの幅に基づいてモバイルかどうかを判定
+    const newIsMobile = window.innerWidth <= 768;
     
-    // 画面サイズが大きくなった場合、モバイルメニューを閉じる
-    if (window.innerWidth >= 768 && state.isMobileMenuOpen) {
-      toggleMobileMenu(false);
+    // モバイルとPCの切り替わりが発生した場合はページをリロード
+    if ((isMobile && !newIsMobile) || (!isMobile && newIsMobile)) {
+      console.log('デバイスモードが変更されました。ページをリロードします。');
+      window.location.reload();
     }
-    
-    // 必要に応じてセクションのサイズを調整
-    elements.sections.forEach(section => {
-      section.style.minHeight = '100vh';
-    });
   }
   
   /**
@@ -706,19 +860,20 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {boolean|undefined} forceState - 強制的に開くか閉じるかの状態 (未指定の場合はトグル)
    */
   function toggleMobileMenu(forceState) {
-    const newState = forceState !== undefined ? forceState : !state.isMobileMenuOpen;
+    const menuToggle = elements.menuToggle;
+    const mobileMenu = elements.mobileMenu;
     
-    if (newState) {
-      elements.mobileMenu.classList.add('active');
-      elements.menuToggle.classList.add('active');
-      elements.menuToggle.setAttribute('aria-expanded', 'true');
-    } else {
-      elements.mobileMenu.classList.remove('active');
-      elements.menuToggle.classList.remove('active');
-      elements.menuToggle.setAttribute('aria-expanded', 'false');
+    if (menuToggle && mobileMenu) {
+      // forceStateが指定されている場合はその値を使用、そうでなければ現在の状態を反転
+      const newState = forceState !== undefined ? forceState : !state.isMobileMenuOpen;
+      
+      menuToggle.classList.toggle('active', newState);
+      mobileMenu.classList.toggle('active', newState);
+      state.isMobileMenuOpen = newState;
+      
+      // スクロール制御（モバイルメニュー表示時はスクロール禁止）
+      document.body.style.overflow = newState ? 'hidden' : '';
     }
-    
-    state.isMobileMenuOpen = newState;
   }
   
   // アプリケーション初期化
