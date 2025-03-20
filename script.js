@@ -383,7 +383,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // リサイズイベント
-    window.addEventListener('resize', debounce(handleResize, 200));
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        // 画面幅が768pxを超えたか以下になった場合のみリロード
+        const currentIsMobile = window.innerWidth <= 768;
+        if (currentIsMobile !== isMobile) {
+          console.log('デバイスモードが変更されました。ページをリロードします。');
+          window.location.reload();
+        }
+      }, 250);
+    });
     
     // モバイルメニューが開いているときに画面外をクリックしたらメニューを閉じる
     document.addEventListener('click', (e) => {
@@ -756,20 +767,6 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       scrollToSection(elements.sections.length - 1);
       state.lastScrollTime = currentTime;
-    }
-  }
-  
-  /**
-   * リサイズイベントのハンドラー
-   */
-  function handleResize() {
-    // 新しいビューポートの幅に基づいてモバイルかどうかを判定
-    const newIsMobile = window.innerWidth <= 768;
-    
-    // モバイルとPCの切り替わりが発生した場合はページをリロード
-    if ((isMobile && !newIsMobile) || (!isMobile && newIsMobile)) {
-      console.log('デバイスモードが変更されました。ページをリロードします。');
-      window.location.reload();
     }
   }
   
