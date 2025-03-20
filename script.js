@@ -51,6 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(`セクション ${i+1}: id=${section.id}, class=${section.className}`);
     });
     
+    // スタイルのリセット - 既存の設定をクリア
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.documentElement.classList.remove('no-scroll');
+    
+    elements.sections.forEach(section => {
+      section.style.position = '';
+      section.style.display = '';
+      section.style.opacity = '';
+      section.style.visibility = '';
+      section.style.minHeight = '';
+      section.style.width = '';
+      section.style.overflow = '';
+      section.style.top = '';
+      section.style.left = '';
+    });
+    
     // PCとモバイルで別々の初期化処理
     if (isMobile) {
       // モバイル向け初期化: 標準のスクロールを使用
@@ -87,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
       section.style.display = 'flex';
       section.style.opacity = '1';
       section.style.visibility = 'visible';
+      section.style.height = 'auto';  // 高さを自動に設定
+      section.style.minHeight = 'auto'; // 最小高さの制限を解除
       section.classList.add('active');
     });
     
@@ -219,27 +238,22 @@ document.addEventListener('DOMContentLoaded', () => {
         section.classList.add('fullscreen-section');
         
         // スタイルを修正 - すべてのセクションが同じスタイルを持つよう調整
-        if (!section.style.position || section.style.position !== 'relative') {
-          section.style.position = 'relative';
-        }
-        
-        if (!section.style.minHeight || section.style.minHeight !== '100vh') {
-          section.style.minHeight = '100vh';
-        }
-        
-        if (!section.style.width || section.style.width !== '100%') {
-          section.style.width = '100%';
-        }
-        
-        if (!section.style.overflow || section.style.overflow !== 'hidden') {
-          section.style.overflow = 'hidden';
-        }
+        section.style.position = 'absolute'; // absoluteに変更
+        section.style.top = '0';
+        section.style.left = '0';
+        section.style.minHeight = '100vh';
+        section.style.width = '100%';
+        section.style.overflow = 'hidden';
       }
       
       if (index !== 0) {
         section.style.display = 'none';
+        section.style.opacity = '0';
+        section.style.visibility = 'hidden';
       } else {
         section.style.display = '';
+        section.style.opacity = '1';
+        section.style.visibility = 'visible';
       }
       section.setAttribute('aria-hidden', index !== 0 ? 'true' : 'false');
     });
@@ -252,6 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // bodyにno-scrollクラスを追加してスクロールを防止
     document.documentElement.classList.add('no-scroll');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
   }
   
   /**
@@ -869,7 +885,10 @@ document.addEventListener('DOMContentLoaded', () => {
       state.isMobileMenuOpen = newState;
       
       // スクロール制御（モバイルメニュー表示時はスクロール禁止）
-      document.body.style.overflow = newState ? 'hidden' : '';
+      // isMobileがtrueの場合のみ適用（PC表示ではスクロール状態を変更しない）
+      if (isMobile) {
+        document.body.style.overflow = newState ? 'hidden' : 'auto';
+      }
     }
   }
   

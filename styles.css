@@ -94,19 +94,69 @@ header {
 
 /* メインコンテンツスタイル */
 .main-content {
-    width: 100%;
     position: relative;
+    width: 100%;
+}
+
+/* PCモード時のメインコンテンツスタイル */
+@media (min-width: 769px) {
+    .main-content {
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    html.no-scroll,
+    body.no-scroll {
+        overflow: hidden;
+    }
+}
+
+/* モバイルモード時のメインコンテンツスタイル */
+@media (max-width: 768px) {
+    .main-content {
+        height: auto;
+        overflow: visible;
+    }
+    
+    html,
+    body {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
 }
 
 .fullscreen-section {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+}
+
+/* PCモード時のフルスクリーンセクション */
+@media (min-width: 769px) {
+    .fullscreen-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    }
+}
+
+/* モバイルモード時のフルスクリーンセクション */
+@media (max-width: 768px) {
+    .fullscreen-section {
+        position: relative;
+        height: auto;
+        min-height: auto;
+        display: block;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
 }
 
 .section-container {
@@ -914,5 +964,51 @@ header {
     #section6 .w-40 {
         width: 140px !important;
         height: 140px !important;
+    }
+}
+
+/* デバイス分離用のクラス - PCのみ表示 */
+.pc-only {
+    display: none;
+}
+
+/* デバイス分離用のクラス - モバイルのみ表示 */
+.mobile-only {
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .pc-only {
+        display: block;
+    }
+    
+    .mobile-only {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .pc-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: block;
+    }
+    
+    /* セクションスタイルをモバイル用に上書き */
+    .section-container {
+        padding: 2rem 1rem;
+    }
+    
+    /* モバイルでのセクションの最小高さを設定 */
+    section[id^="section"] {
+        min-height: auto;
+        height: auto;
+        margin-bottom: 2rem;
+        position: relative !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 } 
