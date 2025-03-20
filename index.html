@@ -243,6 +243,30 @@
       .menu-toggle.active .menu-icon::after {
         transform: rotate(-45deg);
       }
+      
+      /* モバイル向けのタップターゲット最適化 */
+      @media (max-width: 768px) {
+        .mobile-menu ul li a {
+          padding: 1rem 1.5rem; /* タップエリアを大きく */
+          font-size: 16px; /* フォントサイズを大きく */
+        }
+        
+        /* カード間の間隔調整 */
+        .grid {
+          gap: 1.25rem;
+        }
+        
+        /* アイコンをより目立たせる */
+        .text-primary-600 {
+          margin-bottom: 1rem;
+        }
+        
+        /* モバイルでのスクロール体験向上 */
+        .smooth-scroll {
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+        }
+      }
     </style>
     
     <!-- 構造化データ -->
@@ -297,7 +321,7 @@
     </header>
 
     <!-- メインコンテンツ（全画面スクロール） -->
-    <main class="main-content relative w-full overflow-x-hidden">
+    <main class="main-content relative w-full overflow-x-hidden smooth-scroll">
         <!-- ナビゲーション目印 -->
         <div class="section-navigation fixed right-5 top-1/2 transform -translate-y-1/2 z-[90]">
             <ul class="flex flex-col gap-4">
@@ -733,23 +757,23 @@
 
     <!-- モバイル専用ボトムナビゲーション -->
     <nav class="mobile-bottom-nav md:hidden">
-        <a href="#section1" class="mobile-nav-link active">
+        <a href="#section1" class="mobile-nav-link active" aria-label="トップページへ">
             <i class="fas fa-home"></i>
             <span>トップ</span>
         </a>
-        <a href="#section2" class="mobile-nav-link">
+        <a href="#section2" class="mobile-nav-link" aria-label="課題ページへ">
             <i class="fas fa-exclamation-circle"></i>
             <span>課題</span>
         </a>
-        <a href="#section3" class="mobile-nav-link">
+        <a href="#section3" class="mobile-nav-link" aria-label="解決策ページへ">
             <i class="fas fa-check-circle"></i>
             <span>解決策</span>
         </a>
-        <a href="#section4" class="mobile-nav-link">
+        <a href="#section4" class="mobile-nav-link" aria-label="機能ページへ">
             <i class="fas fa-cogs"></i>
             <span>機能</span>
         </a>
-        <a href="#section5" class="mobile-nav-link">
+        <a href="#section5" class="mobile-nav-link" aria-label="料金ページへ">
             <i class="fas fa-yen-sign"></i>
             <span>料金</span>
         </a>
@@ -789,6 +813,18 @@
                     if (link.getAttribute('href') === `#${current}`) {
                         link.classList.add('active');
                     }
+                });
+            });
+            
+            // フォームフィールドがフォーカスを失ったときにスクロールを元に戻す
+            // iOSでのキーボード表示/非表示時の画面ジャンプを防止
+            const formFields = document.querySelectorAll('input, textarea, select');
+            formFields.forEach(field => {
+                field.addEventListener('blur', function() {
+                    // 少し待ってからスクロール位置を調整
+                    setTimeout(() => {
+                        window.scrollTo(window.scrollX, window.scrollY);
+                    }, 100);
                 });
             });
             
